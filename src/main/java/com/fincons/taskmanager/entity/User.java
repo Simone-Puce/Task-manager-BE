@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 @NoArgsConstructor
@@ -13,6 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -30,7 +30,6 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-
     @ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "users_roles",
@@ -41,5 +40,4 @@ public class User {
 
     @Column(name = "generated_password", nullable = false)
     boolean generatedPassword = false;
-
 }
