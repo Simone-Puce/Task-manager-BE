@@ -18,6 +18,7 @@ import java.util.Map;
 public class JwtUnauthorizedAuthenticationEntryPoint implements AuthenticationEntryPoint {
     Logger logger = LoggerFactory.getLogger(JwtUnauthorizedAuthenticationEntryPoint.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
@@ -26,9 +27,9 @@ public class JwtUnauthorizedAuthenticationEntryPoint implements AuthenticationEn
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
         Map<String, Object> data = new HashMap<>();
-        data.put("Status","UNAUTHORIZED");
-        data.put("Message","Probably you have not permission to this resource.");
-        data.put("Success","false");
+        data.put("Status", "UNAUTHORIZED");
+        data.put("Message", "Probably you have not permission to this resource.");
+        data.put("Success", "false");
         response.getOutputStream()
                 .println(objectMapper.writeValueAsString(data));
 

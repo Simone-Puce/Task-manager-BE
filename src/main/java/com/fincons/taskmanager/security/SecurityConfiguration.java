@@ -29,11 +29,11 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-
     @Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
@@ -41,12 +41,10 @@ public class SecurityConfiguration {
 
     @Autowired
     private JwtUnauthorizedAuthenticationEntryPoint authenticationExceptionEntryPoint;
-
     @Autowired
     private JwtAuthenticationFilter jwtAuthFilter;
 
-    @Value("${application.context}")
-    private String appContext;
+    private final String appContext = "/task-manager/v1";
     @Value("${role.base.uri}")
     private String roleBaseUri;
     @Value("${modify.user}")
@@ -65,7 +63,7 @@ public class SecurityConfiguration {
     private String deleteUserByEmail;
 
     @Bean
-    public WebMvcConfigurer corsConfigurer(){
+    public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
@@ -73,18 +71,15 @@ public class SecurityConfiguration {
             }
         };
     }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-
         http.csrf(AbstractHttpConfigurer::disable);
-
-        List<Endpoint> endpoints = Arrays.asList(
-                new Endpoint(appContext + roleBaseUri + "/**", Arrays.asList(RoleEndpoint.ADMIN,RoleEndpoint.USER)),
-                new Endpoint(appContext + registeredUsers , List.of(RoleEndpoint.ADMIN)),
+        /*List<Endpoint> endpoints = Arrays.asList(
+                new Endpoint(appContext + roleBaseUri + "/**", Arrays.asList(RoleEndpoint.ADMIN, RoleEndpoint.USER)),
+                new Endpoint(appContext + registeredUsers, List.of(RoleEndpoint.ADMIN)),
                 new Endpoint(appContext + deleteUserByEmail + "/**", List.of(RoleEndpoint.ADMIN))
         );
-
         http.authorizeHttpRequests(authz -> {
             for (Endpoint e: endpoints) {
                 if (e.getRoles().contains(RoleEndpoint.ADMIN) && e.getRoles().contains(RoleEndpoint.USER)) {
@@ -102,12 +97,14 @@ public class SecurityConfiguration {
                     .requestMatchers(appContext + modifyUser).authenticated()
                     .requestMatchers(appContext + updateUserPassword).authenticated()
                     .anyRequest().authenticated();
+        }).httpBasic(Customizer.withDefaults());*/
+
+        http.authorizeHttpRequests(auth -> {
+            auth.requestMatchers(appContext + "/**").permitAll();
         }).httpBasic(Customizer.withDefaults());
 
-        http
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(authenticationExceptionEntryPoint));
-
+        http.exceptionHandling(exception -> exception
+                .authenticationEntryPoint(authenticationExceptionEntryPoint));
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

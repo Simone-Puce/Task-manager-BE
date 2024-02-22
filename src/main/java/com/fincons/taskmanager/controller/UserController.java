@@ -22,13 +22,10 @@ import java.util.List;
 @CrossOrigin("*")
 @RequestMapping("/task-manager")
 public class UserController {
-
     @Autowired
     UserService userService;
-
     @Autowired
     UserAndRoleMapper userAndRoleMapper;
-
     @GetMapping("${error.base.uri}")
     public String errorEndpoint() {
         return "Error!";
@@ -60,19 +57,18 @@ public class UserController {
     @GetMapping("${registered.users}")
     public ResponseEntity<GenericResponse<List<UserDTO>>> registeredUsers() {
 
-        List<UserDTO> userDTOList =  userService.findAllUsers()
+        List<UserDTO> userDTOList = userService.findAllUsers()
                 .stream()
                 .map(user -> userAndRoleMapper.userToUserDto(user))
                 .toList();
-
-        if(!userDTOList.isEmpty()) {
+        if (!userDTOList.isEmpty()) {
             return ResponseEntity.ok(GenericResponse.<List<UserDTO>>builder()
                     .status(HttpStatus.OK)
                     .success(true)
                     .message("List of  registered users")
                     .data(userDTOList)
                     .build());
-        }else{
+        } else {
             return ResponseEntity.ok(GenericResponse.<List<UserDTO>>builder()
                     .status(HttpStatus.OK)
                     .success(true)
@@ -121,7 +117,6 @@ public class UserController {
             ) throws Exception {
         try {
             UserDTO updatedUser = userAndRoleMapper.userToUserDto(userService.updateUser(email, userModified, passwordForAdmin));
-
             return ResponseEntity.status(HttpStatus.OK).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.OK)
@@ -144,14 +139,14 @@ public class UserController {
                             .message(resourceNotFoundException.getMessage())
                             .build()
             );
-        }catch(PasswordException passwordException){
+        } catch (PasswordException passwordException) {
             return ResponseEntity.ok().body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.CONFLICT)
                             .success(false)
                             .message(passwordException.getMessage())
                             .build());
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.CONFLICT)
@@ -165,10 +160,10 @@ public class UserController {
     @PutMapping("${update.user.password}")
     public ResponseEntity<GenericResponse<UserDTO>> updateUserPassword(
             @RequestParam String email,
-            @RequestParam  String currentPassword,
-            @RequestParam String newPassword){
-        try{
-            UserDTO userDTO =userAndRoleMapper.userToUserDto(userService.updateUserPassword(email, currentPassword, newPassword));
+            @RequestParam String currentPassword,
+            @RequestParam String newPassword) {
+        try {
+            UserDTO userDTO = userAndRoleMapper.userToUserDto(userService.updateUserPassword(email, currentPassword, newPassword));
             return ResponseEntity.status(HttpStatus.OK).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.OK)
@@ -177,7 +172,7 @@ public class UserController {
                             .data(userDTO)
                             .build()
             );
-        }catch(EmailException | PasswordException emailOrPasswordException){
+        } catch (EmailException | PasswordException emailOrPasswordException) {
             return ResponseEntity.status(HttpStatus.OK).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.CONFLICT)
@@ -186,10 +181,9 @@ public class UserController {
         }
     }
 
-
     @GetMapping("${detail.userdto}")
     public ResponseEntity<GenericResponse<UserDTO>> getUserByEmail(@RequestParam String email) {
-        try{
+        try {
             UserDTO userDTO = userAndRoleMapper.userToUserDto(userService.getUserDtoByEmail(email));
             return ResponseEntity.status(HttpStatus.OK).body(
                     GenericResponse.<UserDTO>builder()
@@ -198,7 +192,7 @@ public class UserController {
                             .message("User fuond!")
                             .data(userDTO)
                             .build());
-        }catch (ResourceNotFoundException resourceNotFoundException){
+        } catch (ResourceNotFoundException resourceNotFoundException) {
             return ResponseEntity.status(HttpStatus.OK).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.NOT_FOUND)
@@ -209,8 +203,8 @@ public class UserController {
     }
 
     @DeleteMapping("${delete.user-by-email}")
-    public ResponseEntity<GenericResponse<Boolean>> deleteUserByEmail(@RequestParam String email){
-        try{
+    public ResponseEntity<GenericResponse<Boolean>> deleteUserByEmail(@RequestParam String email) {
+        try {
             userService.deleteUserByEmail(email);
 
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -219,7 +213,7 @@ public class UserController {
                             .success(true)
                             .message("User deleted succesfully!!")
                             .build());
-        }catch(EmailException emailException){
+        } catch (EmailException emailException) {
             return ResponseEntity.status(HttpStatus.OK).body(
                     GenericResponse.<Boolean>builder()
                             .status(HttpStatus.CONFLICT)

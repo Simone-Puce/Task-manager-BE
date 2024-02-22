@@ -3,8 +3,8 @@ package com.fincons.taskmanager.enums;
 public enum RoleEndpoint {
 
     USER("ROLE_USER"),
+    EDITOR("ROLE_EDITOR"),
     ADMIN("ROLE_ADMIN");
-
 
     private String value;
 

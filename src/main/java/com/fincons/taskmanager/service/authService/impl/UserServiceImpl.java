@@ -31,9 +31,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService{
-
-
+public class UserServiceImpl implements UserService {
     public UserServiceImpl(RoleRepository roleRepo, UserRepository userRepo, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
         this.roleRepo = roleRepo;
         this.userRepo = userRepo;
@@ -41,36 +39,30 @@ public class UserServiceImpl implements UserService{
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
     }
-    private static final Logger LOG = LoggerFactory.getLogger(UserServiceImpl.class);
 
+    private static final Logger LOG = LoggerFactory.getLogger(UserServiceImpl.class);
     private AuthenticationManager authenticationManager;
     private RoleRepository roleRepo;
     private UserRepository userRepo;
     private PasswordEncoder passwordEncoder;
-
     @Autowired
     private UserAndRoleMapper userAndRoleMapper;
-
     private JwtTokenProvider jwtTokenProvider;
-
     @Value("${admin.password}")
     private String passwordAdmin;
 
     @Override
     public User registerNewUser(UserDTO userDTO, String passwordForAdmin) throws EmailException, PasswordException {
-
         String emailDto = userDTO.getEmail().toLowerCase().replace(" ", "");
-
         if (emailDto.isEmpty() || !EmailValidator.isValidEmail(emailDto) || userRepo.existsByEmail(emailDto)) {
             LOG.warn("Invalid or existing email!!");
             throw new EmailException(EmailException.emailInvalidOrExist());
         }
         User userToSave = userAndRoleMapper.dtoToUser(userDTO);
         Role role;
-
-        if(!PasswordValidator.isValidPassword(userDTO.getPassword())){
+        if (!PasswordValidator.isValidPassword(userDTO.getPassword())) {
             LOG.warn("Password dos not respect Regex!!");
-            throw new PasswordException( PasswordException.passwordDoesNotRespectRegexException());
+            throw new PasswordException(PasswordException.passwordDoesNotRespectRegexException());
         }
         if (passwordForAdmin != null && passwordForAdmin.equals(passwordAdmin)) {
             role = roleToAssign("ROLE_ADMIN");
@@ -80,7 +72,6 @@ public class UserServiceImpl implements UserService{
         userToSave.setRoles(List.of(role));
         userToSave.setGeneratedPassword(false);
         User userSaved = userRepo.save(userToSave);
-
         return userSaved;
     }
 
@@ -91,7 +82,6 @@ public class UserServiceImpl implements UserService{
                 loginDto.getPassword()
         ));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         return jwtTokenProvider.generateToken(authentication);
     }
 
@@ -106,60 +96,52 @@ public class UserServiceImpl implements UserService{
         }
         userFound.setFirstName(userModified.getFirstName());
         userFound.setLastName(userModified.getLastName());
-        if(!PasswordValidator.isValidPassword(userModified.getPassword())){
+        if (!PasswordValidator.isValidPassword(userModified.getPassword())) {
             throw new PasswordException(PasswordException.passwordDoesNotRespectRegexException());
         }
         userFound.setPassword(passwordEncoder.encode(userModified.getPassword()));
         if (passwordForAdmin != null && passwordForAdmin.equals(passwordAdmin)) {
-            if(RoleValidator.isValidRole(String.valueOf(userModified.getRoles().get(0)))) throw new RoleException(RoleException.roleDoesNotRespectRegex());
+            if (RoleValidator.isValidRole(String.valueOf(userModified.getRoles().get(0))))
+                throw new RoleException(RoleException.roleDoesNotRespectRegex());
             userFound.setRoles(userModified.getRoles()
                     .stream()
                     .map(role -> userAndRoleMapper.dtoToRole(role))
                     .collect(Collectors.toList()));
         }
         return userRepo.save(userFound);
-
     }
 
     @Override
     public User updateUserPassword(String email, String currentPassword, String newPassword) throws EmailException, PasswordException {
-
-        if(userRepo.findByEmail(email) == null || !EmailValidator.isValidEmail(email)) {
+        if (userRepo.findByEmail(email) == null || !EmailValidator.isValidEmail(email)) {
             throw new EmailException(EmailException.emailInvalidOrExist());
         }
-
         User userToModify = userRepo.findByEmail(email);
-        boolean passwordMatch = passwordEncoder.matches(currentPassword , userToModify.getPassword());
-
-        if(!passwordMatch){
+        boolean passwordMatch = passwordEncoder.matches(currentPassword, userToModify.getPassword());
+        if (!passwordMatch) {
             throw new PasswordException(PasswordException.invalidPasswordException());
         }
-
-        if(!PasswordValidator.isValidPassword(newPassword)){
+        if (!PasswordValidator.isValidPassword(newPassword)) {
             throw new PasswordException(PasswordException.passwordDoesNotRespectRegexException());
         }
-
         userToModify.setPassword(passwordEncoder.encode(newPassword));
-
         return userRepo.save(userToModify);
-
     }
-
 
     @Override
     public List<User> findAllUsers() {
-        return  userRepo.findAll();
+        return userRepo.findAll();
     }
 
     @Override
     public void deleteUserByEmail(String email) throws EmailException, RoleException {
         User userToRemove = userRepo.findByEmail(email);
-        if(userToRemove==null){
+        if (userToRemove == null) {
             throw new EmailException(EmailException.emailInvalidOrExist());
         }
-        if(userToRemove.getRoles()
+        if (userToRemove.getRoles()
                 .stream()
-                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"))){
+                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"))) {
             throw new RoleException("User with role admin can't be deleted!");
         }
         userRepo.delete(userToRemove);
@@ -167,7 +149,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getUserDtoByEmail(String email) {
-        if(userRepo.findByEmail(email)==null){
+        if (userRepo.findByEmail(email) == null) {
             throw new ResourceNotFoundException("User with this email doesn't exist");
         }
         return userRepo.findByEmail(email);
@@ -182,26 +164,4 @@ public class UserServiceImpl implements UserService{
         }
         return role;
     }
-
-
-
-
-    //METODO PER AGGIUNGERE UN NUOVO USER IN SEGUITO ALLA LETTURA DI UN FILE.
-    public User addNewUser(User user) throws RuntimeException {
-
-        String emailUser = user.getEmail().toLowerCase().replace(" ", "");
-        // Controllo se l'indirizzo email è valido e non esiste un utente registrato con la mail specificata
-        //    if (!emailUser.isEmpty() && EmailValidator.isValidEmail(emailUser) && !userRepo.existsByEmail(emailUser)) {
-        Role role;
-        role = roleToAssign("ROLE_USER");
-        user.setRoles(List.of(role));
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepo.save(user);
-        return user;
-        //    } else{
-        //        return false;
-        //    }
-    }
-
-
 }

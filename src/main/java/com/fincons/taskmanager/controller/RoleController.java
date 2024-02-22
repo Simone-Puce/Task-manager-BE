@@ -17,17 +17,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/task-manager")
 public class RoleController {
-
     @Autowired
     private RoleService roleService;
-
     @Autowired
     private UserAndRoleMapper userAndRoleMapper;
 
     @GetMapping("${role.list}")
-    public ResponseEntity<GenericResponse<List<RoleDTO>>> getAllRoles () {
+    public ResponseEntity<GenericResponse<List<RoleDTO>>> getAllRoles() {
 
-        List<RoleDTO> listRoleDTOs =  roleService.findAllRoles()
+        List<RoleDTO> listRoleDTOs = roleService.findAllRoles()
                 .stream()
                 .map(r -> userAndRoleMapper.roleToRoleDto(r))
                 .toList();
@@ -42,28 +40,26 @@ public class RoleController {
 
     @GetMapping("${role.find-by-id}/{roleId}")
     public ResponseEntity<GenericResponse<RoleDTO>> getRoleById(@PathVariable long roleId) {
-        try{
+        try {
             RoleDTO roleDTO = userAndRoleMapper.roleToRoleDto(roleService.getRoleById(roleId));
-
             return ResponseEntity.ok(GenericResponse.<RoleDTO>builder()
                     .status(HttpStatus.OK)
                     .success(true)
                     .message("Role found Succesfully  !!!")
                     .data(roleDTO)
                     .build());
-        }catch(ResourceNotFoundException rnfe){
+        } catch (ResourceNotFoundException rnfe) {
             return ResponseEntity.ok().body(GenericResponse.<RoleDTO>builder()
                     .status(HttpStatus.NOT_FOUND)
                     .success(false)
                     .message(rnfe.getMessage())
                     .build());
         }
-
     }
 
     @PostMapping("${role.create}")
     public ResponseEntity<GenericResponse<RoleDTO>> createRole(@RequestBody RoleDTO roleDTO) {
-        try{
+        try {
             RoleDTO newRole = userAndRoleMapper.roleToRoleDto(roleService.createRole(roleDTO));
             return ResponseEntity.ok().body(
                     GenericResponse.<RoleDTO>builder()
@@ -72,7 +68,7 @@ public class RoleController {
                             .message("Role created Succesfully!!!")
                             .data(newRole)
                             .build());
-        }catch(RoleException re ){
+        } catch (RoleException re) {
             return ResponseEntity.ok().body(GenericResponse.<RoleDTO>builder()
                     .status(HttpStatus.CONFLICT)
                     .success(false)
@@ -89,21 +85,21 @@ public class RoleController {
      */
     public ResponseEntity<GenericResponse<RoleDTO>> updateRole
             (@PathVariable long roleId, @RequestBody RoleDTO roleModifiedDTO) {
-        try{
-            RoleDTO updatedRole  = userAndRoleMapper.roleToRoleDto(roleService.updateRole(roleId,roleModifiedDTO));
+        try {
+            RoleDTO updatedRole = userAndRoleMapper.roleToRoleDto(roleService.updateRole(roleId, roleModifiedDTO));
             return ResponseEntity.ok().body(GenericResponse.<RoleDTO>builder()
                     .status(HttpStatus.OK)
                     .success(true)
                     .message("Role updated Succesfully!!!")
                     .data(updatedRole)
                     .build());
-        }catch(RoleException re){
+        } catch (RoleException re) {
             return ResponseEntity.ok().body(GenericResponse.<RoleDTO>builder()
                     .status(HttpStatus.CONFLICT)
                     .success(false)
                     .message(re.getMessage())
                     .build());
-        }catch(ResourceNotFoundException resourseException){
+        } catch (ResourceNotFoundException resourseException) {
             return ResponseEntity.ok().body(GenericResponse.<RoleDTO>builder()
                     .status(HttpStatus.NOT_FOUND)
                     .success(false)
@@ -115,9 +111,9 @@ public class RoleController {
     @DeleteMapping("${delete.role}/{roleId}")
     public ResponseEntity<GenericResponse<String>> deleteRole(
             @PathVariable long roleId,
-            @RequestParam (name = "deleteUsers" , required = false) boolean deleteUsers) {
-        try{
-            String roleDeleted = roleService.deleteRole(roleId,deleteUsers);
+            @RequestParam(name = "deleteUsers", required = false) boolean deleteUsers) {
+        try {
+            String roleDeleted = roleService.deleteRole(roleId, deleteUsers);
             return ResponseEntity.ok().body(
                     GenericResponse.<String>builder()
                             .status(HttpStatus.OK)
@@ -125,7 +121,7 @@ public class RoleController {
                             .message(roleDeleted)
                             .build()
             );
-        }catch(ResourceNotFoundException | RoleException re){
+        } catch (ResourceNotFoundException | RoleException re) {
             return ResponseEntity.ok().body(
                     GenericResponse.<String>builder()
                             .status(HttpStatus.CONFLICT)

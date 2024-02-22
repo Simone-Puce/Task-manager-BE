@@ -12,13 +12,12 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class GenericResponse<T>  {
+public class GenericResponse<T> {
 
     private HttpStatus status;
     private boolean success;
     private String message;
     private T data;
-
 
     public static <T> GenericResponse<T> empty(String message, HttpStatus status) {
         return success(null, message, status);
@@ -32,6 +31,7 @@ public class GenericResponse<T>  {
                 .success(true)
                 .build();
     }
+
     public static <T> GenericResponse<T> error(String message, HttpStatus status) {
         return GenericResponse.<T>builder()
                 .message(message)
@@ -39,11 +39,13 @@ public class GenericResponse<T>  {
                 .success(false)
                 .build();
     }
+
     public GenericResponse(HttpStatus status, boolean success, String message) {
         this.status = status;
         this.success = success;
         this.message = message;
     }
+
     public GenericResponse(HttpStatus status, boolean success, T data) {
         this.status = status;
         this.success = success;

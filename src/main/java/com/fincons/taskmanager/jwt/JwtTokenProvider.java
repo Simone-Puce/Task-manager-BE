@@ -13,13 +13,10 @@ import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
-
     @Value("${app.jwt-secret}")
     private String jwtSecret;
-
     @Value("${app.jwt-expiration-milliseconds}")
     private long jwtExpirationDate;
-
     public String generateToken(Authentication authentication) {
         String email = authentication.getName();
 
@@ -33,7 +30,6 @@ public class JwtTokenProvider {
                 .signWith(key())
                 .compact();
     }
-
     public String getEmailFromJWT(String token) {
 
         return Jwts.parserBuilder()
@@ -42,7 +38,6 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody().getSubject();
     }
-
     public boolean validateToken(String token){
         try {
             Jwts.parserBuilder()
@@ -54,7 +49,6 @@ public class JwtTokenProvider {
             return false;
         }
     }
-
     private Key key(){
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }

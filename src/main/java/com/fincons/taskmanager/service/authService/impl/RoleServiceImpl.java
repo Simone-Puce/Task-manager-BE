@@ -18,13 +18,10 @@ import java.util.Optional;
 
 @Service
 public class RoleServiceImpl implements RoleService {
-
     @Autowired
     private RoleRepository roleRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private UserAndRoleMapper userAndRoleMapper;
 
@@ -35,75 +32,58 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role getRoleById(long roleId) {
-
         Optional<Role> optionalRole = roleRepository.findById(roleId);
-        if(optionalRole.isEmpty()){
+        if (optionalRole.isEmpty()) {
             throw new ResourceNotFoundException("Role does not present");
         }
         Role optionalRoleToRole = optionalRole.get();
         optionalRoleToRole.setName(optionalRole.get().getName());
         optionalRoleToRole.setId(optionalRole.get().getId());
         optionalRoleToRole.setUsers(optionalRole.get().getUsers());
-
         return optionalRoleToRole;
     }
 
     @Override
     public Role createRole(RoleDTO roleDTO) throws RoleException {
-
-        if(!RoleValidator.isValidRole(roleDTO.getName().toUpperCase())){
+        if (!RoleValidator.isValidRole(roleDTO.getName().toUpperCase())) {
             throw new RoleException(RoleException.roleDoesNotRespectRegex());
         }
         Role roleExist = roleRepository.findByName(roleDTO.getName().toUpperCase());
-
-        if(roleExist != null){
+        if (roleExist != null) {
             throw new RoleException(RoleException.roleExistException());
         }
-
         roleDTO.setName(roleDTO.getName().toUpperCase());
-
         return roleRepository.save(userAndRoleMapper.dtoToRole(roleDTO));
     }
 
     @Override
-    public Role updateRole(long roleId, RoleDTO roleModifiedDTO) throws  RoleException {
-
+    public Role updateRole(long roleId, RoleDTO roleModifiedDTO) throws RoleException {
         String roleDTONameToConfront = roleModifiedDTO.getName().toUpperCase();
-
-        if(!RoleValidator.isValidRole(roleDTONameToConfront)){
+        if (!RoleValidator.isValidRole(roleDTONameToConfront)) {
             throw new RoleException(RoleException.roleDoesNotRespectRegex());
         }
-
         Optional<Role> roleFound = roleRepository.findById(roleId);
-
-        if(roleFound.isEmpty()){
+        if (roleFound.isEmpty()) {
             throw new ResourceNotFoundException("Role does not Exist");
         }
-
-        if(roleFound.get().getName().equals("ROLE_ADMIN")){
+        if (roleFound.get().getName().equals("ROLE_ADMIN")) {
             throw new RoleException("Can't modify a ROLE_ADMIN");
         }
-
         Role roleToModify = roleFound.get();
-
         roleToModify.setName(roleModifiedDTO.getName().toUpperCase());
-        if(roleRepository.findByName(roleModifiedDTO.getName().toUpperCase())!= null) {
+        if (roleRepository.findByName(roleModifiedDTO.getName().toUpperCase()) != null) {
             throw new RoleException(RoleException.roleExistException());
         }
-
         return roleRepository.save(roleToModify);
     }
 
     @Override
-    public String deleteRole(long roleId, boolean deleteUsersAssociated) throws RoleException {  //  if Boolean deleteUsersAssociated == null -- > nullPointerExepciont
-
+    public String deleteRole(long roleId, boolean deleteUsersAssociated) throws RoleException {
         Optional<Role> roleToDelete = Optional.ofNullable(roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException("Role does not Exist")));
-
-        if (roleToDelete.isPresent() && !roleToDelete.get().getName().equals("ROLE_ADMIN"))  {
+        if (roleToDelete.isPresent() && !roleToDelete.get().getName().equals("ROLE_ADMIN")) {
             if (roleToDelete.get().getUsers().isEmpty()) {
                 roleRepository.deleteById(roleId);
                 return "Role deleted successfully!";
-
             } else {
                 if (deleteUsersAssociated) {
                     roleToDelete.get().removeUsersAssociations();
@@ -117,13 +97,11 @@ public class RoleServiceImpl implements RoleService {
                             .stream()
                             .map(User::getId)
                             .toList();
-
                     throw new RoleException("You have to change before the role's name of these users: List of id of users : " + idOfUsersToModifyRole);
                 }
             }
-        }else{
+        } else {
             throw new RoleException("Can't delete a ROLE_ADMIN");
         }
-
     }
 }

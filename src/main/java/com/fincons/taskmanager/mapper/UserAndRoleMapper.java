@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserAndRoleMapper {
-
     private static final ModelMapper modelMapper = new ModelMapper();
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -29,10 +27,10 @@ public class UserAndRoleMapper {
         return userDTO;
     }
 
-
     public RoleDTO roleToRoleDto(Role role) {
         return modelMapper.map(role, RoleDTO.class);
     }
+
     public Role dtoToRole(RoleDTO roleDTO) {
         return modelMapper.map(roleDTO, Role.class);
     }

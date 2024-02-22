@@ -14,7 +14,6 @@ import java.util.List;
 public class Endpoint {
 
     public String path;
-
+    
     public List<RoleEndpoint> roles;
-
 }

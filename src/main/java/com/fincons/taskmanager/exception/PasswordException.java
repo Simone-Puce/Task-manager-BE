@@ -6,7 +6,6 @@ public class PasswordException extends Exception{
         super(message);
     }
 
-
     public static String  passwordDoesNotRespectRegexException() {
         return "Password does not respect regex !";
     }
