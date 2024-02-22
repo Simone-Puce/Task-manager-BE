@@ -14,8 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class UserDTO {
 
-    private long id;
-
     private String firstName;
 
     private String lastName;
@@ -25,10 +23,6 @@ public class UserDTO {
     private String password;
     @JsonIgnoreProperties("users")
     private List<RoleDTO> roles;
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;

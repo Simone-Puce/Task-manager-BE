@@ -14,8 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class RoleDTO {
 
-    private long id;
-
     private String name;
 
     //@JsonBackReference
