@@ -50,9 +50,11 @@ public class UserServiceImpl implements UserService {
     private JwtTokenProvider jwtTokenProvider;
     @Value("${admin.password}")
     private String passwordAdmin;
+    @Value("${editor.password}")
+    private String passwordEditor;
 
     @Override
-    public User registerNewUser(UserDTO userDTO, String passwordForAdmin) throws EmailException, PasswordException {
+    public User registerNewUser(UserDTO userDTO, String passwordForAdmin, String passwordForEditor) throws EmailException, PasswordException {
         String emailDto = userDTO.getEmail().toLowerCase().replace(" ", "");
         if (emailDto.isEmpty() || !EmailValidator.isValidEmail(emailDto) || userRepo.existsByEmail(emailDto)) {
             LOG.warn("Invalid or existing email!!");
@@ -64,15 +66,15 @@ public class UserServiceImpl implements UserService {
             LOG.warn("Password dos not respect Regex!!");
             throw new PasswordException(PasswordException.passwordDoesNotRespectRegexException());
         }
-        if (passwordForAdmin != null && passwordForAdmin.equals(passwordAdmin)) {
+        if (passwordAdmin.equals(passwordForAdmin)) {
             role = roleToAssign("ROLE_ADMIN");
+        } else if (passwordEditor.equals(passwordForEditor)) {
+            role = roleToAssign("ROLE_EDITOR");
         } else {
             role = roleToAssign("ROLE_USER");
         }
         userToSave.setRoles(List.of(role));
-        userToSave.setGeneratedPassword(false);
-        User userSaved = userRepo.save(userToSave);
-        return userSaved;
+        return userRepo.save(userToSave);
     }
 
     @Override

@@ -26,8 +26,6 @@ public class UserDTO {
     @JsonIgnoreProperties("users")
     private List<RoleDTO> roles;
 
-    private boolean generatedPassword;
-
     public void setId(long id) {
         this.id = id;
     }
