@@ -22,12 +22,12 @@ public class Role {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy="roles")
+    @ManyToMany(mappedBy = "roles")
     private List<User> users;
 
     @PreRemove
     public void removeUsersAssociations() {
-        for (User user: this.users) {
+        for (User user : this.users) {
             user.getRoles().remove(this);
         }
     }
