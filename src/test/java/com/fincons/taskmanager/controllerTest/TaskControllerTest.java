@@ -30,9 +30,8 @@ public class TaskControllerTest {
     private TaskController taskController;
     @MockBean
     private TaskRepository taskRepository;
-
     @Autowired
-    public TaskMapper modelMapperTask;
+    private TaskMapper modelMapperTask;
 
 
     @Test
