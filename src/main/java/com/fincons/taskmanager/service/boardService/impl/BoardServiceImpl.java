@@ -11,6 +11,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,12 +41,38 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board updateBoardByCode(String boardCode, Board board) {
-        return null;
+        List<Board> tasks = boardRepository.findAll();
+        Board taskExisting = validateBoardByCode(boardCode);
+
+        List<Board> tasksWithoutTaskCodeChosed = new ArrayList<>();
+
+        for(Board t : tasks){
+            if (!Objects.equals(t.getBoardCode(), boardCode)){
+                tasksWithoutTaskCodeChosed.add(t);
+            }
+        }
+        taskExisting.setBoardCode(board.getBoardCode());
+        taskExisting.setName(board.getName());
+
+
+        if(tasksWithoutTaskCodeChosed.isEmpty()){
+            boardRepository.save(taskExisting);
+        } else {
+            for(Board t : tasksWithoutTaskCodeChosed){
+                if(t.getBoardCode().equals(taskExisting.getBoardCode())){
+                    throw new DuplicateException("CODE: " + boardCode, "CODE: " + board.getBoardCode());
+                }
+            }
+            boardRepository.save(taskExisting);
+        }
+
+        return taskExisting;
     }
 
     @Override
     public void deleteBoardByCode(String boardCode) {
-
+        Board board = validateBoardByCode(boardCode);
+        boardRepository.deleteById(board.getId());
     }
 
     public Board validateBoardByCode(String code) {
@@ -68,5 +95,4 @@ public class BoardServiceImpl implements BoardService {
             throw new DuplicateException("CODE: " + boardCode, "CODE: " + boardByCode.getBoardCode());
         }
     }
-
 }
