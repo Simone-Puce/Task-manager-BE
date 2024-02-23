@@ -43,7 +43,6 @@ public class SecurityConfiguration {
     private JwtUnauthorizedAuthenticationEntryPoint authenticationExceptionEntryPoint;
     @Autowired
     private JwtAuthenticationFilter jwtAuthFilter;
-
     private final String appContext = "/task-manager/v1";
     @Value("${role.base.uri}")
     private String roleBaseUri;
@@ -100,7 +99,10 @@ public class SecurityConfiguration {
         }).httpBasic(Customizer.withDefaults());*/
 
         http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers(appContext + "/**").permitAll();
+            auth
+                    .requestMatchers(appContext + loginBaseUri).permitAll()
+                    .requestMatchers(appContext + registerBaseUri).permitAll()
+                    .requestMatchers(appContext + "/**").hasAnyRole("USER", "ADMIN", "EDITOR");
         }).httpBasic(Customizer.withDefaults());
 
         http.exceptionHandling(exception -> exception
