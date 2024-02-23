@@ -19,6 +19,7 @@ public class TaskDTO {
     private String name;
     private String status;
     private String description;
+    private List<UserDTO> users;
     private String boardCode;
     private List<AttachmentDTO> attachmentDTOs;
 }

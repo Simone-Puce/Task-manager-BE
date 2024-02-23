@@ -1,5 +1,6 @@
 package com.fincons.taskmanager.service.taskService;
 
+import com.fincons.taskmanager.dto.TaskDTO;
 import com.fincons.taskmanager.entity.Task;
 
 import java.util.List;
@@ -11,4 +12,5 @@ public interface TaskService{
     Task createTask(Task task);
     Task updateTaskByCode(String code, Task task);
     void deleteTaskByCode(String code);
+    void validateTaskFields(TaskDTO taskDTO);
 }
