@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class BoardMapper {
     @Autowired
-    private ModelMapper modelMapperStandard;
+    private ModelMapper modelMapperForBoard;
 
     public BoardDTO mapToDTO(Board board) {
-        return modelMapperStandard.map(board, BoardDTO.class);
+        return modelMapperForBoard.map(board, BoardDTO.class);
     }
 
     public Board mapToEntity(BoardDTO boardDTO){
-        return modelMapperStandard.map(boardDTO, Board.class);
+        return modelMapperForBoard.map(boardDTO, Board.class);
     }
 
 }
