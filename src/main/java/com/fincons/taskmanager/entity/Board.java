@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
 @NoArgsConstructor
@@ -11,6 +14,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "board")
+@EntityListeners(AuditingEntityListener.class)
 public class Board {
 
     @Id
@@ -43,4 +47,12 @@ public class Board {
 
     @ManyToMany(mappedBy = "boards")
     private List<User> users;
+
+    @Column(name = "created_date", nullable = false, updatable = false)
+    @CreatedDate
+    private long createdDate;
+
+    @Column(name = "modified_date")
+    @LastModifiedDate
+    private long modifiedDate;
 }
