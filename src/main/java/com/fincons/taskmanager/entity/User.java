@@ -38,6 +38,14 @@ public class User {
     )
     private List<Role> roles;
 
+    @ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "users_boards",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "board_id")
+    )
+    private List<Board> boards;
+
     @ManyToMany(mappedBy = "users")
     private List<Task> tasks;
 }
