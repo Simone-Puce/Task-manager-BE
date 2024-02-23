@@ -24,7 +24,7 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
     @Autowired
-    public TaskMapper modelMapperTask;
+    private TaskMapper modelMapperTask;
 
     @GetMapping(value = "${task.find-by-code}")
     public ResponseEntity<GenericResponse<TaskDTO>> getTaskByCode(@RequestParam String code) {

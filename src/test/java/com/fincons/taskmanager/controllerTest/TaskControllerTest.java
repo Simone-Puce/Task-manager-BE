@@ -3,6 +3,7 @@ package com.fincons.taskmanager.controllerTest;
 import com.fincons.taskmanager.controller.TaskController;
 import com.fincons.taskmanager.dto.TaskDTO;
 import com.fincons.taskmanager.entity.Task;
+import com.fincons.taskmanager.mapper.TaskMapper;
 import com.fincons.taskmanager.repository.TaskRepository;
 import com.fincons.taskmanager.utility.GenericResponse;
 import org.junit.jupiter.api.Assertions;
@@ -30,6 +31,8 @@ public class TaskControllerTest {
     @MockBean
     private TaskRepository taskRepository;
 
+    @Autowired
+    public TaskMapper modelMapperTask;
 
 
     @Test
@@ -40,7 +43,7 @@ public class TaskControllerTest {
         when(taskRepository.findTaskByTaskCode(taskCode)).thenReturn(task);
         ResponseEntity<GenericResponse<TaskDTO>> response = taskController.getTaskByCode(taskCode);
 
-        TaskDTO taskDTO = taskController.modelMapperTask.mapToDTO(task);
+        TaskDTO taskDTO = modelMapperTask.mapToDTO(task);
 
         //Assert if the mapper was successful
         assertThat(taskDTO.getTaskCode()).isEqualTo(task.getTaskCode());
