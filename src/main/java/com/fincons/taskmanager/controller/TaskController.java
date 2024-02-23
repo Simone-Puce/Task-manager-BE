@@ -87,7 +87,16 @@ public class TaskController {
                     HttpStatus.OK);
             return ResponseEntity.ok(response);
 
-        } catch (IllegalArgumentException iae) {
+        }
+        catch (ResourceNotFoundException rfe) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    GenericResponse.error(
+                            rfe.getMessage(),
+                            HttpStatus.NOT_FOUND
+                    )
+            );
+        }
+        catch (IllegalArgumentException iae) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     GenericResponse.error(
                             iae.getMessage(),
