@@ -43,8 +43,8 @@ public class SecurityConfiguration {
     private JwtUnauthorizedAuthenticationEntryPoint authenticationExceptionEntryPoint;
     @Autowired
     private JwtAuthenticationFilter jwtAuthFilter;
-
-    private final String appContext = "/task-manager/v1";
+    @Value("${application.context}")
+    private String appContext;
     @Value("${role.base.uri}")
     private String roleBaseUri;
     @Value("${modify.user}")
@@ -61,6 +61,8 @@ public class SecurityConfiguration {
     private String registerBaseUri;
     @Value("${delete.user-by-email}")
     private String deleteUserByEmail;
+    @Value("${task.base.uri}")
+    private String taskBaseUri;
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -100,7 +102,9 @@ public class SecurityConfiguration {
         }).httpBasic(Customizer.withDefaults());*/
 
         http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers(appContext + "/**").permitAll();
+            auth.requestMatchers(appContext + loginBaseUri).permitAll()
+                    .requestMatchers(appContext + registerBaseUri).permitAll()
+                    .requestMatchers(appContext + taskBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN");
         }).httpBasic(Customizer.withDefaults());
 
         http.exceptionHandling(exception -> exception
