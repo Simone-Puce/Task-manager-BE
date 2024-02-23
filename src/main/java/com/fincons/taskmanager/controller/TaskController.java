@@ -54,7 +54,6 @@ public class TaskController {
             );
         }
     }
-
     @GetMapping(value = "${task.list}")
     public ResponseEntity<GenericResponse<List<TaskDTO>>> getAllTask() {
         List<Task> tasks = taskService.getAllTasks();
@@ -71,7 +70,6 @@ public class TaskController {
         );
         return ResponseEntity.ok(response);
     }
-
     @PostMapping(value = "${task.create}")
     public ResponseEntity<GenericResponse<TaskDTO>> createTask(@RequestParam TaskDTO taskDTO) {
         try {
@@ -105,7 +103,6 @@ public class TaskController {
             );
         }
     }
-
     @PutMapping(value = "${task.put}")
     public ResponseEntity<GenericResponse<TaskDTO>> updateTaskByCode(@RequestParam String taskCode, @RequestBody TaskDTO taskDTO) {
         try {
@@ -147,7 +144,8 @@ public class TaskController {
                     )
             );
         }
-    }@DeleteMapping(value = "${task.delete}")
+    }
+    @DeleteMapping(value = "${task.delete}")
     public ResponseEntity<GenericResponse<TaskDTO>> deleteTaskByCode(@RequestParam String taskCode) {
         try {
             ValidateFields.validateSingleField(taskCode);
