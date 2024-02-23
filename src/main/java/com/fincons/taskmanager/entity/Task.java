@@ -55,4 +55,18 @@ public class Task {
     private List<Attachment> attachments;
 
 
+    public Task(long id, String taskCode, String name, String status, String description) {
+        this.id = id;
+        this.taskCode = taskCode;
+        this.name = name;
+        this.status = status;
+        this.description = description;
+    }
+
+    public Task(String taskCode, String name, String status, String description) {
+        this.taskCode = taskCode;
+        this.name = name;
+        this.status = status;
+        this.description = description;
+    }
 }

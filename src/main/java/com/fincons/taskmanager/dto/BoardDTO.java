@@ -7,19 +7,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskDTO {
+public class BoardDTO {
 
-    private String taskCode;
-    private String name;
-    private String status;
-    private String description;
-    private List<UserDTO> users;
     private String boardCode;
-    private List<AttachmentDTO> attachmentDTOs;
+    private String name;
+    private List<LaneDTO> lanes;
+    private List<TaskDTO> tasks;
+    private List<UserDTO> users;
+    private long createdDate;
+    private long modifiedDate;
 }
