@@ -37,7 +37,7 @@ public class TaskController {
             return ResponseEntity.ok(response);
         }
         catch (IllegalArgumentException iae) {
-            return ResponseEntity.ok(
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     GenericResponse.error(
                             iae.getMessage(),
                             HttpStatus.BAD_REQUEST
@@ -45,7 +45,7 @@ public class TaskController {
             );
         }
         catch (ResourceNotFoundException rnfe){
-            return ResponseEntity.ok(
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     GenericResponse.error(
                             rnfe.getMessage(),
                             HttpStatus.NOT_FOUND
