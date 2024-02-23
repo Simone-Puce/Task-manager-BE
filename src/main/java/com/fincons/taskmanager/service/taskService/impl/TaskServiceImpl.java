@@ -6,6 +6,7 @@ import com.fincons.taskmanager.entity.Task;
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.repository.TaskRepository;
+import com.fincons.taskmanager.service.boardService.impl.BoardServiceImpl;
 import com.fincons.taskmanager.service.taskService.TaskService;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,12 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private BoardServiceImpl boardServiceImpl;
+
     @Override
-    public Task getTaskByCode(String code) {
-        return validateTaskByCode(code);
+    public Task getTaskByCode(String taskCode) {
+        return validateTaskByCode(taskCode);
     }
 
     @Override
@@ -34,6 +38,9 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task createTask(Task task) {
         checkForDuplicateTask(task.getTaskCode());
+
+        Board board = boardServiceImpl.validateBoardByCode(task.getBoard().getBoardCode());
+        task.setBoard(board);
         taskRepository.save(task);
         return task;
     }
@@ -55,9 +62,8 @@ public class TaskServiceImpl implements TaskService {
         taskExisting.setStatus(task.getStatus());
         taskExisting.setDescription(task.getDescription());
 
-        //Appena creo il service di Board il commento è da togliere
-        //Board board = boardServiceImpl.validateBoardByCode(board.getBoard().getBoardCode());
-        //taskExisting.setBoard(board);
+        Board board = boardServiceImpl.validateBoardByCode(task.getBoard().getBoardCode());
+        taskExisting.setBoard(board);
 
         if(tasksWithoutTaskCodeChosed.isEmpty()){
             taskRepository.save(taskExisting);
@@ -74,8 +80,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void deleteTaskByCode(String code) {
-        Task task = validateTaskByCode(code);
+    public void deleteTaskByCode(String taskCode) {
+        Task task = validateTaskByCode(taskCode);
         taskRepository.deleteById(task.getId());
     }
     public Task validateTaskByCode(String code) {
@@ -89,16 +95,15 @@ public class TaskServiceImpl implements TaskService {
     public void validateTaskFields(TaskDTO taskDTO) {
         if (Strings.isEmpty(taskDTO.getTaskCode()) ||
                 Strings.isEmpty(taskDTO.getName()) ||
-                Strings.isEmpty(taskDTO.getDescription()) ||
                 Strings.isEmpty(taskDTO.getStatus()) ||
                 Strings.isEmpty(taskDTO.getBoardCode())) {
             throw new IllegalArgumentException("Error: The fields of the task can't be null or empty.");
         }
     }
-    private void checkForDuplicateTask(String code) {
-        Task taskByCode = taskRepository.findTaskByTaskCode(code);
+    private void checkForDuplicateTask(String taskCode) {
+        Task taskByCode = taskRepository.findTaskByTaskCode(taskCode);
         if (!Objects.isNull(taskByCode)) {
-            throw new DuplicateException("CODE: " + code, "CODE: " + taskByCode.getTaskCode());
+            throw new DuplicateException("CODE: " + taskCode, "CODE: " + taskByCode.getTaskCode());
         }
     }
 }

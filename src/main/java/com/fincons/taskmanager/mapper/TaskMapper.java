@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class TaskMapper {
     
-
-    private ModelMapper modelMapperStandard = new ModelMapper();
+    @Autowired
+    private ModelMapper modelMapperStandard;
 
     public TaskDTO mapToDTO(Task task) {
         return modelMapperStandard.map(task, TaskDTO.class);

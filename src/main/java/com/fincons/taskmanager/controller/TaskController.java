@@ -71,7 +71,7 @@ public class TaskController {
         return ResponseEntity.ok(response);
     }
     @PostMapping(value = "${task.create}")
-    public ResponseEntity<GenericResponse<TaskDTO>> createTask(@RequestParam TaskDTO taskDTO) {
+    public ResponseEntity<GenericResponse<TaskDTO>> createTask(@RequestBody TaskDTO taskDTO) {
         try {
             taskService.validateTaskFields(taskDTO);
 
