@@ -33,12 +33,12 @@ public class Task {
 
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST , CascadeType.MERGE})
-    @JoinTable(name = "user_task",
+    @JoinTable(name = "tasks_users",
             joinColumns = {
-                    @JoinColumn(name = "user_id", referencedColumnName = "id")
+                    @JoinColumn(name = "task_id", referencedColumnName = "id")
             },
             inverseJoinColumns = {
-                    @JoinColumn(name = "task_id", referencedColumnName = "id")
+                    @JoinColumn(name = "user_id", referencedColumnName = "id")
             }
     )
     private List<User> users;

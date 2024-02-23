@@ -26,7 +26,7 @@ public class Board {
 
     @ManyToMany(fetch = FetchType.LAZY,
         cascade = {CascadeType.PERSIST , CascadeType.MERGE})
-    @JoinTable(name = "board_lane",
+    @JoinTable(name = "boards_lanes",
             joinColumns = {
                     @JoinColumn(name = "board_id", referencedColumnName = "id")
             },
@@ -40,4 +40,7 @@ public class Board {
             mappedBy = "board",
             fetch = FetchType.LAZY)
     private List<Task> tasks;
+
+    @ManyToMany(mappedBy = "boards")
+    private List<User> users;
 }
