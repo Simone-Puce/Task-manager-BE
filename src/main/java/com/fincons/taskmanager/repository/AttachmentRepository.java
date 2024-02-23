@@ -1,4 +1,9 @@
 package com.fincons.taskmanager.repository;
 
-public interface AttachmentRepository {
+import com.fincons.taskmanager.entity.Attachment;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface AttachmentRepository extends JpaRepository<Attachment,Long> {
+
+    Attachment findAttachmentByAttachmentCode(String code);
 }
