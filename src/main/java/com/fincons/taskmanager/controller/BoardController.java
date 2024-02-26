@@ -9,6 +9,7 @@ import com.fincons.taskmanager.mapper.BoardMapper;
 import com.fincons.taskmanager.service.boardService.BoardService;
 import com.fincons.taskmanager.utility.GenericResponse;
 import com.fincons.taskmanager.utility.ValidateFields;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,7 +75,7 @@ public class BoardController {
     @PostMapping(value = "${board.create}")
     public ResponseEntity<GenericResponse<BoardDTO>> createBoard(@RequestBody BoardDTO boardDTO) {
         try {
-            boardService.validateBoardFields(boardDTO);
+            validateBoardFields(boardDTO);
 
             Board boardMapped = modelMapperBoard.mapToEntity(boardDTO);
 
@@ -110,7 +111,7 @@ public class BoardController {
         try {
             ValidateFields.validateSingleField(boardCode);
 
-            boardService.validateBoardFields(boardDTO);
+            validateBoardFields(boardDTO);
 
             Board boardMappedForService = modelMapperBoard.mapToEntity(boardDTO);
 
@@ -170,6 +171,12 @@ public class BoardController {
                     GenericResponse.error(
                             rnfe.getMessage(),
                             HttpStatus.NOT_FOUND));
+        }
+    }
+    private void validateBoardFields(BoardDTO boardDTO) {
+        if (Strings.isEmpty(boardDTO.getBoardCode()) ||
+                Strings.isEmpty(boardDTO.getName())) {
+            throw new IllegalArgumentException("Error: The fields of the board can't be null or empty.");
         }
     }
 }

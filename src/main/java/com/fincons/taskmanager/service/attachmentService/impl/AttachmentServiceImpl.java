@@ -86,8 +86,6 @@ public class AttachmentServiceImpl implements AttachmentService {
         attachmentRepository.deleteById(attachment.getId());
     }
 
-
-
     public Attachment validateAttachmentByCode(String code) {
         Attachment existingCode = attachmentRepository.findAttachmentByAttachmentCode(code);
 
@@ -95,14 +93,6 @@ public class AttachmentServiceImpl implements AttachmentService {
             throw new ResourceNotFoundException("Error: Attachment with CODE: " + code + " not found.");
         }
         return existingCode;
-    }
-    public void validateAttachmentFields(AttachmentDTO attachmentDTO) {
-        if (Strings.isEmpty(attachmentDTO.getAttachmentCode()) ||
-                Strings.isEmpty(attachmentDTO.getName()) ||
-                Strings.isEmpty(attachmentDTO.getExtension()) ||
-                Strings.isEmpty(attachmentDTO.getTaskCode())) {
-            throw new IllegalArgumentException("Error: The fields of the attachment can't be null or empty.");
-        }
     }
     private void checkForDuplicateAttachment(String attachmentCode) {
         Attachment attachmentByCode = attachmentRepository.findAttachmentByAttachmentCode(attachmentCode);

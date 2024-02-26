@@ -1,4 +1,9 @@
 package com.fincons.taskmanager.repository;
 
-public interface LaneRepository {
+import com.fincons.taskmanager.entity.Lane;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface LaneRepository extends JpaRepository<Lane, Long> {
+
+    Lane findLaneByLaneCode(String code);
 }

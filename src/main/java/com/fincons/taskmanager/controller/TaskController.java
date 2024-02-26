@@ -8,6 +8,7 @@ import com.fincons.taskmanager.mapper.TaskMapper;
 import com.fincons.taskmanager.service.taskService.TaskService;
 import com.fincons.taskmanager.utility.GenericResponse;
 import com.fincons.taskmanager.utility.ValidateFields;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +74,7 @@ public class TaskController {
     @PostMapping(value = "${task.create}")
     public ResponseEntity<GenericResponse<TaskDTO>> createTask(@RequestBody TaskDTO taskDTO) {
         try {
-            taskService.validateTaskFields(taskDTO);
+            validateTaskFields(taskDTO);
 
             Task taskMapped = modelMapperTask.mapToEntity(taskDTO);
 
@@ -117,7 +118,7 @@ public class TaskController {
         try {
             ValidateFields.validateSingleField(taskCode);
 
-            taskService.validateTaskFields(taskDTO);
+            validateTaskFields(taskDTO);
 
             Task taskMappedForService = modelMapperTask.mapToEntity(taskDTO);
 
@@ -177,6 +178,14 @@ public class TaskController {
                     GenericResponse.error(
                             rnfe.getMessage(),
                             HttpStatus.NOT_FOUND));
+        }
+    }
+    private void validateTaskFields(TaskDTO taskDTO) {
+        if (Strings.isEmpty(taskDTO.getTaskCode()) ||
+                Strings.isEmpty(taskDTO.getName()) ||
+                Strings.isEmpty(taskDTO.getStatus()) ||
+                Strings.isEmpty(taskDTO.getBoardCode())) {
+            throw new IllegalArgumentException("Error: The fields of the task can't be null or empty.");
         }
     }
 }

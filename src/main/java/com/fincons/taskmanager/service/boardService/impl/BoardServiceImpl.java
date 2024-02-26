@@ -44,21 +44,21 @@ public class BoardServiceImpl implements BoardService {
         List<Board> tasks = boardRepository.findAll();
         Board taskExisting = validateBoardByCode(boardCode);
 
-        List<Board> tasksWithoutTaskCodeChosed = new ArrayList<>();
+        List<Board> tasksWithoutTaskCodeChosen = new ArrayList<>();
 
         for(Board t : tasks){
             if (!Objects.equals(t.getBoardCode(), boardCode)){
-                tasksWithoutTaskCodeChosed.add(t);
+                tasksWithoutTaskCodeChosen.add(t);
             }
         }
         taskExisting.setBoardCode(board.getBoardCode());
         taskExisting.setName(board.getName());
 
 
-        if(tasksWithoutTaskCodeChosed.isEmpty()){
+        if(tasksWithoutTaskCodeChosen.isEmpty()){
             boardRepository.save(taskExisting);
         } else {
-            for(Board t : tasksWithoutTaskCodeChosed){
+            for(Board t : tasksWithoutTaskCodeChosen){
                 if(t.getBoardCode().equals(taskExisting.getBoardCode())){
                     throw new DuplicateException("CODE: " + boardCode, "CODE: " + board.getBoardCode());
                 }
@@ -82,12 +82,6 @@ public class BoardServiceImpl implements BoardService {
             throw new ResourceNotFoundException("Error: Board with CODE: " + code + " not found.");
         }
         return existingCode;
-    }
-    public void validateBoardFields(BoardDTO boardDTO) {
-        if (Strings.isEmpty(boardDTO.getBoardCode()) ||
-                Strings.isEmpty(boardDTO.getName())) {
-            throw new IllegalArgumentException("Error: The fields of the board can't be null or empty.");
-        }
     }
     private void checkForDuplicateBoard(String boardCode) {
         Board boardByCode = boardRepository.findBoardByBoardCode(boardCode);

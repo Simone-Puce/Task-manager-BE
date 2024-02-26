@@ -12,5 +12,4 @@ public interface TaskService{
     Task createTask(Task task);
     Task updateTaskByCode(String taskCode, Task task);
     void deleteTaskByCode(String taskCode);
-    void validateTaskFields(TaskDTO taskDTO);
 }
