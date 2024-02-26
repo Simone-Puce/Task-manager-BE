@@ -4,11 +4,16 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -29,7 +34,7 @@ public class Board {
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY,
-        cascade = {CascadeType.PERSIST , CascadeType.MERGE})
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "boards_lanes",
             joinColumns = {
                     @JoinColumn(name = "board_id", referencedColumnName = "id")
@@ -48,9 +53,19 @@ public class Board {
     @ManyToMany(mappedBy = "boards")
     private List<User> users;
 
+    @Column(name = "created_date", nullable = false, updatable = false)
     @CreatedDate
-    private long createdDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Timestamp createdDate;
 
+    @Column(name = "modified_date")
     @LastModifiedDate
-    private long modifiedDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Timestamp modifiedDate;
+
+    @CreatedBy
+    private String createdBy;
+
+    @LastModifiedBy
+    private String modifiedBy;
 }
