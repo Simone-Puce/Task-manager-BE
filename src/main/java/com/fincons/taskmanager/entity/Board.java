@@ -60,6 +60,7 @@ public class Board {
 
     @Column(name = "modified_date")
     @LastModifiedDate
+
     @Temporal(TemporalType.TIMESTAMP)
     private Timestamp modifiedDate;
 
