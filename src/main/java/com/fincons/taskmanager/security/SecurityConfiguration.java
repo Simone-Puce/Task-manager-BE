@@ -111,7 +111,6 @@ public class SecurityConfiguration {
                     .requestMatchers(appContext + taskBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
                     .requestMatchers(appContext + attachmentBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
                     .requestMatchers(appContext + boardBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN");
-
         }).httpBasic(Customizer.withDefaults());
 
         http.exceptionHandling(exception -> exception
