@@ -1,11 +1,12 @@
 package com.fincons.taskmanager.controller;
 
-import com.fincons.taskmanager.dto.TaskDTO;
-import com.fincons.taskmanager.entity.Task;
+
+import com.fincons.taskmanager.dto.LaneDTO;
+import com.fincons.taskmanager.entity.Lane;
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
-import com.fincons.taskmanager.mapper.TaskMapper;
-import com.fincons.taskmanager.service.taskService.TaskService;
+import com.fincons.taskmanager.mapper.LaneMapper;
+import com.fincons.taskmanager.service.laneService.LaneService;
 import com.fincons.taskmanager.utility.GenericResponse;
 import com.fincons.taskmanager.utility.ValidateFields;
 import org.apache.logging.log4j.util.Strings;
@@ -20,22 +21,22 @@ import java.util.List;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/task-manager")
-public class TaskController {
+public class LaneController {
 
     @Autowired
-    private TaskService taskService;
+    private LaneService laneService;
     @Autowired
-    private TaskMapper modelMapperTask;
+    private LaneMapper modelMapperLane;
 
-    @GetMapping(value = "${task.find-by-code}")
-    public ResponseEntity<GenericResponse<TaskDTO>> getTaskByCode(@RequestParam String code) {
+    @GetMapping(value = "${lane.find-by-code}")
+    public ResponseEntity<GenericResponse<LaneDTO>> getLaneByCode(@RequestParam String code) {
         try {
             ValidateFields.validateSingleField(code);
-            Task task = taskService.getTaskByCode(code);
-            TaskDTO taskDTO = modelMapperTask.mapToDTO(task);
-            GenericResponse<TaskDTO> response = GenericResponse.success(
-                    taskDTO,
-                    "Success: Found Task with CODE " + code + ".",
+            Lane lane = laneService.getLaneByCode(code);
+            LaneDTO laneDTO = modelMapperLane.mapToDTO(lane);
+            GenericResponse<LaneDTO> response = GenericResponse.success(
+                    laneDTO,
+                    "Success: Found Lane with CODE " + code + ".",
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -55,47 +56,39 @@ public class TaskController {
             );
         }
     }
-    @GetMapping(value = "${task.list}")
-    public ResponseEntity<GenericResponse<List<TaskDTO>>> getAllTasks() {
-        List<Task> tasks = taskService.getAllTasks();
-        List<TaskDTO> taskDTOs = new ArrayList<>();
-        for (Task task : tasks) {
-            TaskDTO taskDTO = modelMapperTask.mapToDTO(task);
-            taskDTOs.add(taskDTO);
+    @GetMapping(value = "${lane.list}")
+    public ResponseEntity<GenericResponse<List<LaneDTO>>> getAllLanes() {
+        List<Lane> lanes = laneService.getAllLanes();
+        List<LaneDTO> laneDTOs = new ArrayList<>();
+        for (Lane lane : lanes) {
+            LaneDTO laneDTO = modelMapperLane.mapToDTO(lane);
+            laneDTOs.add(laneDTO);
         }
-        GenericResponse<List<TaskDTO>> response = GenericResponse.success(
-                taskDTOs,
-                "Success:" + (taskDTOs.isEmpty() || taskDTOs.size() == 1 ? " Found " : " Founds ") + taskDTOs.size() +
-                        (taskDTOs.isEmpty() || taskDTOs.size() == 1 ? " task" : " tasks") + ".",
+        GenericResponse<List<LaneDTO>> response = GenericResponse.success(
+                laneDTOs,
+                "Success:" + (laneDTOs.isEmpty() || laneDTOs.size() == 1 ? " Found " : " Founds ") + laneDTOs.size() +
+                        (laneDTOs.isEmpty() || laneDTOs.size() == 1 ? " lane" : " lanes") + ".",
                 HttpStatus.OK
         );
         return ResponseEntity.ok(response);
     }
-    @PostMapping(value = "${task.create}")
-    public ResponseEntity<GenericResponse<TaskDTO>> createTask(@RequestBody TaskDTO taskDTO) {
+    @PostMapping(value = "${lane.create}")
+    public ResponseEntity<GenericResponse<LaneDTO>> createLane(@RequestBody LaneDTO laneDTO) {
         try {
-            validateTaskFields(taskDTO);
+            validateLaneFields(laneDTO);
 
-            Task taskMapped = modelMapperTask.mapToEntity(taskDTO);
+            Lane laneMapped = modelMapperLane.mapToEntity(laneDTO);
 
-            Task task = taskService.createTask(taskMapped);
+            Lane lane = laneService.createLane(laneMapped);
 
-            TaskDTO taskDTO2 = modelMapperTask.mapToDTO(task);
+            LaneDTO laneDTO2 = modelMapperLane.mapToDTO(lane);
 
-            GenericResponse<TaskDTO> response = GenericResponse.success(
-                    taskDTO2,
-                    "Success: Task with code: " + task.getTaskCode() + " has been successfully updated!",
+            GenericResponse<LaneDTO> response = GenericResponse.success(
+                    laneDTO2,
+                    "Success: Lane with code: " + lane.getLaneCode() + " has been successfully updated!",
                     HttpStatus.OK);
             return ResponseEntity.ok(response);
 
-        }
-        catch (ResourceNotFoundException rfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    GenericResponse.error(
-                            rfe.getMessage(),
-                            HttpStatus.NOT_FOUND
-                    )
-            );
         }
         catch (IllegalArgumentException iae) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
@@ -113,22 +106,22 @@ public class TaskController {
             );
         }
     }
-    @PutMapping(value = "${task.put}")
-    public ResponseEntity<GenericResponse<TaskDTO>> updateTaskByCode(@RequestParam String taskCode, @RequestBody TaskDTO taskDTO) {
+    @PutMapping(value = "${lane.put}")
+    public ResponseEntity<GenericResponse<LaneDTO>> updateLaneByCode(@RequestParam String laneCode, @RequestBody LaneDTO laneDTO) {
         try {
-            ValidateFields.validateSingleField(taskCode);
+            ValidateFields.validateSingleField(laneCode);
 
-            validateTaskFields(taskDTO);
+            validateLaneFields(laneDTO);
 
-            Task taskMappedForService = modelMapperTask.mapToEntity(taskDTO);
+            Lane laneMappedForService = modelMapperLane.mapToEntity(laneDTO);
 
-            Task task = taskService.updateTaskByCode(taskCode, taskMappedForService);
+            Lane lane = laneService.updateLaneByCode(laneCode, laneMappedForService);
 
-            TaskDTO taskDTO2 = modelMapperTask.mapToDTO(task);
+            LaneDTO laneDTO2 = modelMapperLane.mapToDTO(lane);
 
-            GenericResponse<TaskDTO> response = GenericResponse.success(
-                    taskDTO2,
-                    "Success: Task with code: " + taskCode + " has been successfully updated!",
+            GenericResponse<LaneDTO> response = GenericResponse.success(
+                    laneDTO2,
+                    "Success: Lane with code: " + laneCode + " has been successfully updated!",
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -155,13 +148,13 @@ public class TaskController {
             );
         }
     }
-    @DeleteMapping(value = "${task.delete}")
-    public ResponseEntity<GenericResponse<TaskDTO>> deleteTaskByCode(@RequestParam String taskCode) {
+    @DeleteMapping(value = "${lane.delete}")
+    public ResponseEntity<GenericResponse<LaneDTO>> deleteLaneByCode(@RequestParam String laneCode) {
         try {
-            ValidateFields.validateSingleField(taskCode);
-            taskService.deleteTaskByCode(taskCode);
-            GenericResponse<TaskDTO> response = GenericResponse.empty(
-                    "Success: Task with code: " + taskCode + " has been successfully deleted! ",
+            ValidateFields.validateSingleField(laneCode);
+            laneService.deleteLaneByCode(laneCode);
+            GenericResponse<LaneDTO> response = GenericResponse.empty(
+                    "Success: Lane with code: " + laneCode + " has been successfully deleted! ",
                     HttpStatus.OK
             );
 
@@ -180,14 +173,11 @@ public class TaskController {
                             HttpStatus.NOT_FOUND));
         }
     }
-    private void validateTaskFields(TaskDTO taskDTO) {
-        if (Strings.isEmpty(taskDTO.getTaskCode()) ||
-                Strings.isEmpty(taskDTO.getName()) ||
-                Strings.isEmpty(taskDTO.getStatus()) ||
-                Strings.isEmpty(taskDTO.getBoardCode())) {
-            throw new IllegalArgumentException("Error: The fields of the task can't be null or empty.");
+    private void validateLaneFields(LaneDTO laneDTO) {
+        if (Strings.isEmpty(laneDTO.getLaneCode()) ||
+                Strings.isEmpty(laneDTO.getName())) {
+            throw new IllegalArgumentException("Error: The fields of the lane can't be null or empty.");
         }
     }
 }
-
 

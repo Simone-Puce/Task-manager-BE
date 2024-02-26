@@ -8,6 +8,7 @@ import com.fincons.taskmanager.mapper.AttachmentMapper;
 import com.fincons.taskmanager.service.attachmentService.AttachmentService;
 import com.fincons.taskmanager.utility.GenericResponse;
 import com.fincons.taskmanager.utility.ValidateFields;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ public class AttachmentController {
     }
 
     @GetMapping(value = "${attachment.list}")
-    public ResponseEntity<GenericResponse<List<AttachmentDTO>>> getAllAttachment() {
+    public ResponseEntity<GenericResponse<List<AttachmentDTO>>> getAllAttachments() {
         List<Attachment> attachments = attachmentService.getAllAttachments();
         List<AttachmentDTO> attachmentDTOs = new ArrayList<>();
         for (Attachment attachment : attachments) {
@@ -75,7 +76,7 @@ public class AttachmentController {
     @PostMapping(value = "${attachment.create}")
     public ResponseEntity<GenericResponse<AttachmentDTO>> createAttachment(@RequestBody AttachmentDTO attachmentDTO) {
         try {
-            attachmentService.validateAttachmentFields(attachmentDTO);
+            validateAttachmentFields(attachmentDTO);
 
             Attachment attachmentMapped = modelMapperAttachment.mapToEntity(attachmentDTO);
 
@@ -118,7 +119,7 @@ public class AttachmentController {
         try {
             ValidateFields.validateSingleField(attachmentCode);
 
-            attachmentService.validateAttachmentFields(attachmentDTO);
+            validateAttachmentFields(attachmentDTO);
 
             Attachment attachmentMappedForService = modelMapperAttachment.mapToEntity(attachmentDTO);
 
@@ -179,6 +180,14 @@ public class AttachmentController {
                     GenericResponse.error(
                             rnfe.getMessage(),
                             HttpStatus.NOT_FOUND));
+        }
+    }
+    private void validateAttachmentFields(AttachmentDTO attachmentDTO) {
+        if (Strings.isEmpty(attachmentDTO.getAttachmentCode()) ||
+                Strings.isEmpty(attachmentDTO.getName()) ||
+                Strings.isEmpty(attachmentDTO.getExtension()) ||
+                Strings.isEmpty(attachmentDTO.getTaskCode())) {
+            throw new IllegalArgumentException("Error: The fields of the attachment can't be null or empty.");
         }
     }
 }

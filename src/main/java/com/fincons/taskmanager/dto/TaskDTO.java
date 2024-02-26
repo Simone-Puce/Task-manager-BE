@@ -23,7 +23,7 @@ public class TaskDTO {
     private String description;
     private List<UserDTO> users;
     private String boardCode;
-    private List<AttachmentDTO> attachmentDTOs;
+    private List<AttachmentDTO> attachments;
     private String createdBy;
     private String modifiedBy;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")

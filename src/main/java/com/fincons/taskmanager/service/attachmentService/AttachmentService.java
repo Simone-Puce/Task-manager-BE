@@ -13,5 +13,4 @@ public interface AttachmentService {
     Attachment createAttachment(Attachment attachment);
     Attachment updateAttachmentByCode(String attachmentCode, Attachment attachment);
     void deleteAttachmentByCode(String attachmentCode);
-    void validateAttachmentFields(AttachmentDTO attachmentDTO);
 }

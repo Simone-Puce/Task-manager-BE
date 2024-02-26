@@ -52,11 +52,11 @@ public class AttachmentServiceImpl implements AttachmentService {
         List<Attachment> attachments = attachmentRepository.findAll();
         Attachment attachmentExisting = validateAttachmentByCode(attachmentCode);
 
-        List<Attachment> attachmentsWithoutAttachmentCodeChosed = new ArrayList<>();
+        List<Attachment> attachmentsExcludingSelectedAttachments = new ArrayList<>();
 
         for(Attachment t : attachments){
             if (!Objects.equals(t.getAttachmentCode(), attachmentCode)){
-                attachmentsWithoutAttachmentCodeChosed.add(t);
+                attachmentsExcludingSelectedAttachments.add(t);
             }
         }
         attachmentExisting.setAttachmentCode(attachment.getAttachmentCode());
@@ -66,10 +66,10 @@ public class AttachmentServiceImpl implements AttachmentService {
         Task task = taskServiceImpl.validateTaskByCode(attachment.getTask().getTaskCode());
         attachmentExisting.setTask(task);
 
-        if(attachmentsWithoutAttachmentCodeChosed.isEmpty()){
+        if(attachmentsExcludingSelectedAttachments.isEmpty()){
             attachmentRepository.save(attachmentExisting);
         } else {
-            for(Attachment t : attachmentsWithoutAttachmentCodeChosed){
+            for(Attachment t : attachmentsExcludingSelectedAttachments){
                 if(t.getAttachmentCode().equals(attachmentExisting.getAttachmentCode())){
                     throw new DuplicateException("CODE: " + attachmentCode, "CODE: " + attachment.getAttachmentCode());
                 }
@@ -86,8 +86,6 @@ public class AttachmentServiceImpl implements AttachmentService {
         attachmentRepository.deleteById(attachment.getId());
     }
 
-
-
     public Attachment validateAttachmentByCode(String code) {
         Attachment existingCode = attachmentRepository.findAttachmentByAttachmentCode(code);
 
@@ -95,14 +93,6 @@ public class AttachmentServiceImpl implements AttachmentService {
             throw new ResourceNotFoundException("Error: Attachment with CODE: " + code + " not found.");
         }
         return existingCode;
-    }
-    public void validateAttachmentFields(AttachmentDTO attachmentDTO) {
-        if (Strings.isEmpty(attachmentDTO.getAttachmentCode()) ||
-                Strings.isEmpty(attachmentDTO.getName()) ||
-                Strings.isEmpty(attachmentDTO.getExtension()) ||
-                Strings.isEmpty(attachmentDTO.getTaskCode())) {
-            throw new IllegalArgumentException("Error: The fields of the attachment can't be null or empty.");
-        }
     }
     private void checkForDuplicateAttachment(String attachmentCode) {
         Attachment attachmentByCode = attachmentRepository.findAttachmentByAttachmentCode(attachmentCode);

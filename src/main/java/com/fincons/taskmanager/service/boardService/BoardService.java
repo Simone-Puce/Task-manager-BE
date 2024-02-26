@@ -12,5 +12,4 @@ public interface BoardService {
     Board createBoard(Board board);
     Board updateBoardByCode(String boardCode, Board board);
     void deleteBoardByCode(String boardCode);
-    void validateBoardFields(BoardDTO boardDTO);
 }
