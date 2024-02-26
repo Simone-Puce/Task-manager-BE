@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-
 public class BoardServiceImpl implements BoardService {
 
     @Autowired
