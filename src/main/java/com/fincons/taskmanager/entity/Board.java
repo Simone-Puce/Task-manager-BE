@@ -48,11 +48,15 @@ public class Board {
     @ManyToMany(mappedBy = "boards")
     private List<User> users;
 
-    @Column(name = "created_date", nullable = false, updatable = false)
     @CreatedDate
     private long createdDate;
 
-    @Column(name = "modified_date")
     @LastModifiedDate
     private long modifiedDate;
+
+    public Board(long id, String boardCode, String name) {
+        this.id = id;
+        this.boardCode = boardCode;
+        this.name = name;
+    }
 }

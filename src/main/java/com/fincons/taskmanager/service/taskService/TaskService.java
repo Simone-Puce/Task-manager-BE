@@ -7,10 +7,10 @@ import java.util.List;
 
 public interface TaskService{
 
-    Task getTaskByCode(String code);
+    Task getTaskByCode(String taskCode);
     List<Task> getAllTasks();
     Task createTask(Task task);
-    Task updateTaskByCode(String code, Task task);
-    void deleteTaskByCode(String code);
+    Task updateTaskByCode(String taskCode, Task task);
+    void deleteTaskByCode(String taskCode);
     void validateTaskFields(TaskDTO taskDTO);
 }

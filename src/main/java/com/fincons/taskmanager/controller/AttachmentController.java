@@ -1,11 +1,11 @@
 package com.fincons.taskmanager.controller;
 
-import com.fincons.taskmanager.dto.TaskDTO;
-import com.fincons.taskmanager.entity.Task;
+import com.fincons.taskmanager.dto.AttachmentDTO;
+import com.fincons.taskmanager.entity.Attachment;
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
-import com.fincons.taskmanager.mapper.TaskMapper;
-import com.fincons.taskmanager.service.taskService.TaskService;
+import com.fincons.taskmanager.mapper.AttachmentMapper;
+import com.fincons.taskmanager.service.attachmentService.AttachmentService;
 import com.fincons.taskmanager.utility.GenericResponse;
 import com.fincons.taskmanager.utility.ValidateFields;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,22 +19,22 @@ import java.util.List;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/task-manager")
-public class TaskController {
+public class AttachmentController {
 
     @Autowired
-    private TaskService taskService;
+    private AttachmentService attachmentService;
     @Autowired
-    private TaskMapper modelMapperTask;
+    private AttachmentMapper modelMapperAttachment;
 
-    @GetMapping(value = "${task.find-by-code}")
-    public ResponseEntity<GenericResponse<TaskDTO>> getTaskByCode(@RequestParam String code) {
+    @GetMapping(value = "${attachment.find-by-code}")
+    public ResponseEntity<GenericResponse<AttachmentDTO>> getAttachmentByCode(@RequestParam String code) {
         try {
             ValidateFields.validateSingleField(code);
-            Task task = taskService.getTaskByCode(code);
-            TaskDTO taskDTO = modelMapperTask.mapToDTO(task);
-            GenericResponse<TaskDTO> response = GenericResponse.success(
-                    taskDTO,
-                    "Success: Found Task with CODE " + code + ".",
+            Attachment attachment = attachmentService.getAttachmentByCode(code);
+            AttachmentDTO attachmentDTO = modelMapperAttachment.mapToDTO(attachment);
+            GenericResponse<AttachmentDTO> response = GenericResponse.success(
+                    attachmentDTO,
+                    "Success: Found Attachment with CODE " + code + ".",
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -54,49 +54,49 @@ public class TaskController {
             );
         }
     }
-    @GetMapping(value = "${task.list}")
-    public ResponseEntity<GenericResponse<List<TaskDTO>>> getAllTask() {
-        List<Task> tasks = taskService.getAllTasks();
-        List<TaskDTO> taskDTOs = new ArrayList<>();
-        for (Task task : tasks) {
-            TaskDTO taskDTO = modelMapperTask.mapToDTO(task);
-            taskDTOs.add(taskDTO);
+
+    @GetMapping(value = "${attachment.list}")
+    public ResponseEntity<GenericResponse<List<AttachmentDTO>>> getAllAttachment() {
+        List<Attachment> attachments = attachmentService.getAllAttachments();
+        List<AttachmentDTO> attachmentDTOs = new ArrayList<>();
+        for (Attachment attachment : attachments) {
+            AttachmentDTO attachmentDTO = modelMapperAttachment.mapToDTO(attachment);
+            attachmentDTOs.add(attachmentDTO);
         }
-        GenericResponse<List<TaskDTO>> response = GenericResponse.success(
-                taskDTOs,
-                "Success:" + (taskDTOs.isEmpty() || taskDTOs.size() == 1 ? " Found " : " Founds ") + taskDTOs.size() +
-                        (taskDTOs.isEmpty() || taskDTOs.size() == 1 ? " task" : " tasks") + ".",
+        GenericResponse<List<AttachmentDTO>> response = GenericResponse.success(
+                attachmentDTOs,
+                "Success:" + (attachmentDTOs.isEmpty() || attachmentDTOs.size() == 1 ? " Found " : " Founds ") + attachmentDTOs.size() +
+                        (attachmentDTOs.isEmpty() || attachmentDTOs.size() == 1 ? " attachment" : " attachments") + ".",
                 HttpStatus.OK
         );
         return ResponseEntity.ok(response);
     }
-    @PostMapping(value = "${task.create}")
-    public ResponseEntity<GenericResponse<TaskDTO>> createTask(@RequestBody TaskDTO taskDTO) {
+
+    @PostMapping(value = "${attachment.create}")
+    public ResponseEntity<GenericResponse<AttachmentDTO>> createAttachment(@RequestBody AttachmentDTO attachmentDTO) {
         try {
-            taskService.validateTaskFields(taskDTO);
+            attachmentService.validateAttachmentFields(attachmentDTO);
 
-            Task taskMapped = modelMapperTask.mapToEntity(taskDTO);
+            Attachment attachmentMapped = modelMapperAttachment.mapToEntity(attachmentDTO);
 
-            Task task = taskService.createTask(taskMapped);
+            Attachment attachment = attachmentService.createAttachment(attachmentMapped);
 
-            TaskDTO taskDTO2 = modelMapperTask.mapToDTO(task);
+            AttachmentDTO attachmentDTO2 = modelMapperAttachment.mapToDTO(attachment);
 
-            GenericResponse<TaskDTO> response = GenericResponse.success(
-                    taskDTO2,
-                    "Success: Task with code: " + task.getTaskCode() + " has been successfully updated!",
+            GenericResponse<AttachmentDTO> response = GenericResponse.success(
+                    attachmentDTO2,
+                    "Success: Attachment with code: " + attachment.getAttachmentCode() + " has been successfully updated!",
                     HttpStatus.OK);
             return ResponseEntity.ok(response);
 
-        }
-        catch (ResourceNotFoundException rfe) {
+        } catch (ResourceNotFoundException rfe) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     GenericResponse.error(
                             rfe.getMessage(),
                             HttpStatus.NOT_FOUND
                     )
             );
-        }
-        catch (IllegalArgumentException iae) {
+        } catch (IllegalArgumentException iae) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     GenericResponse.error(
                             iae.getMessage(),
@@ -112,22 +112,23 @@ public class TaskController {
             );
         }
     }
-    @PutMapping(value = "${task.put}")
-    public ResponseEntity<GenericResponse<TaskDTO>> updateTaskByCode(@RequestParam String taskCode, @RequestBody TaskDTO taskDTO) {
+
+    @PutMapping(value = "${attachment.put}")
+    public ResponseEntity<GenericResponse<AttachmentDTO>> updateAttachmentByCode(@RequestParam String attachmentCode, @RequestBody AttachmentDTO attachmentDTO) {
         try {
-            ValidateFields.validateSingleField(taskCode);
+            ValidateFields.validateSingleField(attachmentCode);
 
-            taskService.validateTaskFields(taskDTO);
+            attachmentService.validateAttachmentFields(attachmentDTO);
 
-            Task taskMappedForService = modelMapperTask.mapToEntity(taskDTO);
+            Attachment attachmentMappedForService = modelMapperAttachment.mapToEntity(attachmentDTO);
 
-            Task task = taskService.updateTaskByCode(taskCode, taskMappedForService);
+            Attachment attachment = attachmentService.updateAttachmentByCode(attachmentCode, attachmentMappedForService);
 
-            TaskDTO taskDTO2 = modelMapperTask.mapToDTO(task);
+            AttachmentDTO attachmentDTO2 = modelMapperAttachment.mapToDTO(attachment);
 
-            GenericResponse<TaskDTO> response = GenericResponse.success(
-                    taskDTO2,
-                    "Success: Task with code: " + taskCode + " has been successfully updated!",
+            GenericResponse<AttachmentDTO> response = GenericResponse.success(
+                    attachmentDTO2,
+                    "Success: Attachment with code: " + attachmentCode + " has been successfully updated!",
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -154,13 +155,14 @@ public class TaskController {
             );
         }
     }
-    @DeleteMapping(value = "${task.delete}")
-    public ResponseEntity<GenericResponse<TaskDTO>> deleteTaskByCode(@RequestParam String taskCode) {
+
+    @DeleteMapping(value = "${attachment.delete}")
+    public ResponseEntity<GenericResponse<AttachmentDTO>> deleteAttachmentByCode(@RequestParam String attachmentCode) {
         try {
-            ValidateFields.validateSingleField(taskCode);
-            taskService.deleteTaskByCode(taskCode);
-            GenericResponse<TaskDTO> response = GenericResponse.empty(
-                    "Success: Task with code: " + taskCode + " has been successfully deleted! ",
+            ValidateFields.validateSingleField(attachmentCode);
+            attachmentService.deleteAttachmentByCode(attachmentCode);
+            GenericResponse<AttachmentDTO> response = GenericResponse.empty(
+                    "Success: Attachment with code: " + attachmentCode + " has been successfully deleted! ",
                     HttpStatus.OK
             );
 
@@ -180,5 +182,3 @@ public class TaskController {
         }
     }
 }
-
-

@@ -43,7 +43,8 @@ public class SecurityConfiguration {
     private JwtUnauthorizedAuthenticationEntryPoint authenticationExceptionEntryPoint;
     @Autowired
     private JwtAuthenticationFilter jwtAuthFilter;
-    private final String appContext = "/task-manager/v1";
+    @Value("${application.context}")
+    private String appContext;
     @Value("${role.base.uri}")
     private String roleBaseUri;
     @Value("${modify.user}")
@@ -60,6 +61,12 @@ public class SecurityConfiguration {
     private String registerBaseUri;
     @Value("${delete.user-by-email}")
     private String deleteUserByEmail;
+    @Value("${task.base.uri}")
+    private String taskBaseUri;
+    @Value("${attachment.base.uri}")
+    private String attachmentBaseUri;
+    @Value("${board.base.uri}")
+    private String boardBaseUri;
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -99,10 +106,11 @@ public class SecurityConfiguration {
         }).httpBasic(Customizer.withDefaults());*/
 
         http.authorizeHttpRequests(auth -> {
-            auth
-                    .requestMatchers(appContext + loginBaseUri).permitAll()
+            auth.requestMatchers(appContext + loginBaseUri).permitAll()
                     .requestMatchers(appContext + registerBaseUri).permitAll()
-                    .requestMatchers(appContext + "/**").hasAnyRole("USER", "ADMIN", "EDITOR");
+                    .requestMatchers(appContext + taskBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
+                    .requestMatchers(appContext + attachmentBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
+                    .requestMatchers(appContext + boardBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN");
         }).httpBasic(Customizer.withDefaults());
 
         http.exceptionHandling(exception -> exception

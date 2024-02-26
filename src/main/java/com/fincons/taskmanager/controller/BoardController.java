@@ -1,11 +1,12 @@
 package com.fincons.taskmanager.controller;
 
-import com.fincons.taskmanager.dto.TaskDTO;
-import com.fincons.taskmanager.entity.Task;
+
+import com.fincons.taskmanager.dto.BoardDTO;
+import com.fincons.taskmanager.entity.Board;
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
-import com.fincons.taskmanager.mapper.TaskMapper;
-import com.fincons.taskmanager.service.taskService.TaskService;
+import com.fincons.taskmanager.mapper.BoardMapper;
+import com.fincons.taskmanager.service.boardService.BoardService;
 import com.fincons.taskmanager.utility.GenericResponse;
 import com.fincons.taskmanager.utility.ValidateFields;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,22 +20,22 @@ import java.util.List;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/task-manager")
-public class TaskController {
-
+public class BoardController {
+    
     @Autowired
-    private TaskService taskService;
+    private BoardService boardService;
     @Autowired
-    private TaskMapper modelMapperTask;
+    private BoardMapper modelMapperBoard;
 
-    @GetMapping(value = "${task.find-by-code}")
-    public ResponseEntity<GenericResponse<TaskDTO>> getTaskByCode(@RequestParam String code) {
+    @GetMapping(value = "${board.find-by-code}")
+    public ResponseEntity<GenericResponse<BoardDTO>> getBoardByCode(@RequestParam String code) {
         try {
             ValidateFields.validateSingleField(code);
-            Task task = taskService.getTaskByCode(code);
-            TaskDTO taskDTO = modelMapperTask.mapToDTO(task);
-            GenericResponse<TaskDTO> response = GenericResponse.success(
-                    taskDTO,
-                    "Success: Found Task with CODE " + code + ".",
+            Board board = boardService.getBoardByCode(code);
+            BoardDTO boardDTO = modelMapperBoard.mapToDTO(board);
+            GenericResponse<BoardDTO> response = GenericResponse.success(
+                    boardDTO,
+                    "Success: Found Board with CODE " + code + ".",
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -54,47 +55,39 @@ public class TaskController {
             );
         }
     }
-    @GetMapping(value = "${task.list}")
-    public ResponseEntity<GenericResponse<List<TaskDTO>>> getAllTask() {
-        List<Task> tasks = taskService.getAllTasks();
-        List<TaskDTO> taskDTOs = new ArrayList<>();
-        for (Task task : tasks) {
-            TaskDTO taskDTO = modelMapperTask.mapToDTO(task);
-            taskDTOs.add(taskDTO);
+    @GetMapping(value = "${board.list}")
+    public ResponseEntity<GenericResponse<List<BoardDTO>>> getAllBoard() {
+        List<Board> boards = boardService.getAllBoards();
+        List<BoardDTO> boardDTOs = new ArrayList<>();
+        for (Board board : boards) {
+            BoardDTO boardDTO = modelMapperBoard.mapToDTO(board);
+            boardDTOs.add(boardDTO);
         }
-        GenericResponse<List<TaskDTO>> response = GenericResponse.success(
-                taskDTOs,
-                "Success:" + (taskDTOs.isEmpty() || taskDTOs.size() == 1 ? " Found " : " Founds ") + taskDTOs.size() +
-                        (taskDTOs.isEmpty() || taskDTOs.size() == 1 ? " task" : " tasks") + ".",
+        GenericResponse<List<BoardDTO>> response = GenericResponse.success(
+                boardDTOs,
+                "Success:" + (boardDTOs.isEmpty() || boardDTOs.size() == 1 ? " Found " : " Founds ") + boardDTOs.size() +
+                        (boardDTOs.isEmpty() || boardDTOs.size() == 1 ? " board" : " boards") + ".",
                 HttpStatus.OK
         );
         return ResponseEntity.ok(response);
     }
-    @PostMapping(value = "${task.create}")
-    public ResponseEntity<GenericResponse<TaskDTO>> createTask(@RequestBody TaskDTO taskDTO) {
+    @PostMapping(value = "${board.create}")
+    public ResponseEntity<GenericResponse<BoardDTO>> createBoard(@RequestBody BoardDTO boardDTO) {
         try {
-            taskService.validateTaskFields(taskDTO);
+            boardService.validateBoardFields(boardDTO);
 
-            Task taskMapped = modelMapperTask.mapToEntity(taskDTO);
+            Board boardMapped = modelMapperBoard.mapToEntity(boardDTO);
 
-            Task task = taskService.createTask(taskMapped);
+            Board board = boardService.createBoard(boardMapped);
 
-            TaskDTO taskDTO2 = modelMapperTask.mapToDTO(task);
+            BoardDTO boardDTO2 = modelMapperBoard.mapToDTO(board);
 
-            GenericResponse<TaskDTO> response = GenericResponse.success(
-                    taskDTO2,
-                    "Success: Task with code: " + task.getTaskCode() + " has been successfully updated!",
+            GenericResponse<BoardDTO> response = GenericResponse.success(
+                    boardDTO2,
+                    "Success: Board with code: " + board.getBoardCode() + " has been successfully updated!",
                     HttpStatus.OK);
             return ResponseEntity.ok(response);
 
-        }
-        catch (ResourceNotFoundException rfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    GenericResponse.error(
-                            rfe.getMessage(),
-                            HttpStatus.NOT_FOUND
-                    )
-            );
         }
         catch (IllegalArgumentException iae) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
@@ -112,22 +105,22 @@ public class TaskController {
             );
         }
     }
-    @PutMapping(value = "${task.put}")
-    public ResponseEntity<GenericResponse<TaskDTO>> updateTaskByCode(@RequestParam String taskCode, @RequestBody TaskDTO taskDTO) {
+    @PutMapping(value = "${board.put}")
+    public ResponseEntity<GenericResponse<BoardDTO>> updateBoardByCode(@RequestParam String boardCode, @RequestBody BoardDTO boardDTO) {
         try {
-            ValidateFields.validateSingleField(taskCode);
+            ValidateFields.validateSingleField(boardCode);
 
-            taskService.validateTaskFields(taskDTO);
+            boardService.validateBoardFields(boardDTO);
 
-            Task taskMappedForService = modelMapperTask.mapToEntity(taskDTO);
+            Board boardMappedForService = modelMapperBoard.mapToEntity(boardDTO);
 
-            Task task = taskService.updateTaskByCode(taskCode, taskMappedForService);
+            Board board = boardService.updateBoardByCode(boardCode, boardMappedForService);
 
-            TaskDTO taskDTO2 = modelMapperTask.mapToDTO(task);
+            BoardDTO boardDTO2 = modelMapperBoard.mapToDTO(board);
 
-            GenericResponse<TaskDTO> response = GenericResponse.success(
-                    taskDTO2,
-                    "Success: Task with code: " + taskCode + " has been successfully updated!",
+            GenericResponse<BoardDTO> response = GenericResponse.success(
+                    boardDTO2,
+                    "Success: Board with code: " + boardCode + " has been successfully updated!",
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -154,13 +147,13 @@ public class TaskController {
             );
         }
     }
-    @DeleteMapping(value = "${task.delete}")
-    public ResponseEntity<GenericResponse<TaskDTO>> deleteTaskByCode(@RequestParam String taskCode) {
+    @DeleteMapping(value = "${board.delete}")
+    public ResponseEntity<GenericResponse<BoardDTO>> deleteBoardByCode(@RequestParam String boardCode) {
         try {
-            ValidateFields.validateSingleField(taskCode);
-            taskService.deleteTaskByCode(taskCode);
-            GenericResponse<TaskDTO> response = GenericResponse.empty(
-                    "Success: Task with code: " + taskCode + " has been successfully deleted! ",
+            ValidateFields.validateSingleField(boardCode);
+            boardService.deleteBoardByCode(boardCode);
+            GenericResponse<BoardDTO> response = GenericResponse.empty(
+                    "Success: Board with code: " + boardCode + " has been successfully deleted! ",
                     HttpStatus.OK
             );
 
@@ -180,5 +173,3 @@ public class TaskController {
         }
     }
 }
-
-
