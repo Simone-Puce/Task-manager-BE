@@ -53,4 +53,10 @@ public class Board {
 
     @LastModifiedDate
     private long modifiedDate;
+
+    public Board(long id, String boardCode, String name) {
+        this.id = id;
+        this.boardCode = boardCode;
+        this.name = name;
+    }
 }

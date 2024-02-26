@@ -92,4 +92,23 @@ public class Task {
         this.status = status;
         this.description = description;
     }
+
+    public Task(long id, String taskCode, String name, String status, String description, Board board) {
+        this.id = id;
+        this.taskCode = taskCode;
+        this.name = name;
+        this.status = status;
+        this.description = description;
+        this.board = board;
+    }
+
+    public Task(long id, String taskCode, String name, String status, String description, List<User> users, Board board) {
+        this.id = id;
+        this.taskCode = taskCode;
+        this.name = name;
+        this.status = status;
+        this.description = description;
+        this.users = users;
+        this.board = board;
+    }
 }
