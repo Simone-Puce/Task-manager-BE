@@ -1,5 +1,6 @@
 package com.fincons.taskmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +10,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+
+import java.sql.Timestamp;
 
 import java.util.Date;
 import java.util.List;
@@ -41,12 +45,12 @@ public class Task {
     @Column(name = "created_date", nullable = false, updatable = false)
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdDate;
+    private Timestamp createdDate;
 
     @Column(name = "modified_date")
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedDate;
+    private Timestamp modifiedDate;
 
     @CreatedBy
     private String createdBy;
@@ -54,10 +58,8 @@ public class Task {
     @LastModifiedBy
     private String modifiedBy;
 
-
-
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.PERSIST , CascadeType.MERGE})
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "tasks_users",
             joinColumns = {
                     @JoinColumn(name = "task_id", referencedColumnName = "id")
