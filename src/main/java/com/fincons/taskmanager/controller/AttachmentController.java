@@ -56,7 +56,7 @@ public class AttachmentController {
     }
 
     @GetMapping(value = "${attachment.list}")
-    public ResponseEntity<GenericResponse<List<AttachmentDTO>>> getAllAttachment() {
+    public ResponseEntity<GenericResponse<List<AttachmentDTO>>> getAllAttachments() {
         List<Attachment> attachments = attachmentService.getAllAttachments();
         List<AttachmentDTO> attachmentDTOs = new ArrayList<>();
         for (Attachment attachment : attachments) {

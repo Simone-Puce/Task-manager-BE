@@ -82,7 +82,7 @@ public class TaskControllerTest {
     @Test
     public void testGetAllTasksSuccess(){
         when(taskRepository.findAll()).thenReturn(getTasks());
-        ResponseEntity<GenericResponse<List<TaskDTO>>> response = taskController.getAllTask();
+        ResponseEntity<GenericResponse<List<TaskDTO>>> response = taskController.getAllTasks();
 
         List<TaskDTO> taskDTOs = response.getBody().getData().stream().toList();
 

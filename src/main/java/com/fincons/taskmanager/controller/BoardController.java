@@ -56,7 +56,7 @@ public class BoardController {
         }
     }
     @GetMapping(value = "${board.list}")
-    public ResponseEntity<GenericResponse<List<BoardDTO>>> getAllBoard() {
+    public ResponseEntity<GenericResponse<List<BoardDTO>>> getAllBoards() {
         List<Board> boards = boardService.getAllBoards();
         List<BoardDTO> boardDTOs = new ArrayList<>();
         for (Board board : boards) {

@@ -55,7 +55,7 @@ public class TaskController {
         }
     }
     @GetMapping(value = "${task.list}")
-    public ResponseEntity<GenericResponse<List<TaskDTO>>> getAllTask() {
+    public ResponseEntity<GenericResponse<List<TaskDTO>>> getAllTasks() {
         List<Task> tasks = taskService.getAllTasks();
         List<TaskDTO> taskDTOs = new ArrayList<>();
         for (Task task : tasks) {
