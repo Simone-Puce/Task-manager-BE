@@ -40,21 +40,21 @@ public class LaneServiceImpl implements LaneService {
         List<Lane> tasks = laneRepository.findAll();
         Lane taskExisting = validateLaneByCode(laneCode);
 
-        List<Lane> tasksWithoutTaskCodeChosen = new ArrayList<>();
+        List<Lane> laneExcludingSelectedLane = new ArrayList<>();
 
         for (Lane t : tasks) {
             if (!Objects.equals(t.getLaneCode(), laneCode)) {
-                tasksWithoutTaskCodeChosen.add(t);
+                laneExcludingSelectedLane.add(t);
             }
         }
         taskExisting.setLaneCode(lane.getLaneCode());
         taskExisting.setName(lane.getName());
 
 
-        if (tasksWithoutTaskCodeChosen.isEmpty()) {
+        if (laneExcludingSelectedLane.isEmpty()) {
             laneRepository.save(taskExisting);
         } else {
-            for (Lane t : tasksWithoutTaskCodeChosen) {
+            for (Lane t : laneExcludingSelectedLane) {
                 if (t.getLaneCode().equals(taskExisting.getLaneCode())) {
                     throw new DuplicateException("CODE: " + laneCode, "CODE: " + lane.getLaneCode());
                 }

@@ -43,21 +43,21 @@ public class BoardServiceImpl implements BoardService {
         List<Board> tasks = boardRepository.findAll();
         Board taskExisting = validateBoardByCode(boardCode);
 
-        List<Board> tasksWithoutTaskCodeChosen = new ArrayList<>();
+        List<Board> boardExcludingSelectedBoard = new ArrayList<>();
 
         for(Board t : tasks){
             if (!Objects.equals(t.getBoardCode(), boardCode)){
-                tasksWithoutTaskCodeChosen.add(t);
+                boardExcludingSelectedBoard.add(t);
             }
         }
         taskExisting.setBoardCode(board.getBoardCode());
         taskExisting.setName(board.getName());
 
 
-        if(tasksWithoutTaskCodeChosen.isEmpty()){
+        if(boardExcludingSelectedBoard.isEmpty()){
             boardRepository.save(taskExisting);
         } else {
-            for(Board t : tasksWithoutTaskCodeChosen){
+            for(Board t : boardExcludingSelectedBoard){
                 if(t.getBoardCode().equals(taskExisting.getBoardCode())){
                     throw new DuplicateException("CODE: " + boardCode, "CODE: " + board.getBoardCode());
                 }

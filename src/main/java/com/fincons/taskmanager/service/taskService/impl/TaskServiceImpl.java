@@ -49,11 +49,11 @@ public class TaskServiceImpl implements TaskService {
         List<Task> tasks = taskRepository.findAll();
         Task taskExisting = validateTaskByCode(taskCode);
 
-        List<Task> tasksWithoutTaskCodeChosen = new ArrayList<>();
+        List<Task> tasksExcludingSelectedTask = new ArrayList<>();
 
         for(Task t : tasks){
             if (!Objects.equals(t.getTaskCode(), taskCode)){
-                tasksWithoutTaskCodeChosen.add(t);
+                tasksExcludingSelectedTask.add(t);
             }
         }
         taskExisting.setTaskCode(task.getTaskCode());
@@ -64,10 +64,10 @@ public class TaskServiceImpl implements TaskService {
         Board board = boardServiceImpl.validateBoardByCode(task.getBoard().getBoardCode());
         taskExisting.setBoard(board);
 
-        if(tasksWithoutTaskCodeChosen.isEmpty()){
+        if(tasksExcludingSelectedTask.isEmpty()){
             taskRepository.save(taskExisting);
         } else {
-            for(Task t : tasksWithoutTaskCodeChosen){
+            for(Task t : tasksExcludingSelectedTask){
                 if(t.getTaskCode().equals(taskExisting.getTaskCode())){
                     throw new DuplicateException("CODE: " + taskCode, "CODE: " + task.getTaskCode());
                 }
