@@ -57,7 +57,7 @@ public class TaskServiceImpl implements TaskService {
             }
         }
         taskExisting.setTaskCode(task.getTaskCode());
-        taskExisting.setName(task.getName());
+        taskExisting.setTaskName(task.getTaskName());
         taskExisting.setStatus(task.getStatus());
         taskExisting.setDescription(task.getDescription());
 

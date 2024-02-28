@@ -18,14 +18,16 @@ public class Lane {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String laneCode;
 
     @Column(nullable = false)
-    private String name;
+    private String laneName;
 
-    @ManyToMany(mappedBy = "lanes")
-    private List<Board> boards;
+    @OneToMany(
+            mappedBy = "lane",
+            fetch = FetchType.LAZY)
+    private List<BoardLane> boardsLanes;
 }

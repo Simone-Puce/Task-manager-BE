@@ -175,7 +175,7 @@ public class BoardController {
     }
     private void validateBoardFields(BoardDTO boardDTO) {
         if (Strings.isEmpty(boardDTO.getBoardCode()) ||
-                Strings.isEmpty(boardDTO.getName())) {
+                Strings.isEmpty(boardDTO.getBoardName())) {
             throw new IllegalArgumentException("Error: The fields of the board can't be null or empty.");
         }
     }

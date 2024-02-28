@@ -175,7 +175,7 @@ public class LaneController {
     }
     private void validateLaneFields(LaneDTO laneDTO) {
         if (Strings.isEmpty(laneDTO.getLaneCode()) ||
-                Strings.isEmpty(laneDTO.getName())) {
+                Strings.isEmpty(laneDTO.getLaneName())) {
             throw new IllegalArgumentException("Error: The fields of the lane can't be null or empty.");
         }
     }

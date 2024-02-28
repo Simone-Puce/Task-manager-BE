@@ -18,7 +18,7 @@ import java.util.List;
 public class TaskDTO {
 
     private String taskCode;
-    private String name;
+    private String taskName;
     private String status;
     private String description;
     private List<UserDTO> users;
