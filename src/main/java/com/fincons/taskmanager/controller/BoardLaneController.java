@@ -70,7 +70,7 @@ public class BoardLaneController {
             );
         }
     }
-    @PutMapping(value = "${board.lane.modify}")
+    @PutMapping(value = "${board.lane.put}")
     public ResponseEntity<GenericResponse<BoardLaneDTO>> updateBoardLane(@RequestParam String boardCode,
                                                                          @RequestParam String laneCode,
                                                                          @RequestBody BoardLaneDTO boardLaneDTO) {
