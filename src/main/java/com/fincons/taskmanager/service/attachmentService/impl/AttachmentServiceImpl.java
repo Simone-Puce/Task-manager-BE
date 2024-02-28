@@ -60,7 +60,7 @@ public class AttachmentServiceImpl implements AttachmentService {
             }
         }
         attachmentExisting.setAttachmentCode(attachment.getAttachmentCode());
-        attachmentExisting.setName(attachment.getName());
+        attachmentExisting.setAttachmentName(attachment.getAttachmentName());
         attachmentExisting.setExtension(attachment.getExtension());
 
         Task task = taskServiceImpl.validateTaskByCode(attachment.getTask().getTaskCode());

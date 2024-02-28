@@ -28,13 +28,13 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String taskCode;
 
     @Column(nullable = false)
-    private String name;
+    private String taskName;
 
     @Column(nullable = false)
     private String status;
@@ -79,35 +79,35 @@ public class Task {
             fetch = FetchType.LAZY)
     private List<Attachment> attachments;
 
-    public Task(long id, String taskCode, String name, String status, String description, Board board) {
+    public Task(long id, String taskCode, String taskName, String status, String description, Board board) {
         this.id = id;
         this.taskCode = taskCode;
-        this.name = name;
+        this.taskName = taskName;
         this.status = status;
         this.description = description;
         this.board = board;
     }
 
-    public Task(long id, String taskCode, String name, String status, String description, List<User> users, Board board) {
+    public Task(long id, String taskCode, String taskName, String status, String description, List<User> users, Board board) {
         this.id = id;
         this.taskCode = taskCode;
-        this.name = name;
+        this.taskName = taskName;
         this.status = status;
         this.description = description;
         this.users = users;
         this.board = board;
     }
-    public Task(long id, String taskCode, String name, String status, String description) {
+    public Task(long id, String taskCode, String taskName, String status, String description) {
         this.id = id;
         this.taskCode = taskCode;
-        this.name = name;
+        this.taskName = taskName;
         this.status = status;
         this.description = description;
     }
 
-    public Task(String taskCode, String name, String status, String description) {
+    public Task(String taskCode, String taskName, String status, String description) {
         this.taskCode = taskCode;
-        this.name = name;
+        this.taskName = taskName;
         this.status = status;
         this.description = description;
     }

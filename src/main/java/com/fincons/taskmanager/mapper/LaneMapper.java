@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component;
 public class LaneMapper {
 
     @Autowired
-    private ModelMapper modelMapperStandard;
+    private ModelMapper modelMapperForLane;
 
     public LaneDTO mapToDTO(Lane lane) {
-        return modelMapperStandard.map(lane, LaneDTO.class);
+        return modelMapperForLane.map(lane, LaneDTO.class);
     }
 
     public Lane mapToEntity(LaneDTO laneDTO){
-        return modelMapperStandard.map(laneDTO, Lane.class);
+        return modelMapperForLane.map(laneDTO, Lane.class);
     }
 
 }

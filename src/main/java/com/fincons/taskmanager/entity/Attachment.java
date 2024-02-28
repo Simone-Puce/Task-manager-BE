@@ -15,13 +15,13 @@ public class Attachment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String attachmentCode;
 
     @Column(nullable = false)
-    private String name;
+    private String attachmentName;
 
     @Column(nullable = false)
     private String extension;

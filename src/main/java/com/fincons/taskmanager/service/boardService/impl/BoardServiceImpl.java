@@ -51,7 +51,7 @@ public class BoardServiceImpl implements BoardService {
             }
         }
         taskExisting.setBoardCode(board.getBoardCode());
-        taskExisting.setName(board.getName());
+        taskExisting.setBoardName(board.getBoardName());
 
 
         if(boardExcludingSelectedBoard.isEmpty()){

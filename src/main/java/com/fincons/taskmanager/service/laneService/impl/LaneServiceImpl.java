@@ -48,7 +48,7 @@ public class LaneServiceImpl implements LaneService {
             }
         }
         taskExisting.setLaneCode(lane.getLaneCode());
-        taskExisting.setName(lane.getName());
+        taskExisting.setLaneName(lane.getLaneName());
 
 
         if (laneExcludingSelectedLane.isEmpty()) {

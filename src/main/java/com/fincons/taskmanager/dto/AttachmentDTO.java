@@ -14,7 +14,7 @@ import lombok.Setter;
 public class AttachmentDTO {
 
     private String attachmentCode;
-    private String name;
+    private String attachmentName;
     private String extension;
     private String taskCode;
 }

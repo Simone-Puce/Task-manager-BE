@@ -1,5 +1,6 @@
 package com.fincons.taskmanager.entity;
 
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +12,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -25,25 +25,18 @@ public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "board_code", unique = true, nullable = false)
     private String boardCode;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(name = "name", nullable = false)
+    private String boardName;
 
-    @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "boards_lanes",
-            joinColumns = {
-                    @JoinColumn(name = "board_id", referencedColumnName = "id")
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "lane_id", referencedColumnName = "id")
-            }
-    )
-    private List<Lane> lanes;
+    @OneToMany(
+            mappedBy = "board",
+            fetch = FetchType.LAZY)
+    private List<BoardLane> boardsLanes;
 
     @OneToMany(
             mappedBy = "board",
@@ -69,4 +62,10 @@ public class Board {
 
     @LastModifiedBy
     private String modifiedBy;
+
+    public Board(Long id, String boardCode, String boardName) {
+        this.id = id;
+        this.boardCode = boardCode;
+        this.boardName = boardName;
+    }
 }
