@@ -182,7 +182,7 @@ public class TaskController {
     }
     private void validateTaskFields(TaskDTO taskDTO) {
         if (Strings.isEmpty(taskDTO.getTaskCode()) ||
-                Strings.isEmpty(taskDTO.getName()) ||
+                Strings.isEmpty(taskDTO.getTaskName()) ||
                 Strings.isEmpty(taskDTO.getStatus()) ||
                 Strings.isEmpty(taskDTO.getBoardCode())) {
             throw new IllegalArgumentException("Error: The fields of the task can't be null or empty.");

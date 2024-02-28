@@ -18,7 +18,7 @@ import java.util.List;
 public class BoardDTO {
 
     private String boardCode;
-    private String name;
+    private String boardName;
     private List<LaneDTO> lanes;
     private List<TaskDTO> tasks;
     private List<UserDTO> users;
