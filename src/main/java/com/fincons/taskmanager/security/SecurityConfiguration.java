@@ -117,7 +117,6 @@ public class SecurityConfiguration {
                     .requestMatchers(appContext + boardBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
                     .requestMatchers(appContext + laneBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
                     .requestMatchers(appContext + boardLaneBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN");
-
         }).httpBasic(Customizer.withDefaults());
 
         http.exceptionHandling(exception -> exception

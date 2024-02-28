@@ -1,8 +1,6 @@
 package com.fincons.taskmanager.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fincons.taskmanager.entity.Board;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,5 +18,4 @@ public class LaneDTO {
     private String laneCode;
     private String laneName;
     private List<BoardDTO> boards;
-
 }
