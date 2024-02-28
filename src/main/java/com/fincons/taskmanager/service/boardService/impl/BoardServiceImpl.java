@@ -64,7 +64,6 @@ public class BoardServiceImpl implements BoardService {
             }
             boardRepository.save(taskExisting);
         }
-
         return taskExisting;
     }
 

@@ -1,4 +1,4 @@
-package com.fincons.taskmanager.service.boardService;
+package com.fincons.taskmanager.service.boardLaneService;
 
 import com.fincons.taskmanager.entity.BoardLane;
 

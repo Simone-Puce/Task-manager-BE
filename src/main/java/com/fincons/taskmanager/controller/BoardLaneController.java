@@ -7,16 +7,13 @@ import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.mapper.BoardLaneMapper;
 import com.fincons.taskmanager.mapper.BoardMapper;
 import com.fincons.taskmanager.mapper.LaneMapper;
-import com.fincons.taskmanager.service.boardService.BoardLaneService;
+import com.fincons.taskmanager.service.boardLaneService.BoardLaneService;
 import com.fincons.taskmanager.utility.GenericResponse;
 import com.fincons.taskmanager.utility.ValidateFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @CrossOrigin("*")
@@ -73,7 +70,7 @@ public class BoardLaneController {
             );
         }
     }
-    @PutMapping(value = "${board.lane.put}")
+    @PutMapping(value = "${board.lane.modify}")
     public ResponseEntity<GenericResponse<BoardLaneDTO>> updateBoardLane(@RequestParam String boardCode,
                                                                          @RequestParam String laneCode,
                                                                          @RequestBody BoardLaneDTO boardLaneDTO) {
