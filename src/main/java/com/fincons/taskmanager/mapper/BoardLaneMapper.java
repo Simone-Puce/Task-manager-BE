@@ -12,15 +12,6 @@ import org.springframework.stereotype.Component;
 public class BoardLaneMapper {
     @Autowired
     private ModelMapper modelMapperStandard;
-
-    public BoardLaneDTO mapBoardLaneToDTO(Board board, Lane lane){
-        return new BoardLaneDTO(
-                board.getBoardCode(),
-                board.getBoardName(),
-                lane.getLaneCode(),
-                lane.getLaneName()
-        );
-    }
     public BoardLaneDTO mapToDTO(BoardLane boardLane){
         return modelMapperStandard.map(boardLane, BoardLaneDTO.class);
     }
