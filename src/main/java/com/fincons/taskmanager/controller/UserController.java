@@ -83,7 +83,7 @@ public class UserController {
             @RequestParam(name = "admin", required = false) String passwordForAdmin,
             @RequestParam(name = "editor", required = false) String passwordForEditor) {
         try {
-            UserDTO registeredUser = userAndRoleMapper.userToUserDto(userService.registerNewUser(userDTO, passwordForAdmin, passwordForEditor));
+            UserDTO registeredUser = userAndRoleMapper.mapToDTO(userService.registerNewUser(userDTO, passwordForAdmin, passwordForEditor));
             return ResponseEntity.ok(GenericResponse.<UserDTO>builder()
                     .status(HttpStatus.OK)
                     .success(true)

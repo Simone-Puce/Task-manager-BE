@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableJpaAuditing
@@ -40,6 +38,22 @@ public class AppConfig {
     @Bean
     public ModelMapper modelMapperForBoard(){
         ModelMapper modelMapper = new ModelMapper();
+        modelMapper.addMappings(new PropertyMap<User, UserDTO>() {
+            @Override
+            protected void configure(){
+                skip(destination.getPassword());
+                skip(destination.getRoles());
+                skip(destination.getBoards());
+                skip(destination.getTasks());
+
+            }
+        });
+        modelMapper.addMappings(new PropertyMap<Role, RoleDTO>() {
+            @Override
+            protected void configure(){
+                skip(destination.getUsers());
+            }
+        });
         modelMapper.addMappings(new PropertyMap<Task, TaskDTO>() {
             @Override
             protected void configure(){
@@ -81,5 +95,17 @@ public class AppConfig {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         return modelMapper;
     }
+    @Bean
+    public ModelMapper modelMapperForUser(){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.addMappings(new PropertyMap<Role, RoleDTO>() {
+            @Override
+            protected void configure(){
+                skip(destination.getUsers());
+            }
+        });
+        return modelMapper;
+    }
+
 
 }
