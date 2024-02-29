@@ -113,9 +113,9 @@ public class LaneController {
 
             validateLaneFields(laneDTO);
 
-            Lane laneMappedForService = modelMapperLane.mapToEntity(laneDTO);
+            Lane laneMapped = modelMapperLane.mapToEntity(laneDTO);
 
-            Lane lane = laneService.updateLaneByCode(laneCode, laneMappedForService);
+            Lane lane = laneService.updateLaneByCode(laneCode, laneMapped);
 
             LaneDTO laneDTO2 = modelMapperLane.mapToDTO(lane);
 

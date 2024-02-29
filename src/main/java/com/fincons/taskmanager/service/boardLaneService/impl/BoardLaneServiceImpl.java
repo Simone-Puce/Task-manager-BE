@@ -33,7 +33,6 @@ public class BoardLaneServiceImpl implements BoardLaneService {
         checkDuplicateBoardLaneExist(existingBoard, existingLane);
         BoardLane boardLane = new BoardLane(existingBoard, existingLane);
         boardLaneRepository.save(boardLane);
-
         return boardLane;
     }
 
@@ -61,26 +60,28 @@ public class BoardLaneServiceImpl implements BoardLaneService {
         return boardLaneExist;
     }
     private Board validateBoardByCode(String code) {
-        Board existingCode = boardRepository.findBoardByBoardCode(code);
+        Board existingBoard = boardRepository.findBoardByBoardCode(code);
 
-        if (Objects.isNull(existingCode)) {
+        if (Objects.isNull(existingBoard)) {
             throw new ResourceNotFoundException("Error: Board with CODE: " + code + " not found.");
         }
-        return existingCode;
+        return existingBoard;
     }
     private Lane validateLaneByCode(String code) {
-        Lane existingCode = laneRepository.findLaneByLaneCode(code);
+        Lane existingLane = laneRepository.findLaneByLaneCode(code);
 
-        if (Objects.isNull(existingCode)) {
+        if (Objects.isNull(existingLane)) {
             throw new ResourceNotFoundException("Error: Lane with CODE: " + code + " not found.");
         }
-        return existingCode;
+        return existingLane;
     }
     private void checkDuplicateBoardLaneExist(Board board, Lane lane) {
 
         boolean boardLaneExist = boardLaneRepository.existsByBoardAndLane(board, lane);
         if (boardLaneExist) {
-            throw new DuplicateException("CODE: " + board.getBoardCode(), "CODE: " + lane.getLaneCode());
+            throw new DuplicateException(
+                    "board CODE: " + board.getBoardCode() + " and lane CODE: " + lane.getLaneCode(),
+                    "board CODE: " + board.getBoardCode() + " and lane CODE: " + lane.getLaneCode());
         }
     }
     private BoardLane validateBoardLaneRelationship(Board board, Lane lane) {

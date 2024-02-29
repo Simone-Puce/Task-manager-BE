@@ -121,9 +121,9 @@ public class AttachmentController {
 
             validateAttachmentFields(attachmentDTO);
 
-            Attachment attachmentMappedForService = modelMapperAttachment.mapToEntity(attachmentDTO);
+            Attachment attachmentMapped = modelMapperAttachment.mapToEntity(attachmentDTO);
 
-            Attachment attachment = attachmentService.updateAttachmentByCode(attachmentCode, attachmentMappedForService);
+            Attachment attachment = attachmentService.updateAttachmentByCode(attachmentCode, attachmentMapped);
 
             AttachmentDTO attachmentDTO2 = modelMapperAttachment.mapToDTO(attachment);
 

@@ -71,7 +71,8 @@ public class SecurityConfiguration {
     private String laneBaseUri;
     @Value("${board.lane.base.uri}")
     private String boardLaneBaseUri;
-
+    @Value("${user.board.base.uri}")
+    private String userBoardBaseUri;
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -116,7 +117,8 @@ public class SecurityConfiguration {
                     .requestMatchers(appContext + attachmentBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
                     .requestMatchers(appContext + boardBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
                     .requestMatchers(appContext + laneBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
-                    .requestMatchers(appContext + boardLaneBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN");
+                    .requestMatchers(appContext + boardLaneBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
+                    .requestMatchers(appContext + userBoardBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN");
         }).httpBasic(Customizer.withDefaults());
 
         http.exceptionHandling(exception -> exception

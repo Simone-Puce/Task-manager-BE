@@ -113,9 +113,9 @@ public class BoardController {
 
             validateBoardFields(boardDTO);
 
-            Board boardMappedForService = modelMapperBoard.mapToEntity(boardDTO);
+            Board boardMapped = modelMapperBoard.mapToEntity(boardDTO);
 
-            Board board = boardService.updateBoardByCode(boardCode, boardMappedForService);
+            Board board = boardService.updateBoardByCode(boardCode, boardMapped);
 
             BoardDTO boardDTO2 = modelMapperBoard.mapToDTO(board);
 

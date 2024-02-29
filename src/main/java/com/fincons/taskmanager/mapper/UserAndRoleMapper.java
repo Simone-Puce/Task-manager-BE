@@ -1,6 +1,7 @@
 package com.fincons.taskmanager.mapper;
 
 import com.fincons.taskmanager.dto.RoleDTO;
+import com.fincons.taskmanager.dto.UserBoardDTO;
 import com.fincons.taskmanager.dto.UserDTO;
 import com.fincons.taskmanager.entity.Role;
 import com.fincons.taskmanager.entity.User;
@@ -14,6 +15,8 @@ public class UserAndRoleMapper {
     private static final ModelMapper modelMapper = new ModelMapper();
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ModelMapper modelMapperForUser;
 
     public User dtoToUser(UserDTO userDTO) {
         User userToSave = modelMapper.map(userDTO, User.class);
@@ -33,5 +36,8 @@ public class UserAndRoleMapper {
 
     public Role dtoToRole(RoleDTO roleDTO) {
         return modelMapper.map(roleDTO, Role.class);
+    }
+    public UserDTO mapToDTO(User user) {
+        return modelMapperForUser.map(user, UserDTO.class);
     }
 }

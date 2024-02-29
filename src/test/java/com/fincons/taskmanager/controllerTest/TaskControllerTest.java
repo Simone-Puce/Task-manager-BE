@@ -50,7 +50,7 @@ public class TaskControllerTest {
 
         //Assert if the mapper was successful
         assertThat(taskDTO.getTaskCode()).isEqualTo(task.getTaskCode());
-        assertThat(taskDTO.getName()).isEqualTo(task.getTaskName());
+        assertThat(taskDTO.getTaskName()).isEqualTo(task.getTaskName());
         assertThat(taskDTO.getBoardCode()).isEqualTo(task.getBoard().getBoardCode());
         assertThat(taskDTO.getDescription()).isEqualTo(task.getDescription());
         assertThat(taskDTO.getStatus()).isEqualTo(task.getStatus());
@@ -91,7 +91,7 @@ public class TaskControllerTest {
         int iterations = 0;
         for (int i = 0; i < taskDTOs.size(); i++) {
             assertThat(getTasks().get(i).getTaskCode()).isEqualTo(taskDTOs.get(i).getTaskCode());
-            assertThat(getTasks().get(i).getTaskName()).isEqualTo(taskDTOs.get(i).getName());
+            assertThat(getTasks().get(i).getTaskName()).isEqualTo(taskDTOs.get(i).getTaskName());
             assertThat(getTasks().get(i).getDescription()).isEqualTo(taskDTOs.get(i).getDescription());
             assertThat(getTasks().get(i).getStatus()).isEqualTo(taskDTOs.get(i).getStatus());
             iterations++;

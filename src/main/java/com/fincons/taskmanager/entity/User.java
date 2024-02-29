@@ -1,14 +1,14 @@
 package com.fincons.taskmanager.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class User {
@@ -38,13 +38,10 @@ public class User {
     )
     private List<Role> roles;
 
-    @ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "users_boards",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "board_id")
-    )
-    private List<Board> boards;
+    @OneToMany(
+            mappedBy = "user",
+            fetch = FetchType.LAZY)
+    private List<UserBoard> usersBoards;
 
     @ManyToMany(mappedBy = "users")
     private List<Task> tasks;

@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component;
 public class TaskMapper {
     
     @Autowired
-    private ModelMapper modelMapperStandard;
+    private ModelMapper modelMapperForTask;
 
     public TaskDTO mapToDTO(Task task) {
-        return modelMapperStandard.map(task, TaskDTO.class);
+        return modelMapperForTask.map(task, TaskDTO.class);
     }
 
     public Task mapToEntity(TaskDTO taskDTO){
-        return modelMapperStandard.map(taskDTO, Task.class);
+        return modelMapperForTask.map(taskDTO, Task.class);
     }
 
 }
