@@ -120,9 +120,9 @@ public class TaskController {
 
             validateTaskFields(taskDTO);
 
-            Task taskMappedForService = modelMapperTask.mapToEntity(taskDTO);
+            Task taskMapped = modelMapperTask.mapToEntity(taskDTO);
 
-            Task task = taskService.updateTaskByCode(taskCode, taskMappedForService);
+            Task task = taskService.updateTaskByCode(taskCode, taskMapped);
 
             TaskDTO taskDTO2 = modelMapperTask.mapToDTO(task);
 

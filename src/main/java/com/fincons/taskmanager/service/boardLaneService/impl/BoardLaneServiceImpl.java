@@ -1,6 +1,5 @@
-package com.fincons.taskmanager.service.boardService.impl;
+package com.fincons.taskmanager.service.boardLaneService.impl;
 
-import com.fincons.taskmanager.dto.BoardLaneDTO;
 import com.fincons.taskmanager.entity.Board;
 import com.fincons.taskmanager.entity.BoardLane;
 import com.fincons.taskmanager.entity.Lane;
@@ -9,11 +8,10 @@ import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.repository.BoardLaneRepository;
 import com.fincons.taskmanager.repository.BoardRepository;
 import com.fincons.taskmanager.repository.LaneRepository;
-import com.fincons.taskmanager.service.boardService.BoardLaneService;
+import com.fincons.taskmanager.service.boardLaneService.BoardLaneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -32,33 +30,21 @@ public class BoardLaneServiceImpl implements BoardLaneService {
 
         Board existingBoard = validateBoardByCode(boardCode);
         Lane existingLane = validateLaneByCode(laneCode);
-
         checkDuplicateBoardLaneExist(existingBoard, existingLane);
-
         BoardLane boardLane = new BoardLane(existingBoard, existingLane);
         boardLaneRepository.save(boardLane);
-
         return boardLane;
     }
 
     @Override
     public BoardLane updateBoardLane(String boardCode, String laneCode, BoardLane boardLane) {
 
-        //Assert if there are in the database
         Board existingBoard = validateBoardByCode(boardCode);
         Lane existingLane = validateLaneByCode(laneCode);
-
-        //Assert if the relationship is real
         BoardLane boardLaneExist = validateBoardLaneRelationship(existingBoard, existingLane);
-
-        //Update the old entities
         Board boardToUpdate = validateBoardByCode(boardLane.getBoard().getBoardCode());
         Lane laneToUpdate = validateLaneByCode(boardLane.getLane().getLaneCode());
-
-        //Assert if the new relationship not exist in the DB
         validateBoardLaneNotExistRelationship(boardToUpdate, laneToUpdate);
-
-        //Prepare entity for the save
         boardLaneExist.setBoard(boardToUpdate);
         boardLaneExist.setLane(laneToUpdate);
         boardLaneRepository.save(boardLaneExist);
@@ -67,38 +53,35 @@ public class BoardLaneServiceImpl implements BoardLaneService {
     @Override
     public BoardLane deleteBoardLane(String boardCode, String laneCode) {
 
-        //Assert if there are in the database
         Board existingBoard = validateBoardByCode(boardCode);
         Lane existingLane = validateLaneByCode(laneCode);
-
-        //Assert if the relationship is real
         BoardLane boardLaneExist = validateBoardLaneRelationship(existingBoard, existingLane);
-
-        //Prepare entity for the delete
         boardLaneRepository.delete(boardLaneExist);
         return boardLaneExist;
     }
     private Board validateBoardByCode(String code) {
-        Board existingCode = boardRepository.findBoardByBoardCode(code);
+        Board existingBoard = boardRepository.findBoardByBoardCode(code);
 
-        if (Objects.isNull(existingCode)) {
+        if (Objects.isNull(existingBoard)) {
             throw new ResourceNotFoundException("Error: Board with CODE: " + code + " not found.");
         }
-        return existingCode;
+        return existingBoard;
     }
     private Lane validateLaneByCode(String code) {
-        Lane existingCode = laneRepository.findLaneByLaneCode(code);
+        Lane existingLane = laneRepository.findLaneByLaneCode(code);
 
-        if (Objects.isNull(existingCode)) {
+        if (Objects.isNull(existingLane)) {
             throw new ResourceNotFoundException("Error: Lane with CODE: " + code + " not found.");
         }
-        return existingCode;
+        return existingLane;
     }
     private void checkDuplicateBoardLaneExist(Board board, Lane lane) {
 
         boolean boardLaneExist = boardLaneRepository.existsByBoardAndLane(board, lane);
         if (boardLaneExist) {
-            throw new DuplicateException("CODE: " + board.getBoardCode(), "CODE: " + lane.getLaneCode());
+            throw new DuplicateException(
+                    "board CODE: " + board.getBoardCode() + " and lane CODE: " + lane.getLaneCode(),
+                    "board CODE: " + board.getBoardCode() + " and lane CODE: " + lane.getLaneCode());
         }
     }
     private BoardLane validateBoardLaneRelationship(Board board, Lane lane) {
