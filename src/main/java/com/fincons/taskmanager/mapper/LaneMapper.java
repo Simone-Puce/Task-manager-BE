@@ -6,6 +6,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class LaneMapper {
 
@@ -14,6 +17,11 @@ public class LaneMapper {
 
     public LaneDTO mapToDTO(Lane lane) {
         return modelMapperForLane.map(lane, LaneDTO.class);
+    }
+    public List<LaneDTO> mapEntitiesToDTOs(List<Lane> lanes){
+        return lanes.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     public Lane mapToEntity(LaneDTO laneDTO){

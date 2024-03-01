@@ -59,11 +59,7 @@ public class BoardController {
     @GetMapping(value = "${board.list}")
     public ResponseEntity<GenericResponse<List<BoardDTO>>> getAllBoards() {
         List<Board> boards = boardService.getAllBoards();
-        List<BoardDTO> boardDTOs = new ArrayList<>();
-        for (Board board : boards) {
-            BoardDTO boardDTO = modelMapperBoard.mapToDTO(board);
-            boardDTOs.add(boardDTO);
-        }
+        List<BoardDTO> boardDTOs = modelMapperBoard.mapEntitiesToDTOs(boards);
         GenericResponse<List<BoardDTO>> response = GenericResponse.success(
                 boardDTOs,
                 "Success:" + (boardDTOs.isEmpty() || boardDTOs.size() == 1 ? " Found " : " Founds ") + boardDTOs.size() +

@@ -58,17 +58,10 @@ public class Task {
     @LastModifiedBy
     private String modifiedBy;
 
-    @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "tasks_users",
-            joinColumns = {
-                    @JoinColumn(name = "task_id", referencedColumnName = "id")
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "user_id", referencedColumnName = "id")
-            }
-    )
-    private List<User> users;
+    @OneToMany(
+            mappedBy = "task",
+            fetch = FetchType.LAZY)
+    private List<TaskUser> tasksUsers;
 
     @ManyToOne
     @JoinColumn(name = "board_id")
@@ -88,15 +81,7 @@ public class Task {
         this.board = board;
     }
 
-    public Task(long id, String taskCode, String taskName, String status, String description, List<User> users, Board board) {
-        this.id = id;
-        this.taskCode = taskCode;
-        this.taskName = taskName;
-        this.status = status;
-        this.description = description;
-        this.users = users;
-        this.board = board;
-    }
+
     public Task(long id, String taskCode, String taskName, String status, String description) {
         this.id = id;
         this.taskCode = taskCode;
