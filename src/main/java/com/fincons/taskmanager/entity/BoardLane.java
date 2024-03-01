@@ -8,12 +8,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "board_lane")
+@Table(name = "boards_lanes")
 @Entity
 public class BoardLane {
 

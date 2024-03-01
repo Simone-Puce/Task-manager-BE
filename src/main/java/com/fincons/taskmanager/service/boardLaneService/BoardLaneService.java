@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface BoardLaneService {
 
-    BoardLane createBoardLane(String boardCode, String laneCode);
+    BoardLane createBoardLane(BoardLane boardLane);
     BoardLane updateBoardLane(String boardCode, String laneCode, BoardLane boardLane);
     BoardLane deleteBoardLane(String boardCode, String laneCode);
 

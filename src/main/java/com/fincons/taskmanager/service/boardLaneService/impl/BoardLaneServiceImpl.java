@@ -24,16 +24,15 @@ public class BoardLaneServiceImpl implements BoardLaneService {
     @Autowired
     private BoardLaneRepository boardLaneRepository;
 
-
     @Override
-    public BoardLane createBoardLane(String boardCode, String laneCode) {
+    public BoardLane createBoardLane(BoardLane boardLane) {
 
-        Board existingBoard = validateBoardByCode(boardCode);
-        Lane existingLane = validateLaneByCode(laneCode);
+        Board existingBoard = validateBoardByCode(boardLane.getBoard().getBoardCode());
+        Lane existingLane = validateLaneByCode(boardLane.getLane().getLaneCode());
         checkDuplicateBoardLaneExist(existingBoard, existingLane);
-        BoardLane boardLane = new BoardLane(existingBoard, existingLane);
-        boardLaneRepository.save(boardLane);
-        return boardLane;
+        BoardLane newBoardLane = new BoardLane(existingBoard, existingLane);
+        boardLaneRepository.save(newBoardLane);
+        return newBoardLane;
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.fincons.taskmanager.service.userBoardService.UserBoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -26,6 +27,12 @@ public class UserBoardServiceImpl implements UserBoardService {
     private RoleRepository roleRepository;
 
     @Override
+    public List<UserBoard> findBoardsByUser(String email) {
+        validateUserByEmail(email);
+        return userBoardRepository.findBoardsByUser(email);
+    }
+
+    @Override
     public UserBoard createUserBoard(UserBoard userBoard) {
 
         User existingUser = validateUserByEmail(userBoard.getUser().getEmail());
@@ -37,8 +44,6 @@ public class UserBoardServiceImpl implements UserBoardService {
         userBoardRepository.save(newUserBoard);
         return newUserBoard;
     }
-
-
     @Override
     public UserBoard updateUserBoard(String email, String boardCode, UserBoard userBoard) {
 
@@ -66,7 +71,6 @@ public class UserBoardServiceImpl implements UserBoardService {
         userBoardRepository.delete(userBoardExist);
         return userBoardExist;
     }
-
     private User validateUserByEmail(String email) {
         User existingUser = userRepository.findByEmail(email);
         if (Objects.isNull(existingUser)) {

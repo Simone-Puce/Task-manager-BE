@@ -6,6 +6,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class BoardMapper {
     @Autowired
@@ -13,6 +16,12 @@ public class BoardMapper {
 
     public BoardDTO mapToDTO(Board board) {
         return modelMapperForBoard.map(board, BoardDTO.class);
+    }
+
+    public List<BoardDTO> mapEntitiesToDTOs(List<Board> boards){
+        return boards.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     public Board mapToEntity(BoardDTO boardDTO){

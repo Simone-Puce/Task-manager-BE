@@ -9,9 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserBoardDTO {
+public class TaskUserDTO {
+    private String taskCode;
+    private String taskName;
+    private String firstName;
+    private String lastName;
     private String email;
-    private String boardCode;
-    private String boardName;
-    private String roleCode;
 }

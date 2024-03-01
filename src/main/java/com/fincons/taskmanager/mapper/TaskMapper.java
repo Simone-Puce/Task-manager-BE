@@ -6,6 +6,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class TaskMapper {
     
@@ -14,6 +17,11 @@ public class TaskMapper {
 
     public TaskDTO mapToDTO(Task task) {
         return modelMapperForTask.map(task, TaskDTO.class);
+    }
+    public List<TaskDTO> mapEntitiesToDTOs(List<Task> tasks){
+        return tasks.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     public Task mapToEntity(TaskDTO taskDTO){

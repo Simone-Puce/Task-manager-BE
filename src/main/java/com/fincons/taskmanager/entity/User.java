@@ -43,8 +43,10 @@ public class User {
             fetch = FetchType.LAZY)
     private List<UserBoard> usersBoards;
 
-    @ManyToMany(mappedBy = "users")
-    private List<Task> tasks;
+    @OneToMany(
+            mappedBy = "user",
+            fetch = FetchType.LAZY)
+    private List<TaskUser> tasksUsers;
 
     public User(long id, String firstName, String lastName, String email, String password) {
         this.id = id;

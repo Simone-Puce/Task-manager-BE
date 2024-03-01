@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_board")
+@Table(name = "users_boards")
 @Entity
 public class UserBoard {
 
