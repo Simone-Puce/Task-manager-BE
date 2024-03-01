@@ -24,8 +24,6 @@ public class AppConfig {
     public ModelMapper modelMapperStandard() {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper;
-        //modelMapper.getConfiguration().setAmbiguityIgnored(true);
-        //modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
     }
 
     @Bean
