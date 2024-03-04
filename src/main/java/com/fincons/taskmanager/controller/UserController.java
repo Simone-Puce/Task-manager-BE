@@ -36,16 +36,14 @@ public class UserController {
             String token = userService.login(loginDto);
             JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
             jwtAuthResponse.setAccessToken(token);
-
             return ResponseEntity.ok(GenericResponse.<JwtAuthResponse>builder()
                     .status(HttpStatus.OK)
                     .success(true)
                     .message("Logged Succesfully!!!")
                     .data(jwtAuthResponse)
                     .build());
-
         } catch (Exception e) {
-            return ResponseEntity.ok().body(GenericResponse.<JwtAuthResponse>builder()
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(GenericResponse.<JwtAuthResponse>builder()
                     .status(HttpStatus.CONFLICT)
                     .success(false)
                     .message(e.getMessage())
@@ -93,14 +91,14 @@ public class UserController {
 
         } catch (EmailException ee) {
 
-            return ResponseEntity.ok().body(GenericResponse.<UserDTO>builder()
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(GenericResponse.<UserDTO>builder()
                     .status(HttpStatus.CONFLICT)
                     .success(false)
                     .message(EmailException.emailInvalidOrExist())
                     .build());
 
         } catch (PasswordException passwordEx) {
-            return ResponseEntity.ok().body(GenericResponse.<UserDTO>builder()
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(GenericResponse.<UserDTO>builder()
                     .status(HttpStatus.CONFLICT)
                     .success(false)
                     .message(passwordEx.getMessage())
@@ -125,14 +123,14 @@ public class UserController {
                             .data(updatedUser).build()
             );
         } catch (RoleException roleException) {
-            return ResponseEntity.status(HttpStatus.OK).body(
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.FORBIDDEN)
                             .success(false)
                             .message(roleException.getMessage())
                             .build());
         } catch (ResourceNotFoundException resourceNotFoundException) {
-            return ResponseEntity.ok().body(
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.NOT_FOUND)
                             .success(false)
@@ -173,7 +171,7 @@ public class UserController {
                             .build()
             );
         } catch (EmailException | PasswordException emailOrPasswordException) {
-            return ResponseEntity.status(HttpStatus.OK).body(
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.CONFLICT)
                             .success(false)
@@ -213,14 +211,14 @@ public class UserController {
                             .message("User deleted succesfully!!")
                             .build());
         } catch (EmailException emailException) {
-            return ResponseEntity.status(HttpStatus.OK).body(
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     GenericResponse.<Boolean>builder()
                             .status(HttpStatus.CONFLICT)
                             .success(false)
                             .message(emailException.getMessage())
                             .build());
         } catch (RoleException roleException) {
-            return ResponseEntity.status(HttpStatus.OK).body(
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                     GenericResponse.<Boolean>builder()
                             .status(HttpStatus.UNAUTHORIZED)
                             .success(false)
