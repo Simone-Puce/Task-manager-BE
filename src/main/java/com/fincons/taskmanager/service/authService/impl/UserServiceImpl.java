@@ -150,10 +150,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserDetails() {
-        if (SecurityContextHolder.getContext().getAuthentication().getName() == null) {
+        String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (loggedUser.isEmpty()) {
             throw new ResourceNotFoundException("User with this email doesn't exist");
         }
-        return userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        return userRepo.findByEmail(loggedUser);
     }
 
     public Role roleToAssign(String nomeRuolo) {
