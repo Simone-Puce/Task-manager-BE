@@ -12,7 +12,7 @@ import java.util.List;
 public interface UserService {
     User registerNewUser(UserDTO newUserDTO, String passwordForAdmin, String passwordForUser) throws EmailException, PasswordException;
 
-    User getUserDtoByEmail(String email);
+    User getUserDetails();
 
     String login(LoginDTO loginDto);
 

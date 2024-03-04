@@ -182,18 +182,18 @@ public class UserController {
     }
 
     @GetMapping("${detail.userdto}")
-    public ResponseEntity<GenericResponse<UserDTO>> getUserByEmail(@RequestParam String email) {
+    public ResponseEntity<GenericResponse<UserDTO>> getUserByEmail() {
         try {
-            UserDTO userDTO = userAndRoleMapper.userToUserDto(userService.getUserDtoByEmail(email));
+            UserDTO userDTO = userAndRoleMapper.mapToDTO(userService.getUserDetails());
             return ResponseEntity.status(HttpStatus.OK).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.OK)
                             .success(true)
-                            .message("User fuond!")
+                            .message("User found!")
                             .data(userDTO)
                             .build());
         } catch (ResourceNotFoundException resourceNotFoundException) {
-            return ResponseEntity.status(HttpStatus.OK).body(
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.NOT_FOUND)
                             .success(false)
@@ -206,7 +206,6 @@ public class UserController {
     public ResponseEntity<GenericResponse<Boolean>> deleteUserByEmail(@RequestParam String email) {
         try {
             userService.deleteUserByEmail(email);
-
             return ResponseEntity.status(HttpStatus.OK).body(
                     GenericResponse.<Boolean>builder()
                             .status(HttpStatus.OK)
