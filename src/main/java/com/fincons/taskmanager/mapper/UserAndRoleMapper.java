@@ -1,6 +1,7 @@
 package com.fincons.taskmanager.mapper;
 
 import com.fincons.taskmanager.dto.RoleDTO;
+import com.fincons.taskmanager.dto.UserBoardDTO;
 import com.fincons.taskmanager.dto.UserDTO;
 import com.fincons.taskmanager.entity.Role;
 import com.fincons.taskmanager.entity.User;
