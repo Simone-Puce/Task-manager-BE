@@ -1,7 +1,6 @@
 package com.fincons.taskmanager.service.attachmentService;
 
 
-import com.fincons.taskmanager.dto.AttachmentDTO;
 import com.fincons.taskmanager.entity.Attachment;
 
 import java.util.List;

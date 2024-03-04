@@ -1,8 +1,6 @@
 package com.fincons.taskmanager.service.attachmentService.impl;
 
 
-
-import com.fincons.taskmanager.dto.AttachmentDTO;
 import com.fincons.taskmanager.entity.Attachment;
 import com.fincons.taskmanager.entity.Task;
 import com.fincons.taskmanager.exception.DuplicateException;
@@ -10,7 +8,6 @@ import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.repository.AttachmentRepository;
 import com.fincons.taskmanager.service.attachmentService.AttachmentService;
 import com.fincons.taskmanager.service.taskService.impl.TaskServiceImpl;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

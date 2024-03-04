@@ -1,6 +1,5 @@
 package com.fincons.taskmanager.service.taskService;
 
-import com.fincons.taskmanager.dto.TaskDTO;
 import com.fincons.taskmanager.entity.Task;
 
 import java.util.List;

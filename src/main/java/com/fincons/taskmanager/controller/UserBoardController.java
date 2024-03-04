@@ -1,10 +1,6 @@
 package com.fincons.taskmanager.controller;
 
-import com.fincons.taskmanager.dto.BoardDTO;
-import com.fincons.taskmanager.dto.BoardLaneDTO;
-import com.fincons.taskmanager.dto.LaneDTO;
 import com.fincons.taskmanager.dto.UserBoardDTO;
-import com.fincons.taskmanager.entity.User;
 import com.fincons.taskmanager.entity.UserBoard;
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;

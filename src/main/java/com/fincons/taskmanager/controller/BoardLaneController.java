@@ -1,14 +1,10 @@
 package com.fincons.taskmanager.controller;
 
 import com.fincons.taskmanager.dto.BoardLaneDTO;
-import com.fincons.taskmanager.dto.BoardDTO;
-import com.fincons.taskmanager.dto.BoardLaneDTO;
 import com.fincons.taskmanager.entity.BoardLane;
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.mapper.BoardLaneMapper;
-import com.fincons.taskmanager.mapper.BoardMapper;
-import com.fincons.taskmanager.mapper.LaneMapper;
 import com.fincons.taskmanager.service.boardLaneService.BoardLaneService;
 import com.fincons.taskmanager.utility.GenericResponse;
 import com.fincons.taskmanager.utility.ValidateFields;
