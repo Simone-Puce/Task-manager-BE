@@ -1,7 +1,6 @@
 package com.fincons.taskmanager.mapper;
 
 import com.fincons.taskmanager.dto.UserBoardDTO;
-import com.fincons.taskmanager.entity.BoardLane;
 import com.fincons.taskmanager.entity.UserBoard;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

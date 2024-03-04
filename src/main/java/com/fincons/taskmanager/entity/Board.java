@@ -33,6 +33,7 @@ public class Board {
     @Column(name = "name", nullable = false)
     private String boardName;
 
+
     @OneToMany(
             mappedBy = "board",
             fetch = FetchType.LAZY)

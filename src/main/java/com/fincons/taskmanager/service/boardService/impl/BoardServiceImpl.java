@@ -1,13 +1,11 @@
 package com.fincons.taskmanager.service.boardService.impl;
 
 
-import com.fincons.taskmanager.dto.BoardDTO;
 import com.fincons.taskmanager.entity.Board;
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.repository.BoardRepository;
 import com.fincons.taskmanager.service.boardService.BoardService;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

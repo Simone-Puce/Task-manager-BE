@@ -4,7 +4,6 @@ package com.fincons.taskmanager.repository;
 import com.fincons.taskmanager.entity.Task;
 import com.fincons.taskmanager.entity.TaskUser;
 import com.fincons.taskmanager.entity.User;
-import com.fincons.taskmanager.entity.TaskUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
