@@ -1,7 +1,6 @@
 package com.fincons.taskmanager.service.boardService;
 
 
-import com.fincons.taskmanager.dto.BoardDTO;
 import com.fincons.taskmanager.entity.Board;
 
 import java.util.List;

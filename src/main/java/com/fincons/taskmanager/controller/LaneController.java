@@ -59,11 +59,7 @@ public class LaneController {
     @GetMapping(value = "${lane.list}")
     public ResponseEntity<GenericResponse<List<LaneDTO>>> getAllLanes() {
         List<Lane> lanes = laneService.getAllLanes();
-        List<LaneDTO> laneDTOs = new ArrayList<>();
-        for (Lane lane : lanes) {
-            LaneDTO laneDTO = modelMapperLane.mapToDTO(lane);
-            laneDTOs.add(laneDTO);
-        }
+        List<LaneDTO> laneDTOs = modelMapperLane.mapEntitiesToDTOs(lanes);
         GenericResponse<List<LaneDTO>> response = GenericResponse.success(
                 laneDTOs,
                 "Success:" + (laneDTOs.isEmpty() || laneDTOs.size() == 1 ? " Found " : " Founds ") + laneDTOs.size() +

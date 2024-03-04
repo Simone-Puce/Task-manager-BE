@@ -59,11 +59,7 @@ public class AttachmentController {
     @GetMapping(value = "${attachment.list}")
     public ResponseEntity<GenericResponse<List<AttachmentDTO>>> getAllAttachments() {
         List<Attachment> attachments = attachmentService.getAllAttachments();
-        List<AttachmentDTO> attachmentDTOs = new ArrayList<>();
-        for (Attachment attachment : attachments) {
-            AttachmentDTO attachmentDTO = modelMapperAttachment.mapToDTO(attachment);
-            attachmentDTOs.add(attachmentDTO);
-        }
+        List<AttachmentDTO> attachmentDTOs = modelMapperAttachment.mapEntitiesToDTOs(attachments);
         GenericResponse<List<AttachmentDTO>> response = GenericResponse.success(
                 attachmentDTOs,
                 "Success:" + (attachmentDTOs.isEmpty() || attachmentDTOs.size() == 1 ? " Found " : " Founds ") + attachmentDTOs.size() +

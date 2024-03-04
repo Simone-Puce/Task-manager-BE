@@ -7,6 +7,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class AttachmentMapper {
 
@@ -15,6 +18,11 @@ public class AttachmentMapper {
 
     public AttachmentDTO mapToDTO(Attachment attachment) {
         return modelMapperStandard.map(attachment, AttachmentDTO.class);
+    }
+    public List<AttachmentDTO> mapEntitiesToDTOs(List<Attachment> attachments){
+        return attachments.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     public Attachment mapToEntity(AttachmentDTO attachmentDTO){

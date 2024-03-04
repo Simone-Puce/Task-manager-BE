@@ -58,11 +58,7 @@ public class TaskController {
     @GetMapping(value = "${task.list}")
     public ResponseEntity<GenericResponse<List<TaskDTO>>> getAllTasks() {
         List<Task> tasks = taskService.getAllTasks();
-        List<TaskDTO> taskDTOs = new ArrayList<>();
-        for (Task task : tasks) {
-            TaskDTO taskDTO = modelMapperTask.mapToDTO(task);
-            taskDTOs.add(taskDTO);
-        }
+        List<TaskDTO> taskDTOs = modelMapperTask.mapEntitiesToDTOs(tasks);
         GenericResponse<List<TaskDTO>> response = GenericResponse.success(
                 taskDTOs,
                 "Success:" + (taskDTOs.isEmpty() || taskDTOs.size() == 1 ? " Found " : " Founds ") + taskDTOs.size() +
