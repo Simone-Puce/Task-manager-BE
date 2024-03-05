@@ -113,6 +113,7 @@ public class SecurityConfiguration {
             auth.requestMatchers(appContext + loginBaseUri).permitAll()
                     .requestMatchers(appContext + registerBaseUri).permitAll()
                     .requestMatchers(appContext + taskBaseUri + "/**").hasAnyRole("USER","ADMIN")
+                    .requestMatchers(appContext + "/v1/email").hasAnyRole("USER","ADMIN")
                     .requestMatchers(appContext + attachmentBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
                     .requestMatchers(appContext + boardBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
                     .requestMatchers(appContext + laneBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")

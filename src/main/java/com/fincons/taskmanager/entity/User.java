@@ -1,5 +1,6 @@
 package com.fincons.taskmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,16 +37,19 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @JsonIgnore
     private List<Role> roles;
 
     @OneToMany(
             mappedBy = "user",
             fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<UserBoard> usersBoards;
 
     @OneToMany(
             mappedBy = "user",
             fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<TaskUser> tasksUsers;
 
     public User(long id, String firstName, String lastName, String email, String password) {
