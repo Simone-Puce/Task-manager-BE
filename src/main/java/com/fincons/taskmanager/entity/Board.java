@@ -81,17 +81,4 @@ public class Board {
         this.boardName = boardName;
         this.usersBoards = usersBoards;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Board board = (Board) o;
-        return Objects.equals(id, board.id) && Objects.equals(boardCode, board.boardCode) && Objects.equals(boardName, board.boardName) && Objects.equals(boardsLanes, board.boardsLanes) && Objects.equals(tasks, board.tasks) && Objects.equals(usersBoards, board.usersBoards) && Objects.equals(createdDate, board.createdDate) && Objects.equals(modifiedDate, board.modifiedDate) && Objects.equals(createdBy, board.createdBy) && Objects.equals(modifiedBy, board.modifiedBy);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, boardCode, boardName, boardsLanes, tasks, usersBoards, createdDate, modifiedDate, createdBy, modifiedBy);
-    }
 }
