@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -29,4 +30,16 @@ public class BoardDTO {
     private Timestamp modifiedDate;
     private boolean active;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BoardDTO boardDTO = (BoardDTO) o;
+        return Objects.equals(boardCode, boardDTO.boardCode) && Objects.equals(boardName, boardDTO.boardName) && Objects.equals(lanes, boardDTO.lanes) && Objects.equals(tasks, boardDTO.tasks) && Objects.equals(users, boardDTO.users) && Objects.equals(createdBy, boardDTO.createdBy) && Objects.equals(modifiedBy, boardDTO.modifiedBy) && Objects.equals(createdDate, boardDTO.createdDate) && Objects.equals(modifiedDate, boardDTO.modifiedDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(boardCode, boardName, lanes, tasks, users, createdBy, modifiedBy, createdDate, modifiedDate);
+    }
 }
