@@ -40,6 +40,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
         Task task = taskServiceImpl.validateTaskByCode(attachment.getTask().getTaskCode());
         attachment.setTask(task);
+        attachment.setActive(true);
         attachmentRepository.save(attachment);
         return attachment;
     }
@@ -80,6 +81,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Override
     public void deleteAttachmentByCode(String attachmentCode) {
         Attachment attachment = validateAttachmentByCode(attachmentCode);
+        attachment.setActive(false);
         attachmentRepository.deleteById(attachment.getId());
     }
 

@@ -153,7 +153,7 @@ public class AttachmentController {
         }
     }
 
-    @DeleteMapping(value = "${attachment.delete}")
+    @PutMapping(value = "${attachment.delete}")
     public ResponseEntity<GenericResponse<AttachmentDTO>> deleteAttachmentByCode(@RequestParam String attachmentCode) {
         try {
             ValidateFields.validateSingleField(attachmentCode);

@@ -18,4 +18,5 @@ public class LaneDTO {
     private String laneCode;
     private String laneName;
     private List<BoardDTO> boards;
+    private boolean active;
 }

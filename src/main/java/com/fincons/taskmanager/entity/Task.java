@@ -57,6 +57,9 @@ public class Task {
     @LastModifiedBy
     private String modifiedBy;
 
+    @Column(name = "active")
+    private boolean active;
+
     @OneToMany(
             mappedBy = "task",
             fetch = FetchType.LAZY)

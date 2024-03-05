@@ -144,7 +144,7 @@ public class LaneController {
             );
         }
     }
-    @DeleteMapping(value = "${lane.delete}")
+    @PutMapping(value = "${lane.delete}")
     public ResponseEntity<GenericResponse<LaneDTO>> deleteLaneByCode(@RequestParam String laneCode) {
         try {
             ValidateFields.validateSingleField(laneCode);

@@ -1,6 +1,7 @@
 package com.fincons.taskmanager.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,4 +18,5 @@ public class AttachmentDTO {
     private String attachmentName;
     private String extension;
     private String taskCode;
+    private boolean active;
 }
