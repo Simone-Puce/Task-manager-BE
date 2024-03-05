@@ -44,7 +44,8 @@ public class Board {
             fetch = FetchType.LAZY)
     private List<Task> tasks;
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board",
+            fetch = FetchType.LAZY)
     private List<UserBoard> usersBoards;
 
     @Column(name = "created_date", nullable = false, updatable = false)

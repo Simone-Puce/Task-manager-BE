@@ -36,8 +36,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task createTask(Task task) {
-        checkForDuplicateTask(task.getTaskCode());
-
+        validateTaskByCodeAlreadyExist(task.getTaskCode());
         Board board = boardServiceImpl.validateBoardByCode(task.getBoard().getBoardCode());
         task.setBoard(board);
         taskRepository.save(task);
@@ -46,16 +45,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task updateTaskByCode(String taskCode, Task task) {
-        List<Task> tasks = taskRepository.findAll();
+
         Task taskExisting = validateTaskByCode(taskCode);
+        validateTaskByCodeAlreadyExist(task.getTaskCode());
 
-        List<Task> tasksExcludingSelectedTask = new ArrayList<>();
-
-        for(Task t : tasks){
-            if (!Objects.equals(t.getTaskCode(), taskCode)){
-                tasksExcludingSelectedTask.add(t);
-            }
-        }
         taskExisting.setTaskCode(task.getTaskCode());
         taskExisting.setTaskName(task.getTaskName());
         taskExisting.setStatus(task.getStatus());
@@ -64,16 +57,7 @@ public class TaskServiceImpl implements TaskService {
         Board board = boardServiceImpl.validateBoardByCode(task.getBoard().getBoardCode());
         taskExisting.setBoard(board);
 
-        if(tasksExcludingSelectedTask.isEmpty()){
-            taskRepository.save(taskExisting);
-        } else {
-            for(Task t : tasksExcludingSelectedTask){
-                if(t.getTaskCode().equals(taskExisting.getTaskCode())){
-                    throw new DuplicateException("CODE: " + taskCode, "CODE: " + task.getTaskCode());
-                }
-            }
-            taskRepository.save(taskExisting);
-        }
+        taskRepository.save(taskExisting);
 
         return taskExisting;
     }
@@ -91,10 +75,10 @@ public class TaskServiceImpl implements TaskService {
         }
         return existingCode;
     }
-    private void checkForDuplicateTask(String taskCode) {
-        Task taskByCode = taskRepository.findTaskByTaskCode(taskCode);
-        if (!Objects.isNull(taskByCode)) {
-            throw new DuplicateException("CODE: " + taskCode, "CODE: " + taskByCode.getTaskCode());
+    public void validateTaskByCodeAlreadyExist(String taskCode) {
+        boolean existingCode = taskRepository.existsByTaskCode(taskCode);
+        if (existingCode) {
+            throw new DuplicateException("CODE: " + taskCode, "CODE: " + taskCode);
         }
     }
 }

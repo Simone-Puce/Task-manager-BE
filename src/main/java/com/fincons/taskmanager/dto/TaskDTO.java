@@ -31,4 +31,13 @@ public class TaskDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
     private Timestamp modifiedDate;
 
+
+    public TaskDTO(String taskCode, String taskName, String status, String description, String boardCode) {
+        this.taskCode = taskCode;
+        this.taskName = taskName;
+        this.status = status;
+        this.description = description;
+        this.boardCode = boardCode;
+    }
+
 }

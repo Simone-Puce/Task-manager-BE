@@ -44,6 +44,7 @@ public class AppConfig {
         modelMapper.addMappings(new PropertyMap<Task, TaskDTO>() {
             protected void configure() {
                 skip(destination.getAttachments());
+                skip(destination.getUsers());
                 skip(destination.getBoardCode());
                 skip(destination.getCreatedBy());
                 skip(destination.getModifiedBy());

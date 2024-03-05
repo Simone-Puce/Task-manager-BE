@@ -176,7 +176,7 @@ public class TaskController {
                             HttpStatus.NOT_FOUND));
         }
     }
-    private void validateTaskFields(TaskDTO taskDTO) {
+    public void validateTaskFields(TaskDTO taskDTO) {
         if (Strings.isEmpty(taskDTO.getTaskCode()) ||
                 Strings.isEmpty(taskDTO.getTaskName()) ||
                 Strings.isEmpty(taskDTO.getStatus()) ||
