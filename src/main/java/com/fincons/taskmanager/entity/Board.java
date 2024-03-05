@@ -64,6 +64,9 @@ public class Board {
     @LastModifiedBy
     private String modifiedBy;
 
+    @Column(name = "active")
+    private boolean active;
+
     public Board(Long id, String boardCode, String boardName) {
         this.id = id;
         this.boardCode = boardCode;

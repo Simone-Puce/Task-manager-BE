@@ -30,5 +30,6 @@ public class TaskDTO {
     private Timestamp createdDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
     private Timestamp modifiedDate;
+    private boolean active;
 
 }
