@@ -151,7 +151,7 @@ public class TaskController {
             );
         }
     }
-    @DeleteMapping(value = "${task.delete}")
+    @PutMapping(value = "${task.delete}")
     public ResponseEntity<GenericResponse<TaskDTO>> deleteTaskByCode(@RequestParam String taskCode) {
         try {
             ValidateFields.validateSingleField(taskCode);

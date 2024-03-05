@@ -39,6 +39,7 @@ public class TaskServiceImpl implements TaskService {
         validateTaskByCodeAlreadyExist(task.getTaskCode());
         Board board = boardServiceImpl.validateBoardByCode(task.getBoard().getBoardCode());
         task.setBoard(board);
+        task.setActive(true);
         taskRepository.save(task);
         return task;
     }
@@ -65,7 +66,8 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void deleteTaskByCode(String taskCode) {
         Task task = validateTaskByCode(taskCode);
-        taskRepository.deleteById(task.getId());
+        task.setActive(false);
+        taskRepository.save(task);
     }
     public Task validateTaskByCode(String code) {
         Task existingCode = taskRepository.findTaskByTaskCode(code);

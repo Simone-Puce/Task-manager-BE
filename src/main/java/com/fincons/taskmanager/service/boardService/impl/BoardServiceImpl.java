@@ -32,6 +32,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public Board createBoard(Board board) {
         checkForDuplicateBoard(board.getBoardCode());
+        board.setActive(true);
         boardRepository.save(board);
         return board;
     }
@@ -68,6 +69,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public void deleteBoardByCode(String boardCode) {
         Board board = validateBoardByCode(boardCode);
+        board.setActive(false);
         boardRepository.deleteById(board.getId());
     }
 

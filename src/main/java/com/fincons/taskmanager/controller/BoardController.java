@@ -144,7 +144,7 @@ public class BoardController {
             );
         }
     }
-    @DeleteMapping(value = "${board.delete}")
+    @PutMapping(value = "${board.delete}")
     public ResponseEntity<GenericResponse<BoardDTO>> deleteBoardByCode(@RequestParam String boardCode) {
         try {
             ValidateFields.validateSingleField(boardCode);

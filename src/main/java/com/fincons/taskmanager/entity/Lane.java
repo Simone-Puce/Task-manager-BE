@@ -24,6 +24,8 @@ public class Lane {
 
     @Column(nullable = false)
     private String laneName;
+    @Column(name = "active")
+    private boolean active;
 
     @OneToMany(
             mappedBy = "lane",
