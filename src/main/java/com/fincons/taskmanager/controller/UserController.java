@@ -80,10 +80,9 @@ public class UserController {
     @PostMapping(value = "${register.base.uri}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GenericResponse<UserDTO>> register(
             @RequestBody UserDTO userDTO,
-            @RequestParam(name = "admin", required = false) String passwordForAdmin,
-            @RequestParam(name = "editor", required = false) String passwordForEditor) {
+            @RequestParam(name = "admin", required = false) String passwordForAdmin) {
         try {
-            UserDTO registeredUser = userAndRoleMapper.mapToDTO(userService.registerNewUser(userDTO, passwordForAdmin, passwordForEditor));
+            UserDTO registeredUser = userAndRoleMapper.mapToDTO(userService.registerNewUser(userDTO, passwordForAdmin));
             return ResponseEntity.ok(GenericResponse.<UserDTO>builder()
                     .status(HttpStatus.OK)
                     .success(true)
