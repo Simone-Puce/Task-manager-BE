@@ -26,6 +26,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,7 @@ public class UserServiceImpl implements UserService {
     private String passwordEditor;
 
     @Override
-    public User registerNewUser(UserDTO userDTO, String passwordForAdmin, String passwordForEditor) throws EmailException, PasswordException {
+    public User registerNewUser(UserDTO userDTO, String passwordForAdmin) throws EmailException, PasswordException {
         String emailDto = userDTO.getEmail().toLowerCase().replace(" ", "");
         if (emailDto.isEmpty() || !EmailValidator.isValidEmail(emailDto) || userRepo.existsByEmail(emailDto)) {
             LOG.warn("Invalid or existing email!!");
@@ -67,8 +68,6 @@ public class UserServiceImpl implements UserService {
         }
         if (passwordAdmin.equals(passwordForAdmin)) {
             role = roleToAssign("ROLE_ADMIN");
-        } else if (passwordEditor.equals(passwordForEditor)) {
-            role = roleToAssign("ROLE_EDITOR");
         } else {
             role = roleToAssign("ROLE_USER");
         }
