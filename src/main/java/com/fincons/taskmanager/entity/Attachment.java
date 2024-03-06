@@ -25,6 +25,8 @@ public class Attachment {
 
     @Column(nullable = false)
     private String extension;
+    @Column(name = "active")
+    private boolean active;
 
     @ManyToOne
     @JoinColumn(name = "task_id")

@@ -36,14 +36,12 @@ public class UserController {
             String token = userService.login(loginDto);
             JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
             jwtAuthResponse.setAccessToken(token);
-
             return ResponseEntity.ok(GenericResponse.<JwtAuthResponse>builder()
                     .status(HttpStatus.OK)
                     .success(true)
                     .message("Logged successfully!!!")
                     .data(jwtAuthResponse)
                     .build());
-
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(GenericResponse.<JwtAuthResponse>builder()
                     .status(HttpStatus.CONFLICT)
@@ -171,7 +169,7 @@ public class UserController {
                             .build()
             );
         } catch (EmailException | PasswordException emailOrPasswordException) {
-            return ResponseEntity.status(HttpStatus.OK).body(
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.CONFLICT)
                             .success(false)
