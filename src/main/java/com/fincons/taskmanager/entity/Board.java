@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -44,7 +45,8 @@ public class Board {
             fetch = FetchType.LAZY)
     private List<Task> tasks;
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board",
+            fetch = FetchType.LAZY)
     private List<UserBoard> usersBoards;
 
     @Column(name = "created_date", nullable = false, updatable = false)
@@ -71,5 +73,12 @@ public class Board {
         this.id = id;
         this.boardCode = boardCode;
         this.boardName = boardName;
+    }
+
+    public Board(Long id, String boardCode, String boardName, List<UserBoard> usersBoards) {
+        this.id = id;
+        this.boardCode = boardCode;
+        this.boardName = boardName;
+        this.usersBoards = usersBoards;
     }
 }

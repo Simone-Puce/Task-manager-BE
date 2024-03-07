@@ -7,6 +7,7 @@ import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.repository.TaskRepository;
 import com.fincons.taskmanager.service.boardService.impl.BoardServiceImpl;
 import com.fincons.taskmanager.service.taskService.TaskService;
+import com.fincons.taskmanager.utility.CodeBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,12 +32,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+        return taskRepository.findAllByActiveTrue();
     }
 
     @Override
     public Task createTask(Task task) {
-        checkForDuplicateTask(task.getTaskCode());
+        validateTaskByCodeAlreadyExist(task.getTaskCode());
         Board board = boardServiceImpl.validateBoardByCode(task.getBoard().getBoardCode());
         task.setBoard(board);
         task.setActive(true);
@@ -46,16 +47,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task updateTaskByCode(String taskCode, Task task) {
-        List<Task> tasks = taskRepository.findAll();
+
         Task taskExisting = validateTaskByCode(taskCode);
+        validateTaskByCodeAlreadyExist(task.getTaskCode());
 
-        List<Task> tasksExcludingSelectedTask = new ArrayList<>();
-
-        for(Task t : tasks){
-            if (!Objects.equals(t.getTaskCode(), taskCode)){
-                tasksExcludingSelectedTask.add(t);
-            }
-        }
         taskExisting.setTaskCode(task.getTaskCode());
         taskExisting.setTaskName(task.getTaskName());
         taskExisting.setStatus(task.getStatus());
@@ -64,16 +59,7 @@ public class TaskServiceImpl implements TaskService {
         Board board = boardServiceImpl.validateBoardByCode(task.getBoard().getBoardCode());
         taskExisting.setBoard(board);
 
-        if(tasksExcludingSelectedTask.isEmpty()){
-            taskRepository.save(taskExisting);
-        } else {
-            for(Task t : tasksExcludingSelectedTask){
-                if(t.getTaskCode().equals(taskExisting.getTaskCode())){
-                    throw new DuplicateException("CODE: " + taskCode, "CODE: " + task.getTaskCode());
-                }
-            }
-            taskRepository.save(taskExisting);
-        }
+        taskRepository.save(taskExisting);
 
         return taskExisting;
     }
@@ -85,17 +71,17 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.save(task);
     }
     public Task validateTaskByCode(String code) {
-        Task existingCode = taskRepository.findTaskByTaskCode(code);
+        Task existingCode = taskRepository.findTaskByTaskCodeAndActiveTrue(code);
 
         if (Objects.isNull(existingCode)) {
             throw new ResourceNotFoundException("Error: Task with CODE: " + code + " not found.");
         }
         return existingCode;
     }
-    private void checkForDuplicateTask(String taskCode) {
-        Task taskByCode = taskRepository.findTaskByTaskCode(taskCode);
-        if (!Objects.isNull(taskByCode)) {
-            throw new DuplicateException("CODE: " + taskCode, "CODE: " + taskByCode.getTaskCode());
+    public void validateTaskByCodeAlreadyExist(String taskCode) {
+        boolean existingCode = taskRepository.existsByTaskCodeAndActiveTrue(taskCode);
+        if (existingCode) {
+            throw new DuplicateException("CODE: " + taskCode, "CODE: " + taskCode);
         }
     }
 }

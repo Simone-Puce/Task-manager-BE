@@ -32,4 +32,13 @@ public class TaskDTO {
     private Timestamp modifiedDate;
     private boolean active;
 
+
+    public TaskDTO(String taskCode, String taskName, String status, String description, String boardCode) {
+        this.taskCode = taskCode;
+        this.taskName = taskName;
+        this.status = status;
+        this.description = description;
+        this.boardCode = boardCode;
+    }
+
 }

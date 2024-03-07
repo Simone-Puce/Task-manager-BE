@@ -7,6 +7,7 @@ import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.mapper.TaskMapper;
 import com.fincons.taskmanager.service.taskService.TaskService;
 import com.fincons.taskmanager.utility.GenericResponse;
+import com.fincons.taskmanager.utility.NameValidator;
 import com.fincons.taskmanager.utility.ValidateFields;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,8 +71,7 @@ public class TaskController {
     @PostMapping(value = "${task.create}")
     public ResponseEntity<GenericResponse<TaskDTO>> createTask(@RequestBody TaskDTO taskDTO) {
         try {
-            validateTaskFields(taskDTO);
-
+            validateDTO(taskDTO);
             Task taskMapped = modelMapperTask.mapToEntity(taskDTO);
 
             Task task = taskService.createTask(taskMapped);
@@ -109,6 +109,7 @@ public class TaskController {
             );
         }
     }
+
     @PutMapping(value = "${task.put}")
     public ResponseEntity<GenericResponse<TaskDTO>> updateTaskByCode(@RequestParam String taskCode, @RequestBody TaskDTO taskDTO) {
         try {
@@ -176,9 +177,13 @@ public class TaskController {
                             HttpStatus.NOT_FOUND));
         }
     }
-    private void validateTaskFields(TaskDTO taskDTO) {
-        if (Strings.isEmpty(taskDTO.getTaskCode()) ||
-                Strings.isEmpty(taskDTO.getTaskName()) ||
+    private void validateDTO(TaskDTO taskDTO) {
+        validateTaskFields(taskDTO);
+        String taskName = NameValidator.nameValidator(taskDTO.getTaskName());
+        taskDTO.setTaskName(taskName);
+    }
+    public void validateTaskFields(TaskDTO taskDTO) {
+        if (Strings.isEmpty(taskDTO.getTaskName()) ||
                 Strings.isEmpty(taskDTO.getStatus()) ||
                 Strings.isEmpty(taskDTO.getBoardCode())) {
             throw new IllegalArgumentException("Error: The fields of the task can't be null or empty.");
