@@ -26,7 +26,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public List<Board> getAllBoards() {
-        return boardRepository.findAll();
+        return boardRepository.findAllByActiveTrue();
     }
 
     @Override
@@ -70,7 +70,7 @@ public class BoardServiceImpl implements BoardService {
     public void deleteBoardByCode(String boardCode) {
         Board board = validateBoardByCode(boardCode);
         board.setActive(false);
-        boardRepository.deleteById(board.getId());
+        boardRepository.save(board);
     }
 
     public Board validateBoardByCode(String code) {

@@ -1,15 +1,10 @@
-package com.fincons.taskmanager.mapperTest;
+package com.fincons.taskmanager.genericsTest;
 
 import com.fincons.taskmanager.dto.*;
 import com.fincons.taskmanager.entity.*;
-import com.fincons.taskmanager.mapper.BoardMapper;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeMap;
-import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;

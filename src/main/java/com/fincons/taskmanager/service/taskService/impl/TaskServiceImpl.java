@@ -7,6 +7,7 @@ import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.repository.TaskRepository;
 import com.fincons.taskmanager.service.boardService.impl.BoardServiceImpl;
 import com.fincons.taskmanager.service.taskService.TaskService;
+import com.fincons.taskmanager.utility.CodeBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+        return taskRepository.findAllByActiveTrue();
     }
 
     @Override
@@ -70,7 +71,7 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.save(task);
     }
     public Task validateTaskByCode(String code) {
-        Task existingCode = taskRepository.findTaskByTaskCode(code);
+        Task existingCode = taskRepository.findTaskByTaskCodeAndActiveTrue(code);
 
         if (Objects.isNull(existingCode)) {
             throw new ResourceNotFoundException("Error: Task with CODE: " + code + " not found.");
@@ -78,7 +79,7 @@ public class TaskServiceImpl implements TaskService {
         return existingCode;
     }
     public void validateTaskByCodeAlreadyExist(String taskCode) {
-        boolean existingCode = taskRepository.existsByTaskCode(taskCode);
+        boolean existingCode = taskRepository.existsByTaskCodeAndActiveTrue(taskCode);
         if (existingCode) {
             throw new DuplicateException("CODE: " + taskCode, "CODE: " + taskCode);
         }
