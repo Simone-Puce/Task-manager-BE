@@ -19,6 +19,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             "AND TABLE_NAME = 'task'",
             nativeQuery = true)
     Long getNextSeriesId();
-    @Query("SELECT CONCAT(t.id, ' - ', t.name) FROM Task t")
-    List<String> findIdNameConcat();
+    @Query("SELECT CONCAT(UPPER(t.taskName), '-', t.id) FROM Task t")
+    List<String> getTaskNameAndIdConcatenated();
 }
