@@ -31,7 +31,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public List<Attachment> getAllAttachments() {
-        return attachmentRepository.findAll();
+        return attachmentRepository.findAllByActiveTrue();
     }
 
     @Override
@@ -82,11 +82,11 @@ public class AttachmentServiceImpl implements AttachmentService {
     public void deleteAttachmentByCode(String attachmentCode) {
         Attachment attachment = validateAttachmentByCode(attachmentCode);
         attachment.setActive(false);
-        attachmentRepository.deleteById(attachment.getId());
+        attachmentRepository.save(attachment);
     }
 
     public Attachment validateAttachmentByCode(String code) {
-        Attachment existingCode = attachmentRepository.findAttachmentByAttachmentCode(code);
+        Attachment existingCode = attachmentRepository.findAttachmentByAttachmentCodeAndActiveTrue(code);
 
         if (Objects.isNull(existingCode)) {
             throw new ResourceNotFoundException("Error: Attachment with CODE: " + code + " not found.");
@@ -94,7 +94,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         return existingCode;
     }
     private void checkForDuplicateAttachment(String attachmentCode) {
-        Attachment attachmentByCode = attachmentRepository.findAttachmentByAttachmentCode(attachmentCode);
+        Attachment attachmentByCode = attachmentRepository.findAttachmentByAttachmentCodeAndActiveTrue(attachmentCode);
         if (!Objects.isNull(attachmentByCode)) {
             throw new DuplicateException("CODE: " + attachmentCode, "CODE: " + attachmentByCode.getAttachmentCode());
         }

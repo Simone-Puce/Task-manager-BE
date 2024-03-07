@@ -25,7 +25,7 @@ public class LaneServiceImpl implements LaneService {
 
     @Override
     public List<Lane> getAllLanes() {
-        return laneRepository.findAll();
+        return laneRepository.findAllByActiveTrue();
     }
 
     @Override
@@ -70,7 +70,7 @@ public class LaneServiceImpl implements LaneService {
     public void deleteLaneByCode(String laneCode) {
         Lane lane = validateLaneByCode(laneCode);
         lane.setActive(false);
-        laneRepository.deleteById(lane.getId());
+        laneRepository.save(lane);
     }
 
     public Lane validateLaneByCode(String code) {

@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,7 +27,7 @@ public class UserBoard {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    @Column(name = "role", unique = true, nullable = false)
+    @Column(name = "role", nullable = false)
     private String roleCode;
 
     public UserBoard(User user, Board board, String roleCode) {

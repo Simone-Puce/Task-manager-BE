@@ -70,7 +70,7 @@ public class TaskUserServiceImpl implements TaskUserService {
         return existingUser;
     }
     private Task validateTaskByCode(String code) {
-        Task existingTask = taskRepository.findTaskByTaskCode(code);
+        Task existingTask = taskRepository.findTaskByTaskCodeAndActiveTrue(code);
         if (Objects.isNull(existingTask)) {
             throw new ResourceNotFoundException("Error: Task with CODE: " + code + " not found.");
         }
