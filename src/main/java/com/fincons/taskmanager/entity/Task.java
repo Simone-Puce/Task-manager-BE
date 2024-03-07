@@ -32,7 +32,7 @@ public class Task {
     @Column(name = "id")
     private Long id;
 
-    @Column(unique = true, nullable = true)
+    @Column(unique = true)
     private String taskCode;
 
     @Column(nullable = false)
