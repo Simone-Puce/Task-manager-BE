@@ -19,9 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -72,6 +69,7 @@ public class SecurityConfiguration {
     private String userBoardBaseUri;
     @Value("${task.user.base.uri}")
     private String taskUserBaseUri;
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -85,41 +83,23 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
-        /*List<Endpoint> endpoints = Arrays.asList(
-                new Endpoint(appContext + roleBaseUri + "/**", Arrays.asList(RoleEndpoint.ADMIN, RoleEndpoint.USER)),
-                new Endpoint(appContext + registeredUsers, List.of(RoleEndpoint.ADMIN)),
-                new Endpoint(appContext + deleteUserByEmail + "/**", List.of(RoleEndpoint.ADMIN))
-        );
-        http.authorizeHttpRequests(authz -> {
-            for (Endpoint e: endpoints) {
-                if (e.getRoles().contains(RoleEndpoint.ADMIN) && e.getRoles().contains(RoleEndpoint.USER)) {
-                    authz.requestMatchers(HttpMethod.GET, e.getPath()).hasAnyRole("ADMIN","USER");
-                    authz.requestMatchers(e.getPath()).hasRole("ADMIN");
-                }else if(e.getRoles().contains(RoleEndpoint.ADMIN) && e.getRoles().size() == 1){
-                    authz.requestMatchers(e.getPath()).hasRole("ADMIN");
-                } else if (e.getRoles().contains(RoleEndpoint.USER) && e.getRoles().size() == 1) {
-                    authz.requestMatchers(e.getPath()).hasRole("USER");
-                }
-            }
-            authz.requestMatchers(appContext + loginBaseUri).permitAll()
-                    .requestMatchers(appContext +registerBaseUri).permitAll()
+
+        http.authorizeHttpRequests(auth -> {
+            auth
+                    .requestMatchers(appContext + roleBaseUri + "/**").hasAnyRole("ADMIN")
+                    .requestMatchers(appContext + taskBaseUri + "/**").hasAnyRole("ADMIN", "USER")
+                    .requestMatchers(appContext + attachmentBaseUri + "/**").hasAnyRole("ADMIN", "USER")
+                    .requestMatchers(appContext + boardBaseUri + "/**").hasAnyRole("ADMIN")
+                    .requestMatchers(appContext + laneBaseUri + "/**").hasAnyRole("ADMIN", "USER")
+                    .requestMatchers(appContext + boardLaneBaseUri + "/**").hasAnyRole("ADMIN", "USER")
+                    .requestMatchers(appContext + userBoardBaseUri + "/**").hasAnyRole("ADMIN", "USER")
+                    .requestMatchers(appContext + taskUserBaseUri + "/**").hasAnyRole("ADMIN", "USER")
+                    .requestMatchers(appContext + loginBaseUri).permitAll()
+                    .requestMatchers(appContext + registerBaseUri).permitAll()
                     .requestMatchers(appContext + errorBaseUri).permitAll()
                     .requestMatchers(appContext + modifyUser).authenticated()
                     .requestMatchers(appContext + updateUserPassword).authenticated()
                     .anyRequest().authenticated();
-        }).httpBasic(Customizer.withDefaults());*/
-
-        http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers(appContext + loginBaseUri).permitAll()
-                    .requestMatchers(appContext + registerBaseUri).permitAll()
-                    .requestMatchers(appContext + taskBaseUri + "/**").hasAnyRole("USER","ADMIN")
-                    .requestMatchers(appContext + "/v1/email").hasAnyRole("USER","ADMIN")
-                    .requestMatchers(appContext + attachmentBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
-                    .requestMatchers(appContext + boardBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
-                    .requestMatchers(appContext + laneBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
-                    .requestMatchers(appContext + boardLaneBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
-                    .requestMatchers(appContext + userBoardBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN")
-                    .requestMatchers(appContext + taskUserBaseUri + "/**").hasAnyRole("USER","EDITOR","ADMIN");
         }).httpBasic(Customizer.withDefaults());
 
         http.exceptionHandling(exception -> exception

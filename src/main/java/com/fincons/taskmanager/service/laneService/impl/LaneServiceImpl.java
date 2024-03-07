@@ -31,6 +31,7 @@ public class LaneServiceImpl implements LaneService {
     @Override
     public Lane createLane(Lane lane) {
         checkForDuplicateLane(lane.getLaneCode());
+        lane.setActive(true);
         laneRepository.save(lane);
         return lane;
     }
@@ -68,6 +69,7 @@ public class LaneServiceImpl implements LaneService {
     @Override
     public void deleteLaneByCode(String laneCode) {
         Lane lane = validateLaneByCode(laneCode);
+        lane.setActive(false);
         laneRepository.deleteById(lane.getId());
     }
 

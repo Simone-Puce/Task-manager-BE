@@ -36,16 +36,14 @@ public class UserController {
             String token = userService.login(loginDto);
             JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
             jwtAuthResponse.setAccessToken(token);
-
             return ResponseEntity.ok(GenericResponse.<JwtAuthResponse>builder()
                     .status(HttpStatus.OK)
                     .success(true)
-                    .message("Logged Succesfully!!!")
+                    .message("Logged successfully!!!")
                     .data(jwtAuthResponse)
                     .build());
-
         } catch (Exception e) {
-            return ResponseEntity.ok().body(GenericResponse.<JwtAuthResponse>builder()
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(GenericResponse.<JwtAuthResponse>builder()
                     .status(HttpStatus.CONFLICT)
                     .success(false)
                     .message(e.getMessage())
@@ -80,27 +78,25 @@ public class UserController {
     @PostMapping(value = "${register.base.uri}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GenericResponse<UserDTO>> register(
             @RequestBody UserDTO userDTO,
-            @RequestParam(name = "admin", required = false) String passwordForAdmin,
-            @RequestParam(name = "editor", required = false) String passwordForEditor) {
+            @RequestParam(name = "admin", required = false) String passwordForAdmin) {
         try {
-            UserDTO registeredUser = userAndRoleMapper.mapToDTO(userService.registerNewUser(userDTO, passwordForAdmin, passwordForEditor));
+            UserDTO registeredUser = userAndRoleMapper.mapToDTO(userService.registerNewUser(userDTO, passwordForAdmin));
             return ResponseEntity.ok(GenericResponse.<UserDTO>builder()
                     .status(HttpStatus.OK)
                     .success(true)
-                    .message("Registered Succesfully!!!")
+                    .message("Registered successfully!!!")
                     .data(registeredUser)
                     .build());
 
         } catch (EmailException ee) {
-
-            return ResponseEntity.ok().body(GenericResponse.<UserDTO>builder()
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(GenericResponse.<UserDTO>builder()
                     .status(HttpStatus.CONFLICT)
                     .success(false)
                     .message(EmailException.emailInvalidOrExist())
                     .build());
 
         } catch (PasswordException passwordEx) {
-            return ResponseEntity.ok().body(GenericResponse.<UserDTO>builder()
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(GenericResponse.<UserDTO>builder()
                     .status(HttpStatus.CONFLICT)
                     .success(false)
                     .message(passwordEx.getMessage())
@@ -121,18 +117,18 @@ public class UserController {
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.OK)
                             .success(true)
-                            .message("User modified succesfully!")
+                            .message("User modified successfully!")
                             .data(updatedUser).build()
             );
         } catch (RoleException roleException) {
-            return ResponseEntity.status(HttpStatus.OK).body(
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.FORBIDDEN)
                             .success(false)
                             .message(roleException.getMessage())
                             .build());
         } catch (ResourceNotFoundException resourceNotFoundException) {
-            return ResponseEntity.ok().body(
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.NOT_FOUND)
                             .success(false)
@@ -140,7 +136,7 @@ public class UserController {
                             .build()
             );
         } catch (PasswordException passwordException) {
-            return ResponseEntity.ok().body(
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.CONFLICT)
                             .success(false)
@@ -168,12 +164,12 @@ public class UserController {
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.OK)
                             .success(true)
-                            .message("Password changed succesfully")
+                            .message("Password changed successfully")
                             .data(userDTO)
                             .build()
             );
         } catch (EmailException | PasswordException emailOrPasswordException) {
-            return ResponseEntity.status(HttpStatus.OK).body(
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     GenericResponse.<UserDTO>builder()
                             .status(HttpStatus.CONFLICT)
                             .success(false)
@@ -210,17 +206,17 @@ public class UserController {
                     GenericResponse.<Boolean>builder()
                             .status(HttpStatus.OK)
                             .success(true)
-                            .message("User deleted succesfully!!")
+                            .message("User deleted successfully!!")
                             .build());
         } catch (EmailException emailException) {
-            return ResponseEntity.status(HttpStatus.OK).body(
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     GenericResponse.<Boolean>builder()
                             .status(HttpStatus.CONFLICT)
                             .success(false)
                             .message(emailException.getMessage())
                             .build());
         } catch (RoleException roleException) {
-            return ResponseEntity.status(HttpStatus.OK).body(
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                     GenericResponse.<Boolean>builder()
                             .status(HttpStatus.UNAUTHORIZED)
                             .success(false)

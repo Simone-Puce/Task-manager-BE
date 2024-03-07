@@ -10,7 +10,7 @@ import com.fincons.taskmanager.exception.RoleException;
 import java.util.List;
 
 public interface UserService {
-    User registerNewUser(UserDTO newUserDTO, String passwordForAdmin, String passwordForUser) throws EmailException, PasswordException;
+    User registerNewUser(UserDTO newUserDTO, String passwordForAdmin) throws EmailException, PasswordException;
 
     User getUserDetails();
 
