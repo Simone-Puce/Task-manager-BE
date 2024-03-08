@@ -38,7 +38,7 @@ public class BoardController {
             BoardDTO boardDTO = modelMapperBoard.mapToDTO(board);
             GenericResponse<BoardDTO> response = GenericResponse.success(
                     boardDTO,
-                    "Success: Found Board with CODE " + id + ".",
+                    "Success: Found Board with ID " + id + ".",
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);

@@ -11,5 +11,4 @@ public interface LaneRepository extends JpaRepository<Lane, Long> {
 
     List<Lane> findAllByActiveTrue();
 
-    List<Lane> findAllByActiveTrue();
 }

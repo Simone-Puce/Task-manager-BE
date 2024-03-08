@@ -36,7 +36,7 @@ public class AttachmentController {
             AttachmentDTO attachmentDTO = modelMapperAttachment.mapToDTO(attachment);
             GenericResponse<AttachmentDTO> response = GenericResponse.success(
                     attachmentDTO,
-                    "Success: Found Attachment with CODE " + id + ".",
+                    "Success: Found Attachment with ID " + id + ".",
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);

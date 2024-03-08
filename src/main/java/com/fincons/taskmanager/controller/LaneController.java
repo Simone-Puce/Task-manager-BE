@@ -37,7 +37,7 @@ public class LaneController {
             LaneDTO laneDTO = modelMapperLane.mapToDTO(lane);
             GenericResponse<LaneDTO> response = GenericResponse.success(
                     laneDTO,
-                    "Success: Found Lane with CODE " + id + ".",
+                    "Success: Found Lane with ID " + id + ".",
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
