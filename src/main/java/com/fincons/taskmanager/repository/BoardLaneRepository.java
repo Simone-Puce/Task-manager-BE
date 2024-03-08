@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BoardLaneRepository extends JpaRepository<BoardLane, Long> {
     boolean existsByBoardAndLane(Board board, Lane lane);
-    BoardLane findByBoardBoardCodeAndLaneLaneCode(String boardCode, String laneCode);
+    BoardLane findByBoardBoardIdAndLaneLaneId(Long boardId, Long laneId);
 
 }

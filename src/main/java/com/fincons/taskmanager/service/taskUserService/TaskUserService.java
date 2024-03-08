@@ -8,6 +8,6 @@ public interface TaskUserService {
 
     List<TaskUser> findTasksByUser(String email);
     TaskUser createTaskUser(TaskUser taskUser);
-    TaskUser updateTaskUser(String taskCode, String email, TaskUser taskUser);
-    TaskUser deleteTaskUser(String taskCode, String email);
+    TaskUser updateTaskUser(Long taskId, String email, TaskUser taskUser);
+    TaskUser deleteTaskUser(Long taskId, String email);
 }

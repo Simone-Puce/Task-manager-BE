@@ -31,8 +31,7 @@ public class AppConfig {
 
     @Bean
     public ModelMapper modelMapperStandard() {
-        ModelMapper modelMapper = new ModelMapper();
-        return modelMapper;
+        return new ModelMapper();
     }
 
     @Bean
@@ -47,7 +46,7 @@ public class AppConfig {
         modelMapper.addMappings(new PropertyMap<Attachment, AttachmentDTO>() {
             @Override
             protected void configure() {
-                skip(destination.getTaskCode());
+                skip(destination.getTaskId());
             }
         });
         return modelMapper;
@@ -67,7 +66,7 @@ public class AppConfig {
             protected void configure() {
                 skip(destination.getAttachments());
                 skip(destination.getUsers());
-                skip(destination.getBoardCode());
+                skip(destination.getBoardId());
                 skip(destination.getCreatedBy());
                 skip(destination.getModifiedBy());
                 skip(destination.getCreatedDate());
@@ -119,7 +118,14 @@ public class AppConfig {
     }
 
     @Bean
-    ModelMapper modelMapperForTaskUser() {
+    public ModelMapper modelMapperForTaskUser() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+        return modelMapper;
+    }
+    @Bean
+    public ModelMapper modelMapperForBoardLane(){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         modelMapper.getConfiguration().setAmbiguityIgnored(true);

@@ -20,8 +20,8 @@ public class BoardServiceImpl implements BoardService {
     private BoardRepository boardRepository;
 
     @Override
-    public Board getBoardByCode(String boardCode) {
-        return validateBoardByCode(boardCode);
+    public Board getBoardById(Long boardId) {
+        return validateBoardById(boardId);
     }
 
     @Override
@@ -31,60 +31,31 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board createBoard(Board board) {
-        checkForDuplicateBoard(board.getBoardCode());
         board.setActive(true);
         boardRepository.save(board);
         return board;
     }
 
     @Override
-    public Board updateBoardByCode(String boardCode, Board board) {
-        List<Board> tasks = boardRepository.findAll();
-        Board taskExisting = validateBoardByCode(boardCode);
-
-        List<Board> boardExcludingSelectedBoard = new ArrayList<>();
-
-        for(Board t : tasks){
-            if (!Objects.equals(t.getBoardCode(), boardCode)){
-                boardExcludingSelectedBoard.add(t);
-            }
-        }
-        taskExisting.setBoardCode(board.getBoardCode());
+    public Board updateBoardById(Long boardId, Board board) {
+        Board taskExisting = validateBoardById(boardId);
         taskExisting.setBoardName(board.getBoardName());
-
-
-        if(boardExcludingSelectedBoard.isEmpty()){
-            boardRepository.save(taskExisting);
-        } else {
-            for(Board t : boardExcludingSelectedBoard){
-                if(t.getBoardCode().equals(taskExisting.getBoardCode())){
-                    throw new DuplicateException("CODE: " + boardCode, "CODE: " + board.getBoardCode());
-                }
-            }
-            boardRepository.save(taskExisting);
-        }
+        boardRepository.save(taskExisting);
         return taskExisting;
     }
 
     @Override
-    public void deleteBoardByCode(String boardCode) {
-        Board board = validateBoardByCode(boardCode);
+    public void deleteBoardById(Long boardId) {
+        Board board = validateBoardById(boardId);
         board.setActive(false);
         boardRepository.save(board);
     }
 
-    public Board validateBoardByCode(String code) {
-        Board existingCode = boardRepository.findBoardByBoardCode(code);
-
-        if (Objects.isNull(existingCode)) {
-            throw new ResourceNotFoundException("Error: Board with CODE: " + code + " not found.");
+    public Board validateBoardById(Long id) {
+        Board existingId = boardRepository.findBoardByBoardIdAndActiveTrue(id);
+        if (Objects.isNull(existingId)) {
+            throw new ResourceNotFoundException("Error: Board with ID: " + id + " not found.");
         }
-        return existingCode;
-    }
-    private void checkForDuplicateBoard(String boardCode) {
-        Board boardByCode = boardRepository.findBoardByBoardCode(boardCode);
-        if (!Objects.isNull(boardByCode)) {
-            throw new DuplicateException("CODE: " + boardCode, "CODE: " + boardByCode.getBoardCode());
-        }
+        return existingId;
     }
 }

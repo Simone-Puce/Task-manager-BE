@@ -7,7 +7,7 @@ import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.mapper.TaskMapper;
 import com.fincons.taskmanager.service.taskService.TaskService;
 import com.fincons.taskmanager.utility.GenericResponse;
-import com.fincons.taskmanager.utility.NameValidator;
+import com.fincons.taskmanager.utility.SpaceAndFormatValidator;
 import com.fincons.taskmanager.utility.ValidateFields;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@ControllerAdvice
 @CrossOrigin("*")
 @RequestMapping("/task-manager")
 public class TaskController {
@@ -28,15 +28,15 @@ public class TaskController {
     @Autowired
     private TaskMapper modelMapperTask;
 
-    @GetMapping(value = "${task.find-by-code}")
-    public ResponseEntity<GenericResponse<TaskDTO>> getTaskByCode(@RequestParam String code) {
+    @GetMapping(value = "${task.find-by-id}")
+    public ResponseEntity<GenericResponse<TaskDTO>> getTaskById(@RequestParam Long id) {
         try {
-            ValidateFields.validateSingleField(code);
-            Task task = taskService.getTaskByCode(code);
+            ValidateFields.validateSingleFieldLong(id);
+            Task task = taskService.getTaskById(id);
             TaskDTO taskDTO = modelMapperTask.mapToDTO(task);
             GenericResponse<TaskDTO> response = GenericResponse.success(
                     taskDTO,
-                    "Success: Found Task with CODE " + code + ".",
+                    "Success: Found Task with CODE " + id + ".",
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -71,16 +71,13 @@ public class TaskController {
     @PostMapping(value = "${task.create}")
     public ResponseEntity<GenericResponse<TaskDTO>> createTask(@RequestBody TaskDTO taskDTO) {
         try {
-            validateDTO(taskDTO);
+            validateTaskDTO(taskDTO);
             Task taskMapped = modelMapperTask.mapToEntity(taskDTO);
-
             Task task = taskService.createTask(taskMapped);
-
             TaskDTO taskDTO2 = modelMapperTask.mapToDTO(task);
-
             GenericResponse<TaskDTO> response = GenericResponse.success(
                     taskDTO2,
-                    "Success: Task with code: " + task.getTaskCode() + " has been successfully updated!",
+                    "Success: Task with id: " + task.getTaskId() + " has been successfully updated!",
                     HttpStatus.OK);
             return ResponseEntity.ok(response);
 
@@ -111,21 +108,16 @@ public class TaskController {
     }
 
     @PutMapping(value = "${task.put}")
-    public ResponseEntity<GenericResponse<TaskDTO>> updateTaskByCode(@RequestParam String taskCode, @RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<GenericResponse<TaskDTO>> updateTaskById(@RequestParam Long taskId, @RequestBody TaskDTO taskDTO) {
         try {
-            ValidateFields.validateSingleField(taskCode);
-
-            validateTaskFields(taskDTO);
-
+            ValidateFields.validateSingleFieldLong(taskId);
+            validateTaskDTO(taskDTO);
             Task taskMapped = modelMapperTask.mapToEntity(taskDTO);
-
-            Task task = taskService.updateTaskByCode(taskCode, taskMapped);
-
+            Task task = taskService.updateTaskById(taskId, taskMapped);
             TaskDTO taskDTO2 = modelMapperTask.mapToDTO(task);
-
             GenericResponse<TaskDTO> response = GenericResponse.success(
                     taskDTO2,
-                    "Success: Task with code: " + taskCode + " has been successfully updated!",
+                    "Success: Task with id: " + taskId + " has been successfully updated!",
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -153,12 +145,12 @@ public class TaskController {
         }
     }
     @PutMapping(value = "${task.delete}")
-    public ResponseEntity<GenericResponse<TaskDTO>> deleteTaskByCode(@RequestParam String taskCode) {
+    public ResponseEntity<GenericResponse<TaskDTO>> deleteTaskById(@RequestParam Long taskId) {
         try {
-            ValidateFields.validateSingleField(taskCode);
-            taskService.deleteTaskByCode(taskCode);
+            ValidateFields.validateSingleFieldLong(taskId);
+            taskService.deleteTaskById(taskId);
             GenericResponse<TaskDTO> response = GenericResponse.empty(
-                    "Success: Task with code: " + taskCode + " has been successfully deleted! ",
+                    "Success: Task with id: " + taskId + " has been successfully deleted! ",
                     HttpStatus.OK
             );
 
@@ -177,15 +169,16 @@ public class TaskController {
                             HttpStatus.NOT_FOUND));
         }
     }
-    private void validateDTO(TaskDTO taskDTO) {
+    private void validateTaskDTO(TaskDTO taskDTO) {
         validateTaskFields(taskDTO);
-        String taskName = NameValidator.nameValidator(taskDTO.getTaskName());
-        taskDTO.setTaskName(taskName);
+        String newTaskName = SpaceAndFormatValidator.spaceAndFormatValidator(taskDTO.getTaskName());
+        String newStatus = SpaceAndFormatValidator.spaceAndFormatValidator(taskDTO.getStatus());
+        taskDTO.setTaskName(newTaskName);
+        taskDTO.setStatus(newStatus);
     }
     public void validateTaskFields(TaskDTO taskDTO) {
         if (Strings.isEmpty(taskDTO.getTaskName()) ||
-                Strings.isEmpty(taskDTO.getStatus()) ||
-                Strings.isEmpty(taskDTO.getBoardCode())) {
+                Strings.isEmpty(taskDTO.getStatus())) {
             throw new IllegalArgumentException("Error: The fields of the task can't be null or empty.");
         }
     }

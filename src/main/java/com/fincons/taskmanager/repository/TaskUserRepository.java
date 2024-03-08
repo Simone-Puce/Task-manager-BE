@@ -13,7 +13,7 @@ import java.util.List;
 public interface TaskUserRepository extends JpaRepository <TaskUser, Long> {
 
     boolean existsByTaskAndUser(Task task, User user);
-    TaskUser findByTaskTaskCodeAndUserEmail(String userCode, String email);
+    TaskUser findByTaskTaskIdAndUserEmail(Long userId, String email);
 
     @Query("SELECT tu " +
             "FROM TaskUser tu " +

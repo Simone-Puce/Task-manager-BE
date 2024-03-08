@@ -8,15 +8,15 @@ import static com.fincons.taskmanager.utilityTest.boardBuilder.BoardBuilder.getB
 public class TaskDTOBuilder {
 
     public static TaskDTO getTaskDTO(){
-        return new TaskDTO("taskCode1", "taskName1", "status1", "description1", "boardCode");
+        return new TaskDTO("taskName1", "status1", "description1", 1L);
     }
     public static TaskDTO getTaskDTOForModify() {
-        return new TaskDTO("taskCode1Put", "taskName1Put", "status1Put", "description1Put", "boardCodePut");
+        return new TaskDTO("taskName1Put", "status1Put", "description1Put", 2L);
     }
-    public static TaskDTO getTaskDTOWithoutFieldCode(){
-        return new TaskDTO("", "taskName1", "status1", "description1", "boardCode");
+    public static TaskDTO getTaskDTOWithoutFieldId(){
+        return new TaskDTO("", "status1", "description1", 1L);
     }
     public static TaskDTO getTaskDTOWithoutOtherFieldCannotBeNull(){
-        return new TaskDTO("", "", "", "description1", "boardCode");
+        return new TaskDTO("", "", "description1", 1L);
     }
 }

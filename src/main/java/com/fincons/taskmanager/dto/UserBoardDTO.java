@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserBoardDTO {
     private String email;
-    private String boardCode;
+    private Long boardId;
     private String boardName;
     private String roleCode;
 }

@@ -1,12 +1,9 @@
 package com.fincons.taskmanager.entity;
 
-import com.fincons.taskmanager.repository.TaskRepository;
-import com.fincons.taskmanager.utility.CodeBuilder;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -30,10 +27,7 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
-
-    @Column(unique = true)
-    private String taskCode;
+    private Long taskId;
 
     @Column(nullable = false)
     private String taskName;
@@ -77,14 +71,9 @@ public class Task {
             fetch = FetchType.LAZY)
     private List<Attachment> attachments;
 
-    @PostPersist
-    private void createTaskCode(){
-        taskCode = CodeBuilder.transformToCode(getTaskName(), getId());
-    }
 
-    public Task(long id, String taskCode, String taskName, String status, String description, Board board) {
-        this.id = id;
-        this.taskCode = taskCode;
+    public Task(Long taskId, String taskName, String status, String description, Board board) {
+        this.taskId = taskId;
         this.taskName = taskName;
         this.status = status;
         this.description = description;
@@ -92,16 +81,14 @@ public class Task {
     }
 
 
-    public Task(long id, String taskCode, String taskName, String status, String description) {
-        this.id = id;
-        this.taskCode = taskCode;
+    public Task(Long taskId, String taskName, String status, String description) {
+        this.taskId = taskId;
         this.taskName = taskName;
         this.status = status;
         this.description = description;
     }
 
-    public Task(String taskCode, String taskName, String status, String description) {
-        this.taskCode = taskCode;
+    public Task(String taskName, String status, String description) {
         this.taskName = taskName;
         this.status = status;
         this.description = description;

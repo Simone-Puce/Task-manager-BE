@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 @Component
 public class BoardLaneMapper {
     @Autowired
-    private ModelMapper modelMapperStandard;
+    private ModelMapper modelMapperForBoardLane;
     public BoardLaneDTO mapToDTO(BoardLane boardLane){
-        return modelMapperStandard.map(boardLane, BoardLaneDTO.class);
+        return modelMapperForBoardLane.map(boardLane, BoardLaneDTO.class);
     }
 
     public List<BoardLaneDTO> mapEntitiesToDTOs(List<BoardLane> boardsLanes){
@@ -23,6 +23,6 @@ public class BoardLaneMapper {
                 .collect(Collectors.toList());
     }
     public BoardLane mapToEntity(BoardLaneDTO boardLaneDTO){
-        return modelMapperStandard.map(boardLaneDTO, BoardLane.class);
+        return modelMapperForBoardLane.map(boardLaneDTO, BoardLane.class);
     }
 }

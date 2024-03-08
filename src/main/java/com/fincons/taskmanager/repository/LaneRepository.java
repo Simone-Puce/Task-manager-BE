@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface LaneRepository extends JpaRepository<Lane, Long> {
 
-    Lane findLaneByLaneCode(String code);
+    Lane findLaneByLaneIdAndActiveTrue(Long laneId);
+
+    List<Lane> findAllByActiveTrue();
 
     List<Lane> findAllByActiveTrue();
 }

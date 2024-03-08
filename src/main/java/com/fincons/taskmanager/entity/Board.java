@@ -26,14 +26,10 @@ public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
-
-    @Column(name = "board_code", unique = true, nullable = false)
-    private String boardCode;
+    private Long boardId;
 
     @Column(name = "name", nullable = false)
     private String boardName;
-
 
     @OneToMany(
             mappedBy = "board",
@@ -69,16 +65,10 @@ public class Board {
     @Column(name = "active")
     private boolean active;
 
-    public Board(Long id, String boardCode, String boardName) {
-        this.id = id;
-        this.boardCode = boardCode;
+    public Board(Long boardId, String boardName, List<Task> tasks) {
+        this.boardId = boardId;
         this.boardName = boardName;
+        this.tasks = tasks;
     }
 
-    public Board(Long id, String boardCode, String boardName, List<UserBoard> usersBoards) {
-        this.id = id;
-        this.boardCode = boardCode;
-        this.boardName = boardName;
-        this.usersBoards = usersBoards;
-    }
 }

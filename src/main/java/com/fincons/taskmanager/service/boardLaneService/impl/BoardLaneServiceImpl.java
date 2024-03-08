@@ -27,8 +27,8 @@ public class BoardLaneServiceImpl implements BoardLaneService {
     @Override
     public BoardLane createBoardLane(BoardLane boardLane) {
 
-        Board existingBoard = validateBoardByCode(boardLane.getBoard().getBoardCode());
-        Lane existingLane = validateLaneByCode(boardLane.getLane().getLaneCode());
+        Board existingBoard = validateBoardById(boardLane.getBoard().getBoardId());
+        Lane existingLane = validateLaneById(boardLane.getLane().getLaneId());
         checkDuplicateBoardLaneExist(existingBoard, existingLane);
         BoardLane newBoardLane = new BoardLane(existingBoard, existingLane);
         boardLaneRepository.save(newBoardLane);
@@ -36,13 +36,13 @@ public class BoardLaneServiceImpl implements BoardLaneService {
     }
 
     @Override
-    public BoardLane updateBoardLane(String boardCode, String laneCode, BoardLane boardLane) {
+    public BoardLane updateBoardLane(Long boardId, Long laneId, BoardLane boardLane) {
 
-        Board existingBoard = validateBoardByCode(boardCode);
-        Lane existingLane = validateLaneByCode(laneCode);
+        Board existingBoard = validateBoardById(boardId);
+        Lane existingLane = validateLaneById(laneId);
         BoardLane boardLaneExist = validateBoardLaneRelationship(existingBoard, existingLane);
-        Board boardToUpdate = validateBoardByCode(boardLane.getBoard().getBoardCode());
-        Lane laneToUpdate = validateLaneByCode(boardLane.getLane().getLaneCode());
+        Board boardToUpdate = validateBoardById(boardLane.getBoard().getBoardId());
+        Lane laneToUpdate = validateLaneById(boardLane.getLane().getLaneId());
         validateBoardLaneNotExistRelationship(boardToUpdate, laneToUpdate);
         boardLaneExist.setBoard(boardToUpdate);
         boardLaneExist.setLane(laneToUpdate);
@@ -50,27 +50,27 @@ public class BoardLaneServiceImpl implements BoardLaneService {
         return boardLaneExist;
     }
     @Override
-    public BoardLane deleteBoardLane(String boardCode, String laneCode) {
+    public BoardLane deleteBoardLane(Long boardId, Long laneId) {
 
-        Board existingBoard = validateBoardByCode(boardCode);
-        Lane existingLane = validateLaneByCode(laneCode);
+        Board existingBoard = validateBoardById(boardId);
+        Lane existingLane = validateLaneById(laneId);
         BoardLane boardLaneExist = validateBoardLaneRelationship(existingBoard, existingLane);
         boardLaneRepository.delete(boardLaneExist);
         return boardLaneExist;
     }
-    private Board validateBoardByCode(String code) {
-        Board existingBoard = boardRepository.findBoardByBoardCode(code);
+    private Board validateBoardById(Long id) {
+        Board existingBoard = boardRepository.findBoardByBoardIdAndActiveTrue(id);
 
         if (Objects.isNull(existingBoard)) {
-            throw new ResourceNotFoundException("Error: Board with CODE: " + code + " not found.");
+            throw new ResourceNotFoundException("Error: Board with ID: " + id + " not found.");
         }
         return existingBoard;
     }
-    private Lane validateLaneByCode(String code) {
-        Lane existingLane = laneRepository.findLaneByLaneCode(code);
+    private Lane validateLaneById(Long id) {
+        Lane existingLane = laneRepository.findLaneByLaneIdAndActiveTrue(id);
 
         if (Objects.isNull(existingLane)) {
-            throw new ResourceNotFoundException("Error: Lane with CODE: " + code + " not found.");
+            throw new ResourceNotFoundException("Error: Lane with ID: " + id + " not found.");
         }
         return existingLane;
     }
@@ -79,23 +79,23 @@ public class BoardLaneServiceImpl implements BoardLaneService {
         boolean boardLaneExist = boardLaneRepository.existsByBoardAndLane(board, lane);
         if (boardLaneExist) {
             throw new DuplicateException(
-                    "board CODE: " + board.getBoardCode() + " and lane CODE: " + lane.getLaneCode(),
-                    "board CODE: " + board.getBoardCode() + " and lane CODE: " + lane.getLaneCode());
+                    "board ID: " + board.getBoardId() + " and lane ID: " + lane.getLaneId(),
+                    "board ID: " + board.getBoardId() + " and lane ID: " + lane.getLaneId());
         }
     }
     private BoardLane validateBoardLaneRelationship(Board board, Lane lane) {
-        BoardLane boardLaneExist = boardLaneRepository.findByBoardBoardCodeAndLaneLaneCode(board.getBoardCode(), lane.getLaneCode());
+        BoardLane boardLaneExist = boardLaneRepository.findByBoardBoardIdAndLaneLaneId(board.getBoardId(), lane.getLaneId());
         if (Objects.isNull(boardLaneExist)) {
-            throw new ResourceNotFoundException("Error: Relationship with CODE board: " + board.getBoardCode() +
-                    " and CODE lane: " + lane.getLaneCode() + " don't exists.");
+            throw new ResourceNotFoundException("Error: Relationship with ID board: " + board.getBoardId() +
+                    " and ID lane: " + lane.getLaneId() + " don't exists.");
         }
         return boardLaneExist;
     }
     private void validateBoardLaneNotExistRelationship(Board board, Lane lane) {
-        BoardLane boardLaneExist = boardLaneRepository.findByBoardBoardCodeAndLaneLaneCode(board.getBoardCode(), lane.getLaneCode());
+        BoardLane boardLaneExist = boardLaneRepository.findByBoardBoardIdAndLaneLaneId(board.getBoardId(), lane.getLaneId());
         if (!Objects.isNull(boardLaneExist)) {
-            throw new ResourceNotFoundException("Error: Relationship with CODE board: " + board.getBoardCode() +
-                    " and CODE lane: " + lane.getLaneCode() + " already exist.");
+            throw new ResourceNotFoundException("Error: Relationship with ID board: " + board.getBoardId() +
+                    " and ID lane: " + lane.getLaneId() + " already exist.");
         }
     }
 }

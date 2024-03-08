@@ -23,6 +23,7 @@ public class BoardLaneController {
     private BoardLaneService boardLaneService;
     @Autowired
     private BoardLaneMapper modelMapperBoardLane;
+
     @PostMapping(value = "${board.lane.create}")
     public ResponseEntity<GenericResponse<BoardLaneDTO>> createBoardLane(@RequestBody BoardLaneDTO boardLaneDTO) {
         try {
@@ -33,7 +34,7 @@ public class BoardLaneController {
             BoardLaneDTO boardLaneDTO2 = modelMapperBoardLane.mapToDTO(boardLane);
             GenericResponse<BoardLaneDTO> response = GenericResponse.success(
                     boardLaneDTO2,
-                    "Success: Addition of relationship between board with CODE: " + boardLaneDTO2.getBoardCode() + " and lane with CODE: " + boardLaneDTO2.getLaneCode(),
+                    "Success: Addition of relationship between board with ID: " + boardLaneDTO2.getBoardId() + " and lane with ID: " + boardLaneDTO2.getLaneId(),
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -62,19 +63,19 @@ public class BoardLaneController {
         }
     }
     @PutMapping(value = "${board.lane.put}")
-    public ResponseEntity<GenericResponse<BoardLaneDTO>> updateBoardLane(@RequestParam String boardCode,
-                                                                         @RequestParam String laneCode,
+    public ResponseEntity<GenericResponse<BoardLaneDTO>> updateBoardLane(@RequestParam Long boardId,
+                                                                         @RequestParam Long laneId,
                                                                          @RequestBody BoardLaneDTO boardLaneDTO){
         try {
-            ValidateFields.validateSingleField(boardCode);
-            ValidateFields.validateSingleField(laneCode);
+            ValidateFields.validateSingleFieldLong(boardId);
+            ValidateFields.validateSingleFieldLong(laneId);
             validateBoardLaneFields(boardLaneDTO);
             BoardLane boardLaneMapped = modelMapperBoardLane.mapToEntity(boardLaneDTO);
-            BoardLane boardLane = boardLaneService.updateBoardLane(boardCode, laneCode, boardLaneMapped);
+            BoardLane boardLane = boardLaneService.updateBoardLane(boardId, laneId, boardLaneMapped);
             BoardLaneDTO boardLaneDTO2 = modelMapperBoardLane.mapToDTO(boardLane);
             GenericResponse<BoardLaneDTO> response = GenericResponse.success(
                     boardLaneDTO2,
-                    "Success: Addition of relationship between board with CODE: " + boardCode + " and lane with CODE: " + laneCode,
+                    "Success: Addition of relationship between board with ID: " + boardId + " and lane with ID: " + laneId,
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -103,15 +104,13 @@ public class BoardLaneController {
         }
     }
     @DeleteMapping(value = "${board.lane.delete}")
-    public ResponseEntity<GenericResponse<BoardLaneDTO>> deleteBoardLane(@RequestParam String boardCode, @RequestParam String laneCode) {
+    public ResponseEntity<GenericResponse<BoardLaneDTO>> deleteBoardLane(@RequestParam Long boardId, @RequestParam Long laneId) {
         try {
-            ValidateFields.validateSingleField(boardCode);
-            ValidateFields.validateSingleField(laneCode);
-            BoardLane boardLane = boardLaneService.deleteBoardLane(boardCode, laneCode);
-            BoardLaneDTO boardLaneDTO = modelMapperBoardLane.mapToDTO(boardLane);
-            GenericResponse<BoardLaneDTO> response = GenericResponse.success(
-                    boardLaneDTO,
-                    "Success: Delete relationship between board with CODE: " + boardCode + " and lane with CODE: " + laneCode,
+            ValidateFields.validateSingleFieldLong(boardId);
+            ValidateFields.validateSingleFieldLong(laneId);
+            boardLaneService.deleteBoardLane(boardId, laneId);
+            GenericResponse<BoardLaneDTO> response = GenericResponse.empty(
+                    "Success: Delete relationship between board with ID: " + boardId + " and lane with ID: " + laneId,
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -140,8 +139,8 @@ public class BoardLaneController {
         }
     }
     private void validateBoardLaneFields(BoardLaneDTO boardLaneDTO) {
-        if (Strings.isEmpty(boardLaneDTO.getBoardCode()) ||
-                Strings.isEmpty(boardLaneDTO.getLaneCode())) {
+        if (ValidateFields.isValidTaskId(boardLaneDTO.getBoardId()) ||
+                ValidateFields.isValidTaskId(boardLaneDTO.getLaneId())) {
             throw new IllegalArgumentException("Error: The fields of the boardLane can't be null or empty.");
         }
     }

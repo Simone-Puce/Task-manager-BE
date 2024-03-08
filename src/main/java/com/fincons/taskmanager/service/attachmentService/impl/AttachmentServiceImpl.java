@@ -25,8 +25,8 @@ public class AttachmentServiceImpl implements AttachmentService {
     private TaskServiceImpl taskServiceImpl;
 
     @Override
-    public Attachment getAttachmentByCode(String attachmentCode) {
-        return validateAttachmentByCode(attachmentCode);
+    public Attachment getAttachmentById(Long attachmentId) {
+        return validateAttachmentById(attachmentId);
     }
 
     @Override
@@ -36,9 +36,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public Attachment createAttachment(Attachment attachment) {
-        checkForDuplicateAttachment(attachment.getAttachmentCode());
-
-        Task task = taskServiceImpl.validateTaskByCode(attachment.getTask().getTaskCode());
+        Task task = taskServiceImpl.validateTaskById(attachment.getTask().getTaskId());
         attachment.setTask(task);
         attachment.setActive(true);
         attachmentRepository.save(attachment);
@@ -46,57 +44,29 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public Attachment updateAttachmentByCode(String attachmentCode, Attachment attachment) {
-        List<Attachment> attachments = attachmentRepository.findAll();
-        Attachment attachmentExisting = validateAttachmentByCode(attachmentCode);
-
-        List<Attachment> attachmentsExcludingSelectedAttachments = new ArrayList<>();
-
-        for(Attachment t : attachments){
-            if (!Objects.equals(t.getAttachmentCode(), attachmentCode)){
-                attachmentsExcludingSelectedAttachments.add(t);
-            }
-        }
-        attachmentExisting.setAttachmentCode(attachment.getAttachmentCode());
+    public Attachment updateAttachmentById(Long attachmentId, Attachment attachment) {
+        Attachment attachmentExisting = validateAttachmentById(attachmentId);
         attachmentExisting.setAttachmentName(attachment.getAttachmentName());
         attachmentExisting.setExtension(attachment.getExtension());
-
-        Task task = taskServiceImpl.validateTaskByCode(attachment.getTask().getTaskCode());
+        Task task = taskServiceImpl.validateTaskById(attachment.getTask().getTaskId());
         attachmentExisting.setTask(task);
-
-        if(attachmentsExcludingSelectedAttachments.isEmpty()){
-            attachmentRepository.save(attachmentExisting);
-        } else {
-            for(Attachment t : attachmentsExcludingSelectedAttachments){
-                if(t.getAttachmentCode().equals(attachmentExisting.getAttachmentCode())){
-                    throw new DuplicateException("CODE: " + attachmentCode, "CODE: " + attachment.getAttachmentCode());
-                }
-            }
-            attachmentRepository.save(attachmentExisting);
-        }
-
+        attachmentRepository.save(attachmentExisting);
         return attachmentExisting;
     }
 
     @Override
-    public void deleteAttachmentByCode(String attachmentCode) {
-        Attachment attachment = validateAttachmentByCode(attachmentCode);
+    public void deleteAttachmentById(Long attachmentId) {
+        Attachment attachment = validateAttachmentById(attachmentId);
         attachment.setActive(false);
         attachmentRepository.save(attachment);
     }
 
-    public Attachment validateAttachmentByCode(String code) {
-        Attachment existingCode = attachmentRepository.findAttachmentByAttachmentCodeAndActiveTrue(code);
+    public Attachment validateAttachmentById(Long id) {
+        Attachment existingId = attachmentRepository.findAttachmentByAttachmentIdAndActiveTrue(id);
 
-        if (Objects.isNull(existingCode)) {
-            throw new ResourceNotFoundException("Error: Attachment with CODE: " + code + " not found.");
+        if (Objects.isNull(existingId)) {
+            throw new ResourceNotFoundException("Error: Attachment with ID: " + id + " not found.");
         }
-        return existingCode;
-    }
-    private void checkForDuplicateAttachment(String attachmentCode) {
-        Attachment attachmentByCode = attachmentRepository.findAttachmentByAttachmentCodeAndActiveTrue(attachmentCode);
-        if (!Objects.isNull(attachmentByCode)) {
-            throw new DuplicateException("CODE: " + attachmentCode, "CODE: " + attachmentByCode.getAttachmentCode());
-        }
+        return existingId;
     }
 }

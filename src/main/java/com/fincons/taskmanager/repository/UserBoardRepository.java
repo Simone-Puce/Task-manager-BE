@@ -12,7 +12,7 @@ import java.util.List;
 public interface UserBoardRepository extends JpaRepository<UserBoard, Long> {
 
     boolean existsByUserAndBoard(User user, Board board);
-    UserBoard findByUserEmailAndBoardBoardCode(String email, String boardCode);
+    UserBoard findByUserEmailAndBoardBoardId(String email, Long boardId);
 
     @Query("SELECT ub " +
             "FROM UserBoard ub " +
