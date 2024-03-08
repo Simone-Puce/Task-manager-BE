@@ -6,9 +6,9 @@ import com.fincons.taskmanager.entity.Board;
 import java.util.List;
 
 public interface BoardService {
-    Board getBoardByCode(String boardCode);
+    Board getBoardById(Long boardId);
     List<Board> getAllBoards();
     Board createBoard(Board board);
-    Board updateBoardByCode(String boardCode, Board board);
-    void deleteBoardByCode(String boardCode);
+    Board updateBoardById(Long boardId, Board board);
+    void deleteBoardById(Long boardId);
 }

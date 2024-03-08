@@ -19,8 +19,8 @@ public class LaneServiceImpl implements LaneService {
     private LaneRepository laneRepository;
 
     @Override
-    public Lane getLaneByCode(String laneCode) {
-        return validateLaneByCode(laneCode);
+    public Lane getLaneById(Long laneId) {
+        return validateLaneById(laneId);
     }
 
     @Override
@@ -30,62 +30,31 @@ public class LaneServiceImpl implements LaneService {
 
     @Override
     public Lane createLane(Lane lane) {
-        checkForDuplicateLane(lane.getLaneCode());
         lane.setActive(true);
         laneRepository.save(lane);
         return lane;
     }
 
     @Override
-    public Lane updateLaneByCode(String laneCode, Lane lane) {
-        List<Lane> tasks = laneRepository.findAll();
-        Lane taskExisting = validateLaneByCode(laneCode);
-
-        List<Lane> laneExcludingSelectedLane = new ArrayList<>();
-
-        for (Lane t : tasks) {
-            if (!Objects.equals(t.getLaneCode(), laneCode)) {
-                laneExcludingSelectedLane.add(t);
-            }
-        }
-        taskExisting.setLaneCode(lane.getLaneCode());
+    public Lane updateLaneById(Long laneId, Lane lane) {
+        Lane taskExisting = validateLaneById(laneId);
         taskExisting.setLaneName(lane.getLaneName());
-
-
-        if (laneExcludingSelectedLane.isEmpty()) {
-            laneRepository.save(taskExisting);
-        } else {
-            for (Lane t : laneExcludingSelectedLane) {
-                if (t.getLaneCode().equals(taskExisting.getLaneCode())) {
-                    throw new DuplicateException("CODE: " + laneCode, "CODE: " + lane.getLaneCode());
-                }
-            }
-            laneRepository.save(taskExisting);
-        }
-
+        laneRepository.save(taskExisting);
         return taskExisting;
     }
 
     @Override
-    public void deleteLaneByCode(String laneCode) {
-        Lane lane = validateLaneByCode(laneCode);
+    public void deleteLaneById(Long laneId) {
+        Lane lane = validateLaneById(laneId);
         lane.setActive(false);
         laneRepository.save(lane);
     }
 
-    public Lane validateLaneByCode(String code) {
-        Lane existingCode = laneRepository.findLaneByLaneCode(code);
-
-        if (Objects.isNull(existingCode)) {
-            throw new ResourceNotFoundException("Error: Lane with CODE: " + code + " not found.");
+    public Lane validateLaneById(Long id) {
+        Lane existingId = laneRepository.findLaneByLaneIdAndActiveTrue(id);
+        if (Objects.isNull(existingId)) {
+            throw new ResourceNotFoundException("Error: Lane with ID: " + id + " not found.");
         }
-        return existingCode;
-    }
-
-    private void checkForDuplicateLane(String laneCode) {
-        Lane laneByCode = laneRepository.findLaneByLaneCode(laneCode);
-        if (!Objects.isNull(laneByCode)) {
-            throw new DuplicateException("CODE: " + laneCode, "CODE: " + laneByCode.getLaneCode());
-        }
+        return existingId;
     }
 }

@@ -73,7 +73,7 @@ public class UserBoardController {
             UserBoardDTO userBoardDTO2 = modelMapperUserBoard.mapToDTO(userBoard);
             GenericResponse<UserBoardDTO> response = GenericResponse.success(
                     userBoardDTO2,
-                    "Success: Addition of relationship between USER with email: " + userBoardDTO2.getEmail() + " and BOARD with CODE: " + userBoardDTO2.getBoardCode(),
+                    "Success: Addition of relationship between USER with email: " + userBoardDTO2.getEmail() + " and BOARD with CODE: " + userBoardDTO2.getBoardId(),
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -103,18 +103,18 @@ public class UserBoardController {
     }
     @PutMapping(value = "${user.board.put}")
     public ResponseEntity<GenericResponse<UserBoardDTO>> updateUserBoard(@RequestParam String email,
-                                                                         @RequestParam String boardCode,
+                                                                         @RequestParam Long boardId,
                                                                          @RequestBody UserBoardDTO userBoardDTO) {
         try {
             ValidateFields.validateSingleField(email);
-            ValidateFields.validateSingleField(boardCode);
+            ValidateFields.validateSingleFieldLong(boardId);
             validateUserBoardFields(userBoardDTO);
             UserBoard userBoardMapped = modelMapperUserBoard.mapToEntity(userBoardDTO);
-            UserBoard userBoard = userBoardService.updateUserBoard(email, boardCode, userBoardMapped);
+            UserBoard userBoard = userBoardService.updateUserBoard(email, boardId, userBoardMapped);
             UserBoardDTO userBoardDTO2 = modelMapperUserBoard.mapToDTO(userBoard);
             GenericResponse<UserBoardDTO> response = GenericResponse.success(
                     userBoardDTO2,
-                    "Success: Addition of relationship between User with EMAIL: " + email + " and Board with CODE: " + boardCode,
+                    "Success: Addition of relationship between User with EMAIL: " + email + " and Board with CODE: " + boardId,
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -141,15 +141,13 @@ public class UserBoardController {
     }
     @DeleteMapping(value = "${user.board.delete}")
     public ResponseEntity<GenericResponse<UserBoardDTO>> deleteUserBoard(@RequestParam String email,
-                                                                         @RequestParam String boardCode){
+                                                                         @RequestParam Long boardId){
         try{
             ValidateFields.validateSingleField(email);
-            ValidateFields.validateSingleField(boardCode);
-            UserBoard userBoard = userBoardService.deleteUserBoard(email, boardCode);
-            UserBoardDTO userBoardDTO = modelMapperUserBoard.mapToDTO(userBoard);
-            GenericResponse<UserBoardDTO> response = GenericResponse.success(
-                    userBoardDTO,
-                    "Success: Delete relationship between USER with EMAIL: " + email + " and Board with CODE: " + boardCode,
+            ValidateFields.validateSingleFieldLong(boardId);
+            userBoardService.deleteUserBoard(email, boardId);
+            GenericResponse<UserBoardDTO> response = GenericResponse.empty(
+                    "Success: Delete relationship between USER with EMAIL: " + email + " and Board with CODE: " + boardId,
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -179,8 +177,8 @@ public class UserBoardController {
     }
     private void validateUserBoardFields(UserBoardDTO userBoardDTO) {
         if (Strings.isEmpty(userBoardDTO.getEmail()) ||
-                Strings.isEmpty(userBoardDTO.getBoardCode()) ||
-                Strings.isEmpty(userBoardDTO.getRoleCode()))  {
+                ValidateFields.isValidTaskId(userBoardDTO.getBoardId()) ||
+                Strings.isEmpty(userBoardDTO.getRoleCode())){
             throw new IllegalArgumentException("Error: The fields of the user-board can't be null or empty.");
         }
     }

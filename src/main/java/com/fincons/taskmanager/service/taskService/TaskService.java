@@ -6,10 +6,9 @@ import java.util.List;
 
 public interface TaskService{
 
-    Task getTaskByCode(String taskCode);
+    Task getTaskById(Long taskId);
     List<Task> getAllTasks();
     Task createTask(Task task);
-    Task updateTaskByCode(String taskCode, Task task);
-    void deleteTaskByCode(String taskCode);
-    void validateTaskByCodeAlreadyExist(String taskCode);
+    Task updateTaskById(Long taskId, Task task);
+    void deleteTaskById(Long taskId);
 }

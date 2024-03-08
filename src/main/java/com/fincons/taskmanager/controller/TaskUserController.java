@@ -74,7 +74,7 @@ public class TaskUserController {
             TaskUserDTO taskUserDTO2 = modelMapperTaskUser.mapToDTO(taskUser);
             GenericResponse<TaskUserDTO> response = GenericResponse.success(
                     taskUserDTO2,
-                    "Success: Addition of relationship between Task with code: " + taskUserDTO2.getTaskCode() + " and USER with email: " + taskUserDTO2.getEmail(),
+                    "Success: Addition of relationship between Task with Id: " + taskUserDTO2.getTaskId() + " and USER with email: " + taskUserDTO2.getEmail(),
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -103,19 +103,19 @@ public class TaskUserController {
         }
     }
     @PutMapping(value = "${task.user.put}")
-    public ResponseEntity<GenericResponse<TaskUserDTO>> updateTaskUser(@RequestParam String taskCode,
+    public ResponseEntity<GenericResponse<TaskUserDTO>> updateTaskUser(@RequestParam Long taskId,
                                                                          @RequestParam String email,
                                                                          @RequestBody TaskUserDTO taskUserDTO){
         try {
-            ValidateFields.validateSingleField(taskCode);
+            ValidateFields.validateSingleFieldLong(taskId);
             ValidateFields.validateSingleField(email);
             validateTaskUserFields(taskUserDTO);
             TaskUser taskUserMapped = modelMapperTaskUser.mapToEntity(taskUserDTO);
-            TaskUser taskUser = taskUserService.updateTaskUser(taskCode, email, taskUserMapped);
+            TaskUser taskUser = taskUserService.updateTaskUser(taskId, email, taskUserMapped);
             TaskUserDTO taskUserDTO2 = modelMapperTaskUser.mapToDTO(taskUser);
             GenericResponse<TaskUserDTO> response = GenericResponse.success(
                     taskUserDTO2,
-                    "Success: Addition of relationship between task with CODE: " + taskCode + " and user with EMAIL: " + email,
+                    "Success: Addition of relationship between task with CODE: " + taskId + " and user with EMAIL: " + email,
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -144,15 +144,13 @@ public class TaskUserController {
         }
     }
     @DeleteMapping(value = "${task.user.delete}")
-    public ResponseEntity<GenericResponse<TaskUserDTO>> deleteTaskUser(@RequestParam String taskCode, @RequestParam String email) {
+    public ResponseEntity<GenericResponse<TaskUserDTO>> deleteTaskUser(@RequestParam Long taskId, @RequestParam String email) {
         try {
-            ValidateFields.validateSingleField(taskCode);
+            ValidateFields.validateSingleFieldLong(taskId);
             ValidateFields.validateSingleField(email);
-            TaskUser taskUser = taskUserService.deleteTaskUser(taskCode, email);
-            TaskUserDTO taskUserDTO = modelMapperTaskUser.mapToDTO(taskUser);
-            GenericResponse<TaskUserDTO> response = GenericResponse.success(
-                    taskUserDTO,
-                    "Success: Delete relationship between task with CODE: " + taskCode + " and user with EMAIL: " + email,
+            taskUserService.deleteTaskUser(taskId, email);
+            GenericResponse<TaskUserDTO> response = GenericResponse.empty(
+                    "Success: Delete relationship between task with CODE: " + taskId + " and user with EMAIL: " + email,
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -181,7 +179,7 @@ public class TaskUserController {
         }
     }
     private void validateTaskUserFields(TaskUserDTO taskUserDTO) {
-        if (Strings.isEmpty(taskUserDTO.getTaskCode()) ||
+        if (ValidateFields.isValidTaskId(taskUserDTO.getTaskId()) ||
                 Strings.isEmpty(taskUserDTO.getEmail()))  {
             throw new IllegalArgumentException("Error: The fields of the task-user can't be null or empty.");
         }

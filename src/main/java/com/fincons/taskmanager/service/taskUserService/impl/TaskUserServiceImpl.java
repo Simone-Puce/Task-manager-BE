@@ -29,7 +29,7 @@ public class TaskUserServiceImpl implements TaskUserService {
     public TaskUser createTaskUser(TaskUser taskUser) {
 
         User existingUser = validateUserByEmail(taskUser.getUser().getEmail());
-        Task existingTask = validateTaskByCode(taskUser.getTask().getTaskCode());
+        Task existingTask = validateTaskById(taskUser.getTask().getTaskId());
 
         checkDuplicateTaskUserExist(existingTask, existingUser);
         TaskUser newTaskUser = new TaskUser(existingTask, existingUser);
@@ -37,14 +37,14 @@ public class TaskUserServiceImpl implements TaskUserService {
         return newTaskUser;
     }
     @Override
-    public TaskUser updateTaskUser(String taskCode, String email, TaskUser taskUser) {
+    public TaskUser updateTaskUser(Long taskId, String email, TaskUser taskUser) {
 
         User existingUser = validateUserByEmail(email);
-        Task existingTask = validateTaskByCode(taskCode);
+        Task existingTask = validateTaskById(taskId);
         TaskUser taskUserExist = validateTaskUserRelationship(existingTask, existingUser);
 
         User userToUpdate = validateUserByEmail(taskUser.getUser().getEmail());
-        Task taskToUpdate = validateTaskByCode(taskUser.getTask().getTaskCode());
+        Task taskToUpdate = validateTaskById(taskUser.getTask().getTaskId());
         validateTaskUserNotExistRelationship(taskToUpdate, userToUpdate);
 
         taskUserExist.setTask(taskToUpdate);
@@ -54,9 +54,9 @@ public class TaskUserServiceImpl implements TaskUserService {
         return taskUserExist;
     }
     @Override
-    public TaskUser deleteTaskUser(String taskCode, String email) {
+    public TaskUser deleteTaskUser(Long taskId, String email) {
         User existingUser = validateUserByEmail(email);
-        Task existingTask = validateTaskByCode(taskCode);
+        Task existingTask = validateTaskById(taskId);
         TaskUser taskUserExist = validateTaskUserRelationship(existingTask, existingUser);
         taskUserRepository.delete(taskUserExist);
         return taskUserExist;
@@ -69,10 +69,10 @@ public class TaskUserServiceImpl implements TaskUserService {
         }
         return existingUser;
     }
-    private Task validateTaskByCode(String code) {
-        Task existingTask = taskRepository.findTaskByTaskCodeAndActiveTrue(code);
+    private Task validateTaskById(Long id) {
+        Task existingTask = taskRepository.findTaskByTaskIdAndActiveTrue(id);
         if (Objects.isNull(existingTask)) {
-            throw new ResourceNotFoundException("Error: Task with CODE: " + code + " not found.");
+            throw new ResourceNotFoundException("Error: Task with ID: " + id + " not found.");
         }
         return existingTask;
     }
@@ -81,22 +81,22 @@ public class TaskUserServiceImpl implements TaskUserService {
         boolean taskUserExist = taskUserRepository.existsByTaskAndUser(task,user);
         if (taskUserExist) {
             throw new DuplicateException(
-                    "TASK: " + task.getTaskCode() + " and USER: " + user.getEmail(),
-                    "TASK: " + task.getTaskCode() + " and USER: " + user.getEmail());
+                    "TASK: " + task.getTaskId() + " and USER: " + user.getEmail(),
+                    "TASK: " + task.getTaskId() + " and USER: " + user.getEmail());
         }
     }
     private TaskUser validateTaskUserRelationship(Task task, User user) {
-        TaskUser taskUserExist = taskUserRepository.findByTaskTaskCodeAndUserEmail(task.getTaskCode(), user.getEmail());
+        TaskUser taskUserExist = taskUserRepository.findByTaskTaskIdAndUserEmail(task.getTaskId(), user.getEmail());
         if (Objects.isNull(taskUserExist)) {
-            throw new ResourceNotFoundException("Error: Relationship with CODE task:: " + task.getTaskCode() +
+            throw new ResourceNotFoundException("Error: Relationship with ID task:: " + task.getTaskId() +
                     " and USER email: " + user.getEmail() + " don't exist.");
         }
         return taskUserExist;
     }
     private void validateTaskUserNotExistRelationship(Task task, User user) {
-        TaskUser taskUserExist = taskUserRepository.findByTaskTaskCodeAndUserEmail(task.getTaskCode(), user.getEmail());
+        TaskUser taskUserExist = taskUserRepository.findByTaskTaskIdAndUserEmail(task.getTaskId(), user.getEmail());
         if (!Objects.isNull(taskUserExist)) {
-            throw new ResourceNotFoundException("Error: Relationship with CODE task:: " + task.getTaskCode() +
+            throw new ResourceNotFoundException("Error: Relationship with ID task:: " + task.getTaskId() +
                     " and USER email: " + user.getEmail() + " already exist.");
         }
     }

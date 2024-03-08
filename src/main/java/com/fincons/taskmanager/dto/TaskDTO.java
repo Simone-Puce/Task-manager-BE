@@ -17,12 +17,12 @@ import java.util.List;
 @NoArgsConstructor
 public class TaskDTO {
 
-    private String taskCode;
+    private Long taskId;
     private String taskName;
     private String status;
     private String description;
     private List<UserDTO> users;
-    private String boardCode;
+    private Long boardId;
     private List<AttachmentDTO> attachments;
     private String createdBy;
     private String modifiedBy;
@@ -33,12 +33,18 @@ public class TaskDTO {
     private boolean active;
 
 
-    public TaskDTO(String taskCode, String taskName, String status, String description, String boardCode) {
-        this.taskCode = taskCode;
+    public TaskDTO(Long taskId, String taskName, String status, String description, Long boardId) {
+        this.taskId = taskId;
         this.taskName = taskName;
         this.status = status;
         this.description = description;
-        this.boardCode = boardCode;
+        this.boardId = boardId;
     }
 
+    public TaskDTO(String taskName, String status, String description, Long boardId) {
+        this.taskName = taskName;
+        this.status = status;
+        this.description = description;
+        this.boardId = boardId;
+    }
 }

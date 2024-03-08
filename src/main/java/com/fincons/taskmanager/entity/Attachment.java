@@ -15,10 +15,7 @@ public class Attachment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
-
-    @Column(unique = true, nullable = false)
-    private String attachmentCode;
+    private Long attachmentId;
 
     @Column(nullable = false)
     private String attachmentName;

@@ -2,12 +2,12 @@ package com.fincons.taskmanager.utility;
 
 import java.util.regex.Pattern;
 
-public class NameValidator {
+public class SpaceAndFormatValidator {
     private static final String NAME_REGEX_CONTAIN_LOWERCASE_AND_UPPERCASE_AND_NUMBER = "^[a-zA-Z0-9 ]*$";
     private static final String NAME_REGEX_WITH_SPACE_IN_BUT_NOT_BEFORE_AND_AFTER_WITHIN_DOUBLE_SPACE = "(\\w)(?>\\w|\\s(?!\\s))*(?<!\\s)$";
 
 
-    public static String nameValidator(String inputText){
+    public static String spaceAndFormatValidator(String inputText){
         boolean isMatch = Pattern.matches(NAME_REGEX_CONTAIN_LOWERCASE_AND_UPPERCASE_AND_NUMBER, inputText);
         if (isMatch){
             String textWithoutDoubleSpace = replaceDoubleOrMoreSpaces(inputText);
