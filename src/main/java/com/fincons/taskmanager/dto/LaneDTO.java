@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class LaneDTO {
 
-    private String laneCode;
+    private Long laneId;
     private String laneName;
     private List<BoardDTO> boards;
     private boolean active;

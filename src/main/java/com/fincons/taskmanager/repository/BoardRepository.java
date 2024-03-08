@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    Board findBoardByBoardCode(String code);
-
+    Board findBoardByBoardIdAndActiveTrue(Long id);
     List<Board> findAllByActiveTrue();
 }

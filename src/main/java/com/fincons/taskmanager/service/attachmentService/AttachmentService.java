@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface AttachmentService {
 
-    Attachment getAttachmentByCode(String attachmentCode);
+    Attachment getAttachmentById(Long attachmentId);
     List<Attachment> getAllAttachments();
     Attachment createAttachment(Attachment attachment);
-    Attachment updateAttachmentByCode(String attachmentCode, Attachment attachment);
-    void deleteAttachmentByCode(String attachmentCode);
+    Attachment updateAttachmentById(Long attachmentId, Attachment attachment);
+    void deleteAttachmentById(Long attachmentId);
 }

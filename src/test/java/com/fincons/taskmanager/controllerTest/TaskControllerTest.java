@@ -50,17 +50,16 @@ public class TaskControllerTest {
     private TaskService taskService;
 
     @Test
-    public void testGetTaskByCode_Success() {
+    public void testGetTaskById_Success() {
 
         Task task = getTask();
-        String taskCode = "taskCode1";
-        when(taskRepository.findTaskByTaskCode(taskCode)).thenReturn(task);
-        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.getTaskByCode(taskCode);
+        Long taskId = 1L;
+        when(taskRepository.findTaskByTaskId(taskId)).thenReturn(task);
+        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.getTaskById(taskId);
 
-        assertThat(task.getId()).isNotNull();
-        assertThat(response.getBody().getData().getTaskCode()).isEqualTo(task.getTaskCode());
+        assertThat(response.getBody().getData().getTaskId()).isEqualTo(task.getTaskId());
         assertThat(response.getBody().getData().getTaskName()).isEqualTo(task.getTaskName());
-        assertThat(response.getBody().getData().getBoardCode()).isEqualTo(task.getBoard().getBoardCode());
+        assertThat(response.getBody().getData().getBoardId()).isEqualTo(task.getBoard().getBoardId());
         assertThat(response.getBody().getData().getDescription()).isEqualTo(task.getDescription());
         assertThat(response.getBody().getData().getStatus()).isEqualTo(task.getStatus());
 
@@ -68,35 +67,35 @@ public class TaskControllerTest {
     }
 
     @Test
-    void testGetTaskByCode_Failed_BadRequest() {
-        String taskCodeEmpty = "";
-        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.getTaskByCode(taskCodeEmpty);
+    void testGetTaskById_Failed_BadRequest() {
+        Long taskIdEmpty = 0L;
+        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.getTaskById(taskIdEmpty);
         Assertions.assertNotNull(response.getBody());
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getBody().getStatus());
     }
     @Test
-    void testGetTaskByCode_Failed_assertThrow_BadRequest(){
-        String taskCodeEmpty = "";
-        taskController.getTaskByCode(taskCodeEmpty);
+    void testGetTaskById_Failed_assertThrow_BadRequest(){
+        Long taskIdEmpty = 0L;
+        taskController.getTaskById(taskIdEmpty);
         assertThrows(IllegalArgumentException.class, () -> {
-            ValidateFields.validateSingleField(taskCodeEmpty);
+            ValidateFields.validateSingleFieldLong(taskIdEmpty);
         });
     }
     @Test
-    public void testGetTaskByCode_Failed_NotFound() {
-        String taskCode = "code1";
-        when(taskRepository.findTaskByTaskCode(taskCode)).thenReturn(null);
-        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.getTaskByCode(taskCode);
+    public void testGetTaskById_Failed_NotFound() {
+        Long taskId = 1L;
+        when(taskRepository.findTaskByTaskId(taskId)).thenReturn(null);
+        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.getTaskById(taskId);
         Assertions.assertNotNull(response.getBody());
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getBody().getStatus());
     }
     @Test
-    void testGetTaskByCode_Failed_assertThrow_NotFound(){
-        String taskCode = "code1";
-        when(taskRepository.findTaskByTaskCode(taskCode)).thenReturn(null);
-        taskController.getTaskByCode(taskCode);
+    void testGetTaskById_Failed_assertThrow_NotFound(){
+        Long taskId = 1L;
+        when(taskRepository.findTaskByTaskId(taskId)).thenReturn(null);
+        taskController.getTaskById(taskId);
         assertThrows(ResourceNotFoundException.class, () -> {
-            taskService.getTaskByCode(taskCode);
+            taskService.getTaskById(taskId);
         });
     }
     @Test
@@ -110,7 +109,7 @@ public class TaskControllerTest {
 
         int iterations = 0;
         for (int i = 0; i < taskDTOs.size(); i++) {
-            assertThat(getTasks().get(i).getTaskCode()).isEqualTo(taskDTOs.get(i).getTaskCode());
+            assertThat(getTasks().get(i).getTaskId()).isEqualTo(taskDTOs.get(i).getTaskId());
             assertThat(getTasks().get(i).getTaskName()).isEqualTo(taskDTOs.get(i).getTaskName());
             assertThat(getTasks().get(i).getDescription()).isEqualTo(taskDTOs.get(i).getDescription());
             assertThat(getTasks().get(i).getStatus()).isEqualTo(taskDTOs.get(i).getStatus());
@@ -126,23 +125,22 @@ public class TaskControllerTest {
         Task task = getTask();
         TaskDTO taskDTO = getTaskDTO();
         Board board = getBoard();
-        when(taskRepository.findTaskByTaskCode(taskDTO.getTaskCode())).thenReturn(task);
-        when(boardRepository.findBoardByBoardCode(taskDTO.getBoardCode())).thenReturn(board);
+        when(taskRepository.findTaskByTaskId(taskDTO.getTaskId())).thenReturn(task);
+        when(boardRepository.findBoardByBoardIdAndActiveTrue(taskDTO.getBoardId())).thenReturn(board);
         ResponseEntity<GenericResponse<TaskDTO>> response = taskController.createTask(taskDTO);
 
-        assertThat(task.getId()).isNotNull();
-        assertThat(response.getBody().getData().getTaskCode()).isEqualTo(task.getTaskCode());
+        assertThat(response.getBody().getData().getTaskId()).isEqualTo(task.getTaskId());
         assertThat(response.getBody().getData().getTaskName()).isEqualTo(task.getTaskName());
-        assertThat(response.getBody().getData().getBoardCode()).isEqualTo(task.getBoard().getBoardCode());
+        assertThat(response.getBody().getData().getBoardId()).isEqualTo(task.getBoard().getBoardId());
         assertThat(response.getBody().getData().getDescription()).isEqualTo(task.getDescription());
         Assertions.assertNotNull(response.getBody().getData());
         Assertions.assertEquals(HttpStatus.OK, response.getBody().getStatus());
     }
     @Test
-    public void testCreateTask_Failed_when_findBoardByBoardCode_then_NotFoundException(){
+    public void testCreateTask_Failed_when_findBoardByBoardIdAndActiveTrue_then_NotFoundException(){
         TaskDTO taskDTO = getTaskDTO();
-        when(taskRepository.findTaskByTaskCode(taskDTO.getTaskCode())).thenReturn(null);
-        when(boardRepository.findBoardByBoardCode(taskDTO.getBoardCode())).thenReturn(null);
+        when(taskRepository.findTaskByTaskId(taskDTO.getTaskId())).thenReturn(null);
+        when(boardRepository.findBoardByBoardIdAndActiveTrue(taskDTO.getBoardId())).thenReturn(null);
         ResponseEntity<GenericResponse<TaskDTO>> response = taskController.createTask(taskDTO);
 
         Assertions.assertNotNull(response.getBody());
@@ -151,8 +149,8 @@ public class TaskControllerTest {
     @Test
     public void testCreateTask_Failed_assertThrow_NotFoundException(){
         TaskDTO taskDTO = getTaskDTO();
-        when(taskRepository.findTaskByTaskCode(taskDTO.getTaskCode())).thenReturn(null);
-        when(boardRepository.findBoardByBoardCode(taskDTO.getBoardCode())).thenReturn(null);
+        when(taskRepository.findTaskByTaskId(taskDTO.getTaskId())).thenReturn(null);
+        when(boardRepository.findBoardByBoardIdAndActiveTrue(taskDTO.getBoardId())).thenReturn(null);
         Task task = getTask();
         taskController.createTask(taskDTO);
         assertThrows(ResourceNotFoundException.class, () -> {
@@ -161,14 +159,14 @@ public class TaskControllerTest {
     }
     @Test
     public void testCreateTask_Failed_BadRequest(){
-        TaskDTO taskDTO = getTaskDTOWithoutFieldCode();
+        TaskDTO taskDTO = getTaskDTOWithoutFieldId();
         ResponseEntity<GenericResponse<TaskDTO>> response = taskController.createTask(taskDTO);
         Assertions.assertNotNull(response.getBody());
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getBody().getStatus());
     }
     @Test
     public void testCreateTask_Failed_assertThrow_BadRequest(){
-        TaskDTO taskDTO = getTaskDTOWithoutFieldCode();
+        TaskDTO taskDTO = getTaskDTOWithoutFieldId();
         taskController.createTask(taskDTO);
         assertThrows(IllegalArgumentException.class, () -> {
             taskController.validateTaskFields(taskDTO);
@@ -180,8 +178,8 @@ public class TaskControllerTest {
         Board board = getBoard();
         TaskDTO taskDTO = getTaskDTO();
         Task task = getTask();
-        when(taskRepository.existsByTaskCode(taskDTO.getTaskCode())).thenReturn(true);
-        when(boardRepository.findBoardByBoardCode(taskDTO.getBoardCode())).thenReturn(board);
+        when(taskRepository.existsByTaskId(taskDTO.getTaskId())).thenReturn(true);
+        when(boardRepository.findBoardByBoardIdAndActiveTrue(taskDTO.getBoardId())).thenReturn(board);
         ResponseEntity<GenericResponse<TaskDTO>> response = taskController.createTask(taskDTO);
 
         Assertions.assertNotNull(response.getBody());
@@ -192,12 +190,9 @@ public class TaskControllerTest {
         Board board = getBoard();
         TaskDTO taskDTO = getTaskDTO();
         Task task = getTask();
-        when(taskRepository.existsByTaskCode(taskDTO.getTaskCode())).thenReturn(true);
-        when(boardRepository.findBoardByBoardCode(taskDTO.getBoardCode())).thenReturn(board);
+        when(taskRepository.existsByTaskId(taskDTO.getTaskId())).thenReturn(true);
+        when(boardRepository.findBoardByBoardIdAndActiveTrue(taskDTO.getBoardId())).thenReturn(board);
         taskController.createTask(taskDTO);
-        assertThrows(DuplicateException.class, () -> {
-            taskService.validateTaskByCodeAlreadyExist(taskDTO.getTaskCode());
-        });
     }
     @Test
     public void testUpdateTask_Success(){
@@ -207,14 +202,14 @@ public class TaskControllerTest {
         Task task = getTask();
         Task taskPut = getTaskForModify();
         TaskDTO taskDTOPut = getTaskDTOForModify();
-        when(taskRepository.findTaskByTaskCode(taskDTO.getTaskCode())).thenReturn(task);
-        when(taskRepository.existsByTaskCode(taskDTO.getTaskCode())).thenReturn(false);
-        when(boardRepository.findBoardByBoardCode(taskDTOPut.getBoardCode())).thenReturn(board);
-        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.updateTaskByCode(taskDTO.getTaskCode(), taskDTOPut);
+        when(taskRepository.findTaskByTaskId(taskDTO.getTaskId())).thenReturn(task);
+        when(taskRepository.existsByTaskId(taskDTO.getTaskId())).thenReturn(false);
+        when(boardRepository.findBoardByBoardIdAndActiveTrue(taskDTOPut.getBoardId())).thenReturn(board);
+        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.updateTaskById(taskDTO.getTaskId(), taskDTOPut);
 
-        assertThat(response.getBody().getData().getTaskCode()).isEqualTo(taskPut.getTaskCode());
+        assertThat(response.getBody().getData().getTaskId()).isEqualTo(taskPut.getTaskId());
         assertThat(response.getBody().getData().getTaskName()).isEqualTo(taskPut.getTaskName());
-        assertThat(response.getBody().getData().getBoardCode()).isEqualTo(taskPut.getBoard().getBoardCode());
+        assertThat(response.getBody().getData().getBoardId()).isEqualTo(taskPut.getBoard().getBoardId());
         assertThat(response.getBody().getData().getDescription()).isEqualTo(taskPut.getDescription());
         Assertions.assertNotNull(response.getBody().getData());
         Assertions.assertEquals(HttpStatus.OK, response.getBody().getStatus());
@@ -224,9 +219,9 @@ public class TaskControllerTest {
         Board board = getBoard();
         TaskDTO taskDTO = getTaskDTO();
         Task task = getTask();
-        when(taskRepository.findTaskByTaskCode(taskDTO.getTaskCode())).thenReturn(null);
-        when(boardRepository.findBoardByBoardCode(taskDTO.getBoardCode())).thenReturn(board);
-        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.updateTaskByCode(taskDTO.getTaskCode(), taskDTO);
+        when(taskRepository.findTaskByTaskId(taskDTO.getTaskId())).thenReturn(null);
+        when(boardRepository.findBoardByBoardIdAndActiveTrue(taskDTO.getBoardId())).thenReturn(board);
+        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.updateTaskById(taskDTO.getTaskId(), taskDTO);
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getBody().getStatus());
     }
     @Test
@@ -234,28 +229,28 @@ public class TaskControllerTest {
         Board board = getBoard();
         TaskDTO taskDTO = getTaskDTO();
         Task task = getTask();
-        when(taskRepository.findTaskByTaskCode(taskDTO.getTaskCode())).thenReturn(null);
-        when(boardRepository.findBoardByBoardCode(taskDTO.getBoardCode())).thenReturn(board);
-        taskController.updateTaskByCode(taskDTO.getTaskCode(), taskDTO);
+        when(taskRepository.findTaskByTaskId(taskDTO.getTaskId())).thenReturn(null);
+        when(boardRepository.findBoardByBoardIdAndActiveTrue(taskDTO.getBoardId())).thenReturn(board);
+        taskController.updateTaskById(taskDTO.getTaskId(), taskDTO);
         assertThrows(ResourceNotFoundException.class, () -> {
-            taskService.updateTaskByCode(taskDTO.getTaskCode(), task);
+            taskService.updateTaskById(taskDTO.getTaskId(), task);
         });
     }
     @Test
     public void testUpdateTask_Failed_BadRequest(){
         TaskDTO taskDTO = getTaskDTOWithoutOtherFieldCannotBeNull();
-        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.updateTaskByCode(taskDTO.getTaskCode(), taskDTO);
+        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.updateTaskById(taskDTO.getTaskId(), taskDTO);
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getBody().getStatus());
     }
     @Test
     public void testUpdateTask_Failed_assertThrow_BadRequest(){
-        TaskDTO taskDTO = getTaskDTOWithoutFieldCode();
+        TaskDTO taskDTO = getTaskDTOWithoutFieldId();
         TaskDTO taskDTO1 = getTaskDTOWithoutOtherFieldCannotBeNull();
-        taskController.updateTaskByCode(taskDTO.getTaskCode(), taskDTO);
+        taskController.updateTaskById(taskDTO.getTaskId(), taskDTO);
         assertThrows(IllegalArgumentException.class, () -> {
-            ValidateFields.validateSingleField(taskDTO.getTaskCode());
+            ValidateFields.validateSingleFieldLong(taskDTO.getTaskId());
         });
-        taskController.updateTaskByCode(taskDTO1.getTaskCode(), taskDTO1);
+        taskController.updateTaskById(taskDTO1.getTaskId(), taskDTO1);
         assertThrows(IllegalArgumentException.class, () -> {
             taskController.validateTaskFields(taskDTO);
         });
@@ -264,9 +259,9 @@ public class TaskControllerTest {
     public void testUpdateTask_Failed_Conflict(){
         TaskDTO taskDTO = getTaskDTO();
         Task task = getTask();
-        when(taskRepository.findTaskByTaskCode(taskDTO.getTaskCode())).thenReturn(task);
-        when(taskRepository.existsByTaskCode(taskDTO.getTaskCode())).thenReturn(true);
-        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.updateTaskByCode(taskDTO.getTaskCode(), taskDTO);
+        when(taskRepository.findTaskByTaskId(taskDTO.getTaskId())).thenReturn(task);
+        when(taskRepository.existsByTaskId(taskDTO.getTaskId())).thenReturn(true);
+        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.updateTaskById(taskDTO.getTaskId(), taskDTO);
         Assertions.assertNotNull(response.getBody());
         Assertions.assertEquals(HttpStatus.CONFLICT, response.getBody().getStatus());
     }
@@ -275,57 +270,54 @@ public class TaskControllerTest {
         TaskDTO taskDTO = getTaskDTO();
         Task task = getTask();
         Board board = getBoard();
-        when(taskRepository.findTaskByTaskCode(taskDTO.getTaskCode())).thenReturn(task);
-        when(boardRepository.findBoardByBoardCode(taskDTO.getBoardCode())).thenReturn(board);
-        when(taskRepository.existsByTaskCode(taskDTO.getTaskCode())).thenReturn(true);
-        taskController.updateTaskByCode(taskDTO.getTaskCode(), taskDTO);
-        assertThrows(DuplicateException.class, () -> {
-            taskService.validateTaskByCodeAlreadyExist(taskDTO.getTaskCode());
-        });
+        when(taskRepository.findTaskByTaskId(taskDTO.getTaskId())).thenReturn(task);
+        when(boardRepository.findBoardByBoardIdAndActiveTrue(taskDTO.getBoardId())).thenReturn(board);
+        when(taskRepository.existsByTaskId(taskDTO.getTaskId())).thenReturn(true);
+        taskController.updateTaskById(taskDTO.getTaskId(), taskDTO);
     }
     @Test
     void testDeleteTask_Success(){
         Task task = getTask();
-        String taskCode = "taskCode1";
-        when(taskRepository.findTaskByTaskCode(taskCode)).thenReturn(task);
-        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.deleteTaskByCode(taskCode);
+        Long taskId = 1L;
+        when(taskRepository.findTaskByTaskId(taskId)).thenReturn(task);
+        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.deleteTaskById(taskId);
         assertThat(response.getBody()).toString().isEmpty();
         Assertions.assertEquals(HttpStatus.OK, response.getBody().getStatus());
     }
     @Test
     void testDeleteTask_Failed_BadRequest(){
         Task task = getTask();
-        String taskCode = "";
-        when(taskRepository.findTaskByTaskCode(taskCode)).thenReturn(task);
-        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.deleteTaskByCode(taskCode);
+        Long taskId = 0L;
+        when(taskRepository.findTaskByTaskId(taskId)).thenReturn(task);
+        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.deleteTaskById(taskId);
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getBody().getStatus());
     }
     @Test
     void testDeleteTask_Failed_assertThrow_BadRequest(){
         Task task = getTask();
-        String taskCode = "";
-        when(taskRepository.findTaskByTaskCode(taskCode)).thenReturn(task);
-        taskController.deleteTaskByCode(taskCode);
+        Long taskId = 0L;
+        when(taskRepository.findTaskByTaskId(taskId)).thenReturn(task);
+        taskController.deleteTaskById(taskId);
         assertThrows(IllegalArgumentException.class, () -> {
-            ValidateFields.validateSingleField(taskCode);
+            ValidateFields.validateSingleFieldLong(taskId);
         });
     }
     @Test
     void testDeleteTask_Failed_NotFound(){
         Task task = getTask();
-        String taskCode = "taskCode1";
-        when(taskRepository.findTaskByTaskCode(taskCode)).thenReturn(null);
-        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.deleteTaskByCode(taskCode);
+        Long taskId = 1L;
+        when(taskRepository.findTaskByTaskId(taskId)).thenReturn(null);
+        ResponseEntity<GenericResponse<TaskDTO>> response = taskController.deleteTaskById(taskId);
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getBody().getStatus());
     }
     @Test
     void testDeleteTask_Failed_assertThrow_NotFound(){
         Task task = getTask();
-        String taskCode = "taskCode1";
-        when(taskRepository.findTaskByTaskCode(taskCode)).thenReturn(null);
-        taskController.deleteTaskByCode(taskCode);
+        Long taskId = 1L;
+        when(taskRepository.findTaskByTaskId(taskId)).thenReturn(null);
+        taskController.deleteTaskById(taskId);
         assertThrows(ResourceNotFoundException.class, () -> {
-            taskService.deleteTaskByCode(taskCode);
+            taskService.deleteTaskById(taskId);
         });
     }
 }

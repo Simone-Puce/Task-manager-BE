@@ -12,8 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BoardLaneDTO {
 
-    private String boardCode;
+    private Long boardId;
     private String boardName;
-    private String laneCode;
+    private Long laneId;
     private String laneName;
 }

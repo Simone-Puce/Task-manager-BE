@@ -14,9 +14,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AttachmentDTO {
 
-    private String attachmentCode;
+    private Long attachmentId;
     private String attachmentName;
     private String extension;
-    private String taskCode;
+    private Long taskId;
     private boolean active;
 }

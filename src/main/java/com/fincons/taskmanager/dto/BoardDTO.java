@@ -17,7 +17,7 @@ import java.util.Objects;
 @NoArgsConstructor
 public class BoardDTO {
 
-    private String boardCode;
+    private Long boardId;
     private String boardName;
     private List<LaneDTO> lanes;
     private List<TaskDTO> tasks;

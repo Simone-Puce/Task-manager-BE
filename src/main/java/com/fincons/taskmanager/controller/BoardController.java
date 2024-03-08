@@ -2,12 +2,14 @@ package com.fincons.taskmanager.controller;
 
 
 import com.fincons.taskmanager.dto.BoardDTO;
+import com.fincons.taskmanager.dto.TaskDTO;
 import com.fincons.taskmanager.entity.Board;
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.mapper.BoardMapper;
 import com.fincons.taskmanager.service.boardService.BoardService;
 import com.fincons.taskmanager.utility.GenericResponse;
+import com.fincons.taskmanager.utility.SpaceAndFormatValidator;
 import com.fincons.taskmanager.utility.ValidateFields;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +30,15 @@ public class BoardController {
     @Autowired
     private BoardMapper modelMapperBoard;
 
-    @GetMapping(value = "${board.find-by-code}")
-    public ResponseEntity<GenericResponse<BoardDTO>> getBoardByCode(@RequestParam String code) {
+    @GetMapping(value = "${board.find-by-id}")
+    public ResponseEntity<GenericResponse<BoardDTO>> getBoardById(@RequestParam Long id) {
         try {
-            ValidateFields.validateSingleField(code);
-            Board board = boardService.getBoardByCode(code);
+            ValidateFields.validateSingleFieldLong(id);
+            Board board = boardService.getBoardById(id);
             BoardDTO boardDTO = modelMapperBoard.mapToDTO(board);
             GenericResponse<BoardDTO> response = GenericResponse.success(
                     boardDTO,
-                    "Success: Found Board with CODE " + code + ".",
+                    "Success: Found Board with ID " + id + ".",
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -71,17 +73,13 @@ public class BoardController {
     @PostMapping(value = "${board.create}")
     public ResponseEntity<GenericResponse<BoardDTO>> createBoard(@RequestBody BoardDTO boardDTO) {
         try {
-            validateBoardFields(boardDTO);
-
+            validateBoardDTO(boardDTO);
             Board boardMapped = modelMapperBoard.mapToEntity(boardDTO);
-
             Board board = boardService.createBoard(boardMapped);
-
             BoardDTO boardDTO2 = modelMapperBoard.mapToDTO(board);
-
             GenericResponse<BoardDTO> response = GenericResponse.success(
                     boardDTO2,
-                    "Success: Board with code: " + board.getBoardCode() + " has been successfully updated!",
+                    "Success: Board with id: " + board.getBoardId() + " has been successfully updated!",
                     HttpStatus.OK);
             return ResponseEntity.ok(response);
 
@@ -103,21 +101,16 @@ public class BoardController {
         }
     }
     @PutMapping(value = "${board.put}")
-    public ResponseEntity<GenericResponse<BoardDTO>> updateBoardByCode(@RequestParam String boardCode, @RequestBody BoardDTO boardDTO) {
+    public ResponseEntity<GenericResponse<BoardDTO>> updateBoardById(@RequestParam Long boardId, @RequestBody BoardDTO boardDTO) {
         try {
-            ValidateFields.validateSingleField(boardCode);
-
-            validateBoardFields(boardDTO);
-
+            ValidateFields.validateSingleFieldLong(boardId);
+            validateBoardDTO(boardDTO);
             Board boardMapped = modelMapperBoard.mapToEntity(boardDTO);
-
-            Board board = boardService.updateBoardByCode(boardCode, boardMapped);
-
+            Board board = boardService.updateBoardById(boardId, boardMapped);
             BoardDTO boardDTO2 = modelMapperBoard.mapToDTO(board);
-
             GenericResponse<BoardDTO> response = GenericResponse.success(
                     boardDTO2,
-                    "Success: Board with code: " + boardCode + " has been successfully updated!",
+                    "Success: Board with id: " + boardId + " has been successfully updated!",
                     HttpStatus.OK
             );
             return ResponseEntity.ok(response);
@@ -145,12 +138,12 @@ public class BoardController {
         }
     }
     @PutMapping(value = "${board.delete}")
-    public ResponseEntity<GenericResponse<BoardDTO>> deleteBoardByCode(@RequestParam String boardCode) {
+    public ResponseEntity<GenericResponse<BoardDTO>> deleteBoardById(@RequestParam Long boardId) {
         try {
-            ValidateFields.validateSingleField(boardCode);
-            boardService.deleteBoardByCode(boardCode);
+            ValidateFields.validateSingleFieldLong(boardId);
+            boardService.deleteBoardById(boardId);
             GenericResponse<BoardDTO> response = GenericResponse.empty(
-                    "Success: Board with code: " + boardCode + " has been successfully deleted! ",
+                    "Success: Board with id: " + boardId + " has been successfully deleted! ",
                     HttpStatus.OK
             );
 
@@ -169,10 +162,14 @@ public class BoardController {
                             HttpStatus.NOT_FOUND));
         }
     }
+    private void validateBoardDTO(BoardDTO boardDTO) {
+        validateBoardFields(boardDTO);
+        String newBoardName = SpaceAndFormatValidator.spaceAndFormatValidator(boardDTO.getBoardName());
+        boardDTO.setBoardName(newBoardName);
+    }
     private void validateBoardFields(BoardDTO boardDTO) {
-        if (Strings.isEmpty(boardDTO.getBoardCode()) ||
-                Strings.isEmpty(boardDTO.getBoardName())) {
-            throw new IllegalArgumentException("Error: The fields of the board can't be null or empty.");
+        if (Strings.isEmpty(boardDTO.getBoardName())) {
+            throw new IllegalArgumentException("Error: The field of the board can't be null or empty.");
         }
     }
 }

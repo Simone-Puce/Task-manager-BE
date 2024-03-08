@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface LaneService {
 
-    Lane getLaneByCode(String laneCode);
+    Lane getLaneById(Long laneId);
     List<Lane> getAllLanes();
     Lane createLane(Lane lane);
-    Lane updateLaneByCode(String laneCode, Lane lane);
-    void deleteLaneByCode(String laneCode);
+    Lane updateLaneById(Long laneId, Lane lane);
+    void deleteLaneById(Long laneId);
 }

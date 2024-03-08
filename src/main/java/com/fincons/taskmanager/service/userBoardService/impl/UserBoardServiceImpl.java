@@ -36,37 +36,35 @@ public class UserBoardServiceImpl implements UserBoardService {
     public UserBoard createUserBoard(UserBoard userBoard) {
 
         User existingUser = validateUserByEmail(userBoard.getUser().getEmail());
-        Board existingBoard = validateBoardByCode(userBoard.getBoard().getBoardCode());
-        Role existingRole = validateRoleByName(userBoard.getRoleCode());
+        Board existingBoard = validateBoardById(userBoard.getBoard().getBoardId());
 
         checkDuplicateUserBoardExist(existingUser, existingBoard);
-        UserBoard newUserBoard = new UserBoard(existingUser, existingBoard, existingRole.getName());
+        UserBoard newUserBoard = new UserBoard(existingUser, existingBoard, userBoard.getRoleCode());
         userBoardRepository.save(newUserBoard);
         return newUserBoard;
     }
     @Override
-    public UserBoard updateUserBoard(String email, String boardCode, UserBoard userBoard) {
+    public UserBoard updateUserBoard(String email, Long boardId, UserBoard userBoard) {
 
         User existingUser = validateUserByEmail(email);
-        Board existingBoard = validateBoardByCode(boardCode);
-        Role existingRole = validateRoleByName(userBoard.getRoleCode());
+        Board existingBoard = validateBoardById(boardId);
         UserBoard userBoardExist = validateUserBoardRelationship(existingUser, existingBoard);
 
         User userToUpdate = validateUserByEmail(userBoard.getUser().getEmail());
-        Board boardToUpdate = validateBoardByCode(userBoard.getBoard().getBoardCode());
+        Board boardToUpdate = validateBoardById(userBoard.getBoard().getBoardId());
         validateUserBoardNotExistRelationship(userToUpdate, boardToUpdate);
 
         userBoardExist.setUser(userToUpdate);
         userBoardExist.setBoard(boardToUpdate);
-        userBoardExist.setRoleCode(existingRole.getName());
+        userBoardExist.setRoleCode(userBoard.getRoleCode());
         userBoardRepository.save(userBoardExist);
 
         return userBoardExist;
     }
     @Override
-    public UserBoard deleteUserBoard(String email, String boardCode) {
+    public UserBoard deleteUserBoard(String email, Long boardId) {
         User existingUser = validateUserByEmail(email);
-        Board existingBoard = validateBoardByCode(boardCode);
+        Board existingBoard = validateBoardById(boardId);
         UserBoard userBoardExist = validateUserBoardRelationship(existingUser, existingBoard);
         userBoardRepository.delete(userBoardExist);
         return userBoardExist;
@@ -78,42 +76,35 @@ public class UserBoardServiceImpl implements UserBoardService {
         }
         return existingUser;
     }
-    private Board validateBoardByCode(String code) {
-        Board existingBoard = boardRepository.findBoardByBoardCode(code);
+    private Board validateBoardById(Long id) {
+        Board existingBoard = boardRepository.findBoardByBoardIdAndActiveTrue(id);
         if (Objects.isNull(existingBoard)) {
-            throw new ResourceNotFoundException("Error: Board with CODE: " + code + " not found.");
+            throw new ResourceNotFoundException("Error: Board with ID: " + id + " not found.");
         }
         return existingBoard;
-    }
-    private Role validateRoleByName(String name){
-        Role existingRole = roleRepository.findByName(name);
-        if(Objects.isNull(existingRole)){
-            throw new ResourceNotFoundException("Error: Role with NAME: " + name + " not found.");
-        }
-        return existingRole;
     }
     private void checkDuplicateUserBoardExist(User user, Board board) {
 
         boolean userBoardExist = userBoardRepository.existsByUserAndBoard(user, board);
         if (userBoardExist) {
             throw new DuplicateException(
-                    "USER: " + user.getEmail() + " and BOARD: " + board.getBoardCode(),
-                    "USER: " + user.getEmail() + " and BOARD: " + board.getBoardCode());
+                    "USER: " + user.getEmail() + " and BOARD: " + board.getBoardId(),
+                    "USER: " + user.getEmail() + " and BOARD: " + board.getBoardId());
         }
     }
     private UserBoard validateUserBoardRelationship(User user, Board board) {
-        UserBoard userBoardExist = userBoardRepository.findByUserEmailAndBoardBoardCode(user.getEmail(), board.getBoardCode());
+        UserBoard userBoardExist = userBoardRepository.findByUserEmailAndBoardBoardId(user.getEmail(), board.getBoardId());
         if (Objects.isNull(userBoardExist)) {
             throw new ResourceNotFoundException("Error: Relationship with EMAIL : " + user.getEmail() +
-                    " and CODE board: " + board.getBoardCode() + " don't exists.");
+                    " and ID board: " + board.getBoardId() + " don't exists.");
         }
         return userBoardExist;
     }
     private void validateUserBoardNotExistRelationship(User user, Board board) {
-        UserBoard userBoardExist = userBoardRepository.findByUserEmailAndBoardBoardCode(user.getEmail(), board.getBoardCode());
+        UserBoard userBoardExist = userBoardRepository.findByUserEmailAndBoardBoardId(user.getEmail(), board.getBoardId());
         if (!Objects.isNull(userBoardExist)) {
             throw new ResourceNotFoundException("Error: Relationship with EMAIL: " + user.getEmail() +
-                    " and CODE board: " + board.getBoardCode() + " already exist.");
+                    " and ID board: " + board.getBoardId() + " already exist.");
         }
     }
 }

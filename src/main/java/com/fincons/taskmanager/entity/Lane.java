@@ -17,10 +17,7 @@ public class Lane {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
-
-    @Column(unique = true, nullable = false)
-    private String laneCode;
+    private Long laneId;
 
     @Column(nullable = false)
     private String laneName;

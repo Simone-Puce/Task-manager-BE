@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    Task findTaskByTaskCode(String code);
-    Task findTaskByTaskCodeAndActiveTrue(String code);
+    Task findTaskByTaskId(Long id);
+    Task findTaskByTaskIdAndActiveTrue(Long id);
     List<Task> findAllByActiveTrue();
-    boolean existsByTaskCode(String code);
-    boolean existsByTaskCodeAndActiveTrue(String taskCode);
+    boolean existsByTaskId(Long id);
+    boolean existsByTaskIdAndActiveTrue(Long taskId);
 }
