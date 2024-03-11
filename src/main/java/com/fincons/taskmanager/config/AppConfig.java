@@ -1,24 +1,14 @@
 package com.fincons.taskmanager.config;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fincons.taskmanager.dto.*;
 import com.fincons.taskmanager.entity.*;
 import com.fincons.taskmanager.security.SpringSecurityAuditorAwareImpl;
-import org.modelmapper.Converter;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
-import org.modelmapper.TypeMap;
+import org.modelmapper.*;
 import org.modelmapper.convention.MatchingStrategies;
-import org.modelmapper.spi.MappingContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Configuration
 @EnableJpaAuditing
@@ -28,15 +18,14 @@ public class AppConfig {
     public AuditorAware<String> auditorProvider() {
         return new SpringSecurityAuditorAwareImpl();
     }
-
     @Bean
     public ModelMapper modelMapperStandard() {
         return new ModelMapper();
     }
-
     @Bean
     public ModelMapper modelMapperForTask() {
         ModelMapper modelMapper = new ModelMapper();
+
         TypeMap<TaskUser, UserDTO> userBoardMapping = modelMapper.createTypeMap(TaskUser.class, UserDTO.class);
         userBoardMapping.addMappings(mapper -> {
             mapper.map(src -> src.getUser().getFirstName(), UserDTO::setFirstName);
@@ -51,7 +40,6 @@ public class AppConfig {
         });
         return modelMapper;
     }
-
     @Bean
     public ModelMapper modelMapperForBoard() {
         ModelMapper modelMapper = new ModelMapper();
@@ -61,6 +49,12 @@ public class AppConfig {
             mapper.map(src -> src.getUser().getFirstName(), UserDTO::setFirstName);
             mapper.map(src -> src.getUser().getLastName(), UserDTO::setLastName);
             mapper.map(src -> src.getUser().getEmail(), UserDTO::setEmail);
+        });
+        TypeMap<BoardLane, LaneDTO> boardLaneMapping = modelMapper.createTypeMap(BoardLane.class, LaneDTO.class);
+        boardLaneMapping.addMappings(mapper -> {
+            mapper.map(src -> src.getLane().getLaneId(), LaneDTO::setLaneId);
+            mapper.map(src -> src.getLane().getLaneName(), LaneDTO::setLaneName);
+            mapper.map(src -> src.getLane().isActive(), LaneDTO::setActive);
         });
         modelMapper.addMappings(new PropertyMap<Task, TaskDTO>() {
             protected void configure() {
@@ -80,13 +74,17 @@ public class AppConfig {
                 skip(destination.getBoards());
             }
         });
-
         return modelMapper;
     }
-
     @Bean
     public ModelMapper modelMapperForLane() {
         ModelMapper modelMapper = new ModelMapper();
+        TypeMap<BoardLane, BoardDTO> laneBoardMapping = modelMapper.createTypeMap(BoardLane.class, BoardDTO.class);
+        laneBoardMapping.addMappings(mapper -> {
+            mapper.map(src -> src.getBoard().getBoardId(), BoardDTO::setBoardId);
+            mapper.map(src -> src.getBoard().getBoardName(), BoardDTO::setBoardName);
+            mapper.map(src -> src.getBoard().isActive(), BoardDTO::setActive);
+        });
         modelMapper.addMappings(new PropertyMap<Board, BoardDTO>() {
             @Override
             protected void configure() {
@@ -97,14 +95,12 @@ public class AppConfig {
         });
         return modelMapper;
     }
-
     @Bean
     public ModelMapper modelMapperForUserBoard() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         return modelMapper;
     }
-
     @Bean
     public ModelMapper modelMapperForUser() {
         ModelMapper modelMapper = new ModelMapper();
@@ -116,7 +112,6 @@ public class AppConfig {
         });
         return modelMapper;
     }
-
     @Bean
     public ModelMapper modelMapperForTaskUser() {
         ModelMapper modelMapper = new ModelMapper();
@@ -131,5 +126,4 @@ public class AppConfig {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         return modelMapper;
     }
-
 }
