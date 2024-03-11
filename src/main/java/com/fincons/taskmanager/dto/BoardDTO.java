@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
-
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
 @AllArgsConstructor
