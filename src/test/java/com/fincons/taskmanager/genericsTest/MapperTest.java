@@ -2,38 +2,47 @@ package com.fincons.taskmanager.genericsTest;
 
 import com.fincons.taskmanager.dto.*;
 import com.fincons.taskmanager.entity.*;
+import org.junit.jupiter.api.Test;
+import org.modelmapper.Condition;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeMap;
+import org.modelmapper.spi.MappingContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapperTest {
     private ModelMapper modelMapper(){
         ModelMapper modelMapper = new ModelMapper();
 
-        TypeMap<UserBoard, UserDTO> userBoardMapping = modelMapper.createTypeMap(UserBoard.class, UserDTO.class);
-        userBoardMapping.addMappings(mapper -> {
-            mapper.map(src -> src.getUser().getFirstName(), UserDTO::setFirstName);
-            mapper.map(src -> src.getUser().getLastName(), UserDTO::setLastName);
-            mapper.map(src -> src.getUser().getEmail(), UserDTO::setEmail);
-        });
+        final List<AttachmentDTO> filteredAttachments = new ArrayList<>();
+        Condition<List<Attachment>, List<AttachmentDTO>> attachmentNotActive = new Condition<List<Attachment>, List<AttachmentDTO>>() {
+            @Override
+            public boolean applies(MappingContext<List<Attachment>, List<AttachmentDTO>> context) {
+                List<Attachment> attachments = context.getSource();
+                if (attachments != null) {
+                    for (Attachment attachment : attachments) {
+                        if (attachment.isActive()) {
+                            filteredAttachments.add(modelMapper.map(attachment, AttachmentDTO.class));
+                        }
+                    }
+                }
+                return true;
+            }
+        };
+        PropertyMap<Task, TaskDTO> propertyMapToTaskDTO = new PropertyMap<>() {
+            protected void configure() {
+                when(attachmentNotActive).skip().setAttachments(filteredAttachments);
+            }
+        };
+        modelMapper.addMappings(propertyMapToTaskDTO);
         return modelMapper;
     }
-    /*
     @Test
     public void testMapper() {
 
-        User user = new User(3, "user1", "user1", "user1@gmail.com", "12345");
-        List<UserBoard> usersBoards = new ArrayList<>();
-        Board board = new Board(1L, "board C18", usersBoards);
-        usersBoards.add(new UserBoard(user, board, "ROLE_USER"));
-
-
-        BoardDTO boardDTO = this.modelMapper().map(board, BoardDTO.class);
-        for (UserDTO userDTO : boardDTO.getUsers()) {
-            System.out.println(userDTO.getFirstName());
-            System.out.println(userDTO.getLastName());
-            System.out.println(userDTO.getEmail());
-        }
+        AttachmentDTO attachmentDTOTrue = new AttachmentDTO();
     }
 
-     */
 }
