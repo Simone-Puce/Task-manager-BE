@@ -1,8 +1,10 @@
 package com.fincons.taskmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,7 +17,8 @@ import java.sql.Timestamp;
 
 import java.util.Date;
 import java.util.List;
-
+import java.util.Set;
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

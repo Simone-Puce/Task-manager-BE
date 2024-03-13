@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,13 +45,13 @@ public class User {
             mappedBy = "user",
             fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<UserBoard> usersBoards;
+    private Set<UserBoard> usersBoards;
 
     @OneToMany(
             mappedBy = "user",
             fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<TaskUser> tasksUsers;
+    private Set<TaskUser> tasksUsers;
 
     public User(long id, String firstName, String lastName, String email, String password) {
         this.id = id;

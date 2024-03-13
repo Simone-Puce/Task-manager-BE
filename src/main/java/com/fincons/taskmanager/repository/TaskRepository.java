@@ -9,9 +9,21 @@ import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
+    @Query(value = "SELECT t " +
+            "FROM Task t " +
+            "JOIN FETCH t.attachments a " +
+            "WHERE t.taskId = :taskId " +
+            "AND t.active = true " +
+            "AND a.active = true ")
+    Task findTaskIdForAttachmentsAllTrue(@Param("taskId")Long taskId);
+    @Query(value = "SELECT t " +
+            "FROM Task t " +
+            "JOIN FETCH t.attachments a " +
+            "WHERE t.active = true " +
+            "AND a.active = true "
+    )
+    List<Task> findAllForAttachmentsAllTrue();
     Task findTaskByTaskId(Long id);
     Task findTaskByTaskIdAndActiveTrue(Long id);
-    List<Task> findAllByActiveTrue();
-    boolean existsByTaskId(Long id);
-    boolean existsByTaskIdAndActiveTrue(Long taskId);
+    boolean existsByTaskIdAndActiveTrue(Long id);
 }

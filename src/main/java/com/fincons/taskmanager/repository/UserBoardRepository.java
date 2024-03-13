@@ -13,7 +13,7 @@ public interface UserBoardRepository extends JpaRepository<UserBoard, Long> {
 
     boolean existsByUserAndBoard(User user, Board board);
     UserBoard findByUserEmailAndBoardBoardId(String email, Long boardId);
-
+    void deleteByBoard(Board board);
     @Query("SELECT ub " +
             "FROM UserBoard ub " +
             "JOIN ub.user u " +

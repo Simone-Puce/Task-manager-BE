@@ -26,10 +26,10 @@ public class BoardLaneServiceImpl implements BoardLaneService {
 
     @Override
     public BoardLane createBoardLane(BoardLane boardLane) {
-
         Board existingBoard = validateBoardById(boardLane.getBoard().getBoardId());
         Lane existingLane = validateLaneById(boardLane.getLane().getLaneId());
-        checkDuplicateBoardLaneExist(existingBoard, existingLane);
+
+        checkDuplicateBoardLaneExistAndActiveIsTrue(existingBoard, existingLane);
         BoardLane newBoardLane = new BoardLane(existingBoard, existingLane);
         boardLaneRepository.save(newBoardLane);
         return newBoardLane;
@@ -37,13 +37,14 @@ public class BoardLaneServiceImpl implements BoardLaneService {
 
     @Override
     public BoardLane updateBoardLane(Long boardId, Long laneId, BoardLane boardLane) {
-
+        
         Board existingBoard = validateBoardById(boardId);
         Lane existingLane = validateLaneById(laneId);
         BoardLane boardLaneExist = validateBoardLaneRelationship(existingBoard, existingLane);
+
         Board boardToUpdate = validateBoardById(boardLane.getBoard().getBoardId());
         Lane laneToUpdate = validateLaneById(boardLane.getLane().getLaneId());
-        validateBoardLaneNotExistRelationship(boardToUpdate, laneToUpdate);
+
         boardLaneExist.setBoard(boardToUpdate);
         boardLaneExist.setLane(laneToUpdate);
         boardLaneRepository.save(boardLaneExist);
@@ -51,7 +52,6 @@ public class BoardLaneServiceImpl implements BoardLaneService {
     }
     @Override
     public BoardLane deleteBoardLane(Long boardId, Long laneId) {
-
         Board existingBoard = validateBoardById(boardId);
         Lane existingLane = validateLaneById(laneId);
         BoardLane boardLaneExist = validateBoardLaneRelationship(existingBoard, existingLane);
@@ -74,7 +74,7 @@ public class BoardLaneServiceImpl implements BoardLaneService {
         }
         return existingLane;
     }
-    private void checkDuplicateBoardLaneExist(Board board, Lane lane) {
+    private void checkDuplicateBoardLaneExistAndActiveIsTrue(Board board, Lane lane) {
 
         boolean boardLaneExist = boardLaneRepository.existsByBoardAndLane(board, lane);
         if (boardLaneExist) {
@@ -82,6 +82,9 @@ public class BoardLaneServiceImpl implements BoardLaneService {
                     "board ID: " + board.getBoardId() + " and lane ID: " + lane.getLaneId(),
                     "board ID: " + board.getBoardId() + " and lane ID: " + lane.getLaneId());
         }
+    }
+    private BoardLane checkDuplicateBoardLaneExistAndActiveIsFalse(Board board, Lane lane) {
+        return boardLaneRepository.findByBoardAndLane(board, lane);
     }
     private BoardLane validateBoardLaneRelationship(Board board, Lane lane) {
         BoardLane boardLaneExist = boardLaneRepository.findByBoardBoardIdAndLaneLaneId(board.getBoardId(), lane.getLaneId());

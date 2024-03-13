@@ -178,7 +178,7 @@ public class TaskControllerTest {
         Board board = getBoard();
         TaskDTO taskDTO = getTaskDTO();
         Task task = getTask();
-        when(taskRepository.existsByTaskId(taskDTO.getTaskId())).thenReturn(true);
+        when(taskRepository.existsByTaskIdAndActiveTrue(taskDTO.getTaskId())).thenReturn(true);
         when(boardRepository.findBoardByBoardIdAndActiveTrue(taskDTO.getBoardId())).thenReturn(board);
         ResponseEntity<GenericResponse<TaskDTO>> response = taskController.createTask(taskDTO);
 
@@ -190,7 +190,7 @@ public class TaskControllerTest {
         Board board = getBoard();
         TaskDTO taskDTO = getTaskDTO();
         Task task = getTask();
-        when(taskRepository.existsByTaskId(taskDTO.getTaskId())).thenReturn(true);
+        when(taskRepository.existsByTaskIdAndActiveTrue(taskDTO.getTaskId())).thenReturn(true);
         when(boardRepository.findBoardByBoardIdAndActiveTrue(taskDTO.getBoardId())).thenReturn(board);
         taskController.createTask(taskDTO);
     }
@@ -203,7 +203,7 @@ public class TaskControllerTest {
         Task taskPut = getTaskForModify();
         TaskDTO taskDTOPut = getTaskDTOForModify();
         when(taskRepository.findTaskByTaskId(taskDTO.getTaskId())).thenReturn(task);
-        when(taskRepository.existsByTaskId(taskDTO.getTaskId())).thenReturn(false);
+        when(taskRepository.existsByTaskIdAndActiveTrue(taskDTO.getTaskId())).thenReturn(false);
         when(boardRepository.findBoardByBoardIdAndActiveTrue(taskDTOPut.getBoardId())).thenReturn(board);
         ResponseEntity<GenericResponse<TaskDTO>> response = taskController.updateTaskById(taskDTO.getTaskId(), taskDTOPut);
 
@@ -260,7 +260,7 @@ public class TaskControllerTest {
         TaskDTO taskDTO = getTaskDTO();
         Task task = getTask();
         when(taskRepository.findTaskByTaskId(taskDTO.getTaskId())).thenReturn(task);
-        when(taskRepository.existsByTaskId(taskDTO.getTaskId())).thenReturn(true);
+        when(taskRepository.existsByTaskIdAndActiveTrue(taskDTO.getTaskId())).thenReturn(true);
         ResponseEntity<GenericResponse<TaskDTO>> response = taskController.updateTaskById(taskDTO.getTaskId(), taskDTO);
         Assertions.assertNotNull(response.getBody());
         Assertions.assertEquals(HttpStatus.CONFLICT, response.getBody().getStatus());
@@ -272,7 +272,7 @@ public class TaskControllerTest {
         Board board = getBoard();
         when(taskRepository.findTaskByTaskId(taskDTO.getTaskId())).thenReturn(task);
         when(boardRepository.findBoardByBoardIdAndActiveTrue(taskDTO.getBoardId())).thenReturn(board);
-        when(taskRepository.existsByTaskId(taskDTO.getTaskId())).thenReturn(true);
+        when(taskRepository.existsByTaskIdAndActiveTrue(taskDTO.getTaskId())).thenReturn(true);
         taskController.updateTaskById(taskDTO.getTaskId(), taskDTO);
     }
     @Test

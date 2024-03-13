@@ -41,8 +41,10 @@ public class UserBoardServiceImpl implements UserBoardService {
         checkDuplicateUserBoardExist(existingUser, existingBoard);
         UserBoard newUserBoard = new UserBoard(existingUser, existingBoard, userBoard.getRoleCode());
         userBoardRepository.save(newUserBoard);
+
         return newUserBoard;
     }
+
     @Override
     public UserBoard updateUserBoard(String email, Long boardId, UserBoard userBoard) {
 
@@ -60,6 +62,7 @@ public class UserBoardServiceImpl implements UserBoardService {
         userBoardRepository.save(userBoardExist);
 
         return userBoardExist;
+
     }
     @Override
     public UserBoard deleteUserBoard(String email, Long boardId) {

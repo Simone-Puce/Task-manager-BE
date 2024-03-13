@@ -1,9 +1,9 @@
 package com.fincons.taskmanager.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -13,7 +13,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Objects;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,7 +34,7 @@ public class Board {
             mappedBy = "board",
             fetch = FetchType.LAZY)
     private List<BoardLane> boardsLanes;
-
+    
     @OneToMany(
             mappedBy = "board",
             fetch = FetchType.LAZY)
@@ -70,5 +69,4 @@ public class Board {
         this.boardName = boardName;
         this.tasks = tasks;
     }
-
 }

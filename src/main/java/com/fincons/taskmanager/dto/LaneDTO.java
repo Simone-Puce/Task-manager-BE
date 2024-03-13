@@ -14,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LaneDTO {
-
     private Long laneId;
     private String laneName;
     private List<BoardDTO> boards;

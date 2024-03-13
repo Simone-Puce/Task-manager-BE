@@ -32,5 +32,4 @@ public class BoardLane {
         this.board = board;
         this.lane = lane;
     }
-
 }

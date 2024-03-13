@@ -9,4 +9,5 @@ public interface AttachmentRepository extends JpaRepository<Attachment,Long> {
     Attachment findAttachmentByAttachmentIdAndActiveTrue(Long id);
     List<Attachment> findAllByActiveTrue();
 
+    //TODO GESTIRE CARATTERI SPECIALI
 }

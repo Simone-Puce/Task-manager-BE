@@ -33,7 +33,7 @@ public class TaskController {
         try {
             ValidateFields.validateSingleFieldLong(id);
             Task task = taskService.getTaskById(id);
-            TaskDTO taskDTO = modelMapperTask.mapToDTOOnlyActive(task);
+            TaskDTO taskDTO = modelMapperTask.mapToDTO(task);
             GenericResponse<TaskDTO> response = GenericResponse.success(
                     taskDTO,
                     "Success: Found Task with CODE " + id + ".",
@@ -59,7 +59,7 @@ public class TaskController {
     @GetMapping(value = "${task.list}")
     public ResponseEntity<GenericResponse<List<TaskDTO>>> getAllTasks() {
         List<Task> tasks = taskService.getAllTasks();
-        List<TaskDTO> taskDTOs = modelMapperTask.mapEntitiesToDTOsOnlyActive(tasks);
+        List<TaskDTO> taskDTOs = modelMapperTask.mapEntitiesToDTOs(tasks);
         GenericResponse<List<TaskDTO>> response = GenericResponse.success(
                 taskDTOs,
                 "Success:" + (taskDTOs.isEmpty() || taskDTOs.size() == 1 ? " Found " : " Founds ") + taskDTOs.size() +
@@ -173,8 +173,10 @@ public class TaskController {
         validateTaskFields(taskDTO);
         String newTaskName = SpaceAndFormatValidator.spaceAndFormatValidator(taskDTO.getTaskName());
         String newStatus = SpaceAndFormatValidator.spaceAndFormatValidator(taskDTO.getStatus());
+        String newDescription = SpaceAndFormatValidator.spaceAndFormatValidator(taskDTO.getDescription());
         taskDTO.setTaskName(newTaskName);
         taskDTO.setStatus(newStatus);
+        taskDTO.setDescription(newDescription);
     }
     public void validateTaskFields(TaskDTO taskDTO) {
         if (Strings.isEmpty(taskDTO.getTaskName()) ||
