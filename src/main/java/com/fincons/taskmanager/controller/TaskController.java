@@ -172,13 +172,14 @@ public class TaskController {
     private void validateTaskDTO(TaskDTO taskDTO) {
         validateTaskFields(taskDTO);
         String newTaskName = SpaceAndFormatValidator.spaceAndFormatValidator(taskDTO.getTaskName());
-        String newStatus = SpaceAndFormatValidator.spaceAndFormatValidator(taskDTO.getStatus());
         taskDTO.setTaskName(newTaskName);
-        taskDTO.setStatus(newStatus);
+        if(!Strings.isEmpty(taskDTO.getDescription())){
+            String newDescription = SpaceAndFormatValidator.spaceAndFormatValidator(taskDTO.getDescription());
+            taskDTO.setDescription(newDescription);
+        }
     }
     public void validateTaskFields(TaskDTO taskDTO) {
-        if (Strings.isEmpty(taskDTO.getTaskName()) ||
-                Strings.isEmpty(taskDTO.getStatus())) {
+        if (Strings.isEmpty(taskDTO.getTaskName())) {
             throw new IllegalArgumentException("Error: The fields of the task can't be null or empty.");
         }
     }

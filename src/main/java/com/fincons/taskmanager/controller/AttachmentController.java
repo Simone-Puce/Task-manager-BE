@@ -177,7 +177,8 @@ public class AttachmentController {
     }
     private void validateAttachmentFields(AttachmentDTO attachmentDTO) {
         if (Strings.isEmpty(attachmentDTO.getAttachmentName()) ||
-                Strings.isEmpty(attachmentDTO.getExtension())) {
+                Strings.isEmpty(attachmentDTO.getExtension()) ||
+                ValidateFields.isValidTaskId(attachmentDTO.getTaskId())) {
             throw new IllegalArgumentException("Error: The fields of the attachment can't be null or empty.");
         }
     }

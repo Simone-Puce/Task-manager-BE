@@ -1,6 +1,5 @@
 package com.fincons.taskmanager.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +12,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Objects;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,12 +32,7 @@ public class Board {
     @OneToMany(
             mappedBy = "board",
             fetch = FetchType.LAZY)
-    private List<BoardLane> boardsLanes;
-
-    @OneToMany(
-            mappedBy = "board",
-            fetch = FetchType.LAZY)
-    private List<Task> tasks;
+    private List<Lane> lanes;
 
     @OneToMany(mappedBy = "board",
             fetch = FetchType.LAZY)
@@ -64,11 +57,5 @@ public class Board {
 
     @Column(name = "active")
     private boolean active;
-
-    public Board(Long boardId, String boardName, List<Task> tasks) {
-        this.boardId = boardId;
-        this.boardName = boardName;
-        this.tasks = tasks;
-    }
 
 }
