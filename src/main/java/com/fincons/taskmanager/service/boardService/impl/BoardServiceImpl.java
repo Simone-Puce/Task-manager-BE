@@ -4,10 +4,7 @@ package com.fincons.taskmanager.service.boardService.impl;
 import com.fincons.taskmanager.entity.Board;
 import com.fincons.taskmanager.entity.Lane;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
-import com.fincons.taskmanager.repository.BoardRepository;
-import com.fincons.taskmanager.repository.LaneRepository;
-import com.fincons.taskmanager.repository.TaskRepository;
-import com.fincons.taskmanager.repository.UserBoardRepository;
+import com.fincons.taskmanager.repository.*;
 import com.fincons.taskmanager.service.boardService.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +25,8 @@ public class BoardServiceImpl implements BoardService {
     private LaneRepository laneRepository;
     @Autowired
     private TaskRepository taskRepository;
+    @Autowired
+    private TaskUserRepository taskUserRepository;
 
     @Override
     public Board getBoardById(Long boardId) {
@@ -42,7 +41,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public List<Board> getAllBoards() {
         List<Board> boards = boardRepository.findAllForLaneAllTrue();
-        if(Objects.isNull(boards)){
+        if(boards.isEmpty()){
             List<Board> boardsForLanes = boardRepository.findAllByActiveTrue();
             return filterBoardsForLanesTrue(boardsForLanes);
         }
@@ -69,8 +68,14 @@ public class BoardServiceImpl implements BoardService {
         board.setActive(false);
         boardRepository.save(board);
         userBoardRepository.deleteByBoard(board);
-        //TODO GESTIRE CARATTERI SPECIALI
-        //TODO GESTIRE ELIMINAZIONE IN CASCATA DI LANE o TASK
+        board.getLanes().forEach(lane -> {
+            lane.setActive(false);
+            lane.getTasks().forEach(task -> {
+                taskUserRepository.deleteByTask(task);
+                task.setActive(false);
+                task.getAttachments().forEach(attachment -> attachment.setActive(false));
+            });
+        });
     }
     public Board validateBoardById(Long id) {
         Board existingId = boardRepository.findBoardByBoardIdAndActiveTrue(id);

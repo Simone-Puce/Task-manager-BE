@@ -21,5 +21,4 @@ public class LaneDTO {
     private String boardName;
     private List<TaskDTO> tasks;
     private boolean active;
-    //TODO GESTIRE RISPOSTA SU POSTMAN, GESTIRE LE SELECT
 }

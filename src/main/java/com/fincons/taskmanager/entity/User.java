@@ -44,14 +44,12 @@ public class User {
     @OneToMany(
             mappedBy = "user",
             fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Set<UserBoard> usersBoards;
+    private List<UserBoard> usersBoards;
 
     @OneToMany(
             mappedBy = "user",
             fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Set<TaskUser> tasksUsers;
+    private List<TaskUser> tasksUsers;
 
     public User(long id, String firstName, String lastName, String email, String password) {
         this.id = id;

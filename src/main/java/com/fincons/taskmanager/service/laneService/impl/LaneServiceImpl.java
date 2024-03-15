@@ -1,5 +1,6 @@
 package com.fincons.taskmanager.service.laneService.impl;
 
+import com.fincons.taskmanager.entity.Attachment;
 import com.fincons.taskmanager.entity.Board;
 import com.fincons.taskmanager.entity.Lane;
 import com.fincons.taskmanager.entity.Task;
@@ -34,7 +35,7 @@ public class LaneServiceImpl implements LaneService {
     @Override
     public List<Lane> getAllLanes() {
         List<Lane> lanes = laneRepository.findAllForTasksAllTrue();
-        if (Objects.isNull(lanes)){
+        if (lanes.isEmpty()){
             List<Lane> lanesForTasks = laneRepository.findAllByActiveTrue();
             return filterLanesForTasksTrue(lanesForTasks);
         }
@@ -63,6 +64,10 @@ public class LaneServiceImpl implements LaneService {
     public void deleteLaneById(Long laneId) {
         Lane lane = validateLaneById(laneId);
         lane.setActive(false);
+        lane.getTasks().forEach(task -> {
+            task.setActive(false);
+            task.getAttachments().forEach(attachment -> attachment.setActive(false));
+        });
         laneRepository.save(lane);
     }
     public Lane validateLaneById(Long id) {

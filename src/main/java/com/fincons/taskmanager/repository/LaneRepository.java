@@ -26,6 +26,4 @@ public interface LaneRepository extends JpaRepository<Lane, Long> {
     List<Lane> findAllByActiveTrue();
     Lane findLaneByLaneIdAndActiveTrue(Long laneId);
     boolean existsLaneByLaneIdAndActiveTrue(Long id);
-
-    void deleteByLane(List<Lane> lanes);
 }

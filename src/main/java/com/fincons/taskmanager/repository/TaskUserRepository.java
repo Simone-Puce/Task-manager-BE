@@ -20,4 +20,5 @@ public interface TaskUserRepository extends JpaRepository <TaskUser, Long> {
             "JOIN tu.user u " +
             "WHERE u.email = :userEmail")
     List<TaskUser> findTasksByUser(@Param("userEmail") String userEmail);
+
 }

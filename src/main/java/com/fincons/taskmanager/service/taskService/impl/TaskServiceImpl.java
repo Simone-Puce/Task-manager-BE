@@ -6,6 +6,7 @@ import com.fincons.taskmanager.entity.Lane;
 import com.fincons.taskmanager.entity.Task;
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
+import com.fincons.taskmanager.repository.AttachmentRepository;
 import com.fincons.taskmanager.repository.TaskRepository;
 import com.fincons.taskmanager.repository.TaskUserRepository;
 import com.fincons.taskmanager.service.boardService.impl.BoardServiceImpl;
@@ -30,6 +31,8 @@ public class TaskServiceImpl implements TaskService {
     private LaneServiceImpl laneServiceImpl;
     @Autowired
     private TaskUserRepository taskUserRepository;
+    @Autowired
+    private AttachmentRepository attachmentRepository;
 
     @Override
     public Task getTaskById(Long taskId) {
@@ -45,7 +48,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<Task> getAllTasks() {
         List<Task> tasks = taskRepository.findAllForAttachmentsAllTrue();
-        if (Objects.isNull(tasks)){
+        if (tasks.isEmpty()){
             List<Task> tasksForAttachments = taskRepository.findAllByActiveTrue();
             return filterTasksForAttachmentsTrue(tasksForAttachments);
         }
@@ -77,6 +80,8 @@ public class TaskServiceImpl implements TaskService {
     public void deleteTaskById(Long taskId) {
         Task task = validateTaskById(taskId);
         task.setActive(false);
+        task.getAttachments().forEach(attachment ->
+                attachment.setActive(false));
         taskRepository.save(task);
         taskUserRepository.deleteByTask(task);
     }
