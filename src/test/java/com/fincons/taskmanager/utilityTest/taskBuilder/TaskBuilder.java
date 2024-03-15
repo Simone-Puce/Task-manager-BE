@@ -6,10 +6,10 @@ import com.fincons.taskmanager.entity.Task;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.fincons.taskmanager.utilityTest.boardBuilder.BoardBuilder.getBoard;
 
 public class TaskBuilder {
 
+    /*
     public static Task getTask() {
         Long longP = 1L;
         return new Task(longP, "taskName1", "status1", "description1", getBoard());
@@ -32,4 +32,6 @@ public class TaskBuilder {
     public static List<Task> getTasksEmpty() {
         return new ArrayList<>();
     }
+
+     */
 }
