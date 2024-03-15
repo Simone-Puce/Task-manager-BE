@@ -83,6 +83,14 @@ public class LaneController {
             return ResponseEntity.ok(response);
 
         }
+        catch (ResourceNotFoundException rfe) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    GenericResponse.error(
+                            rfe.getMessage(),
+                            HttpStatus.NOT_FOUND
+                    )
+            );
+        }
         catch (IllegalArgumentException iae) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     GenericResponse.error(
@@ -167,7 +175,8 @@ public class LaneController {
         LaneDTO.setLaneName(newLaneName);
     }
     private void validateLaneFields(LaneDTO laneDTO) {
-        if (Strings.isEmpty(laneDTO.getLaneName())) {
+        if (Strings.isEmpty(laneDTO.getLaneName()) ||
+                ValidateFields.isValidTaskId(laneDTO.getBoardId())) {
             throw new IllegalArgumentException("Error: The fields of the lane can't be null or empty.");
         }
     }

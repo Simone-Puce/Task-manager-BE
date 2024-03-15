@@ -1,6 +1,7 @@
 package com.fincons.taskmanager.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fincons.taskmanager.entity.Board;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,9 @@ import java.util.List;
 public class LaneDTO {
     private Long laneId;
     private String laneName;
-    private List<BoardDTO> boards;
+    private Long boardId;
+    private String boardName;
+    private List<TaskDTO> tasks;
     private boolean active;
+    //TODO GESTIRE RISPOSTA SU POSTMAN, GESTIRE LE SELECT
 }

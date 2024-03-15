@@ -9,38 +9,24 @@ import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
+
     @Query(value = "SELECT b " +
             "FROM Board b " +
-            "JOIN FETCH b.boardsLanes bl " +
+            "LEFT JOIN FETCH b.lanes l " +
             "WHERE b.boardId = :boardId " +
             "AND b.active = true " +
-            "AND bl.lane.active = true "
+            "AND (l.active = true OR l IS NULL) "
     )
     Board findBoardIdForLaneAllTrue(@Param("boardId")Long boardId);
 
     @Query(value = "SELECT b " +
             "FROM Board b " +
-            "JOIN FETCH b.tasks t " +
-            "WHERE b.boardId = :boardId " +
-            "AND b.active = true " +
-            "AND t.active = true "
-    )
-    Board findBoardIdForTaskAllTrue(@Param("boardId")Long boardId);
-
-    @Query(value = "SELECT b " +
-            "FROM Board b " +
-            "JOIN FETCH b.boardsLanes bl " +
+            "JOIN FETCH b.lanes l " +
             "WHERE b.active = true " +
-            "AND bl.lane.active = true "
+            "AND (l.active = true OR l IS NULL)"
     )
     List<Board> findAllForLaneAllTrue();
-    @Query(value = "SELECT b " +
-            "FROM Board b " +
-            "JOIN FETCH b.tasks t " +
-            "WHERE b.active = true " +
-            "AND t.active = true "
-    )
-    List<Board> findAllForTaskAllTrue();
     Board findBoardByBoardIdAndActiveTrue(Long id);
+    List<Board> findAllByActiveTrue();
     boolean existsBoardByBoardIdAndActiveTrue(Long id);
 }

@@ -19,7 +19,6 @@ public class BoardDTO {
     private Long boardId;
     private String boardName;
     private List<LaneDTO> lanes;
-    private List<TaskDTO> tasks;
     private List<UserDTO> users;
     private String createdBy;
     private String modifiedBy;

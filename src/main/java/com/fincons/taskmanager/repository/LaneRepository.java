@@ -10,19 +10,22 @@ import java.util.List;
 public interface LaneRepository extends JpaRepository<Lane, Long> {
     @Query(value = "SELECT l " +
                     "FROM Lane l " +
-                    "JOIN FETCH l.boardsLanes bl " +
+                    "LEFT JOIN FETCH l.tasks t " +
                     "WHERE l.laneId = :laneId " +
                     "AND l.active = true " +
-                    "AND bl.board.active = true "
+                    "AND (t.active = true OR t IS NULL) "
     )
-    Lane findLaneIdForBoardsAllTrue(@Param("laneId")Long laneId);
+    Lane findLaneIdForTasksAllTrue(@Param("laneId")Long laneId);
     @Query(value = "SELECT l " +
             "FROM Lane l " +
-            "JOIN FETCH l.boardsLanes bl " +
+            "LEFT JOIN FETCH l.tasks t " +
             "WHERE l.active = true " +
-            "AND bl.board.active = true "
+            "AND (t.active = true OR t IS NULL) "
     )
-    List<Lane> findAllForBoardsAllTrue();
+    List<Lane> findAllForTasksAllTrue();
+    List<Lane> findAllByActiveTrue();
     Lane findLaneByLaneIdAndActiveTrue(Long laneId);
     boolean existsLaneByLaneIdAndActiveTrue(Long id);
+
+    void deleteByLane(List<Lane> lanes);
 }

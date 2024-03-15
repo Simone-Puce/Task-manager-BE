@@ -19,32 +19,15 @@ public class TaskDTO {
 
     private Long taskId;
     private String taskName;
-    private String status;
     private String description;
     private List<UserDTO> users;
-    private Long boardId;
+    private Long laneId;
     private List<AttachmentDTO> attachments;
+    private boolean active;
     private String createdBy;
     private String modifiedBy;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
     private Timestamp createdDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
     private Timestamp modifiedDate;
-    private boolean active;
-
-
-    public TaskDTO(Long taskId, String taskName, String status, String description, Long boardId) {
-        this.taskId = taskId;
-        this.taskName = taskName;
-        this.status = status;
-        this.description = description;
-        this.boardId = boardId;
-    }
-
-    public TaskDTO(String taskName, String status, String description, Long boardId) {
-        this.taskName = taskName;
-        this.status = status;
-        this.description = description;
-        this.boardId = boardId;
-    }
 }

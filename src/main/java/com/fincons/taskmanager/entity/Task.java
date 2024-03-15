@@ -1,6 +1,5 @@
 package com.fincons.taskmanager.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,9 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.sql.Timestamp;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,11 +32,25 @@ public class Task {
     @Column(nullable = false)
     private String taskName;
 
-    @Column(nullable = false)
-    private String status;
-
     @Column
     private String description;
+
+    @Column(name = "active")
+    private boolean active;
+
+    @OneToMany(
+            mappedBy = "task",
+            fetch = FetchType.LAZY)
+    private List<TaskUser> tasksUsers;
+
+    @ManyToOne
+    @JoinColumn(name = "lane_id")
+    private Lane lane;
+
+    @OneToMany(
+            mappedBy = "task",
+            fetch = FetchType.LAZY)
+    private List<Attachment> attachments;
 
     @Column(name = "created_date", nullable = false, updatable = false)
     @CreatedDate
@@ -56,44 +67,4 @@ public class Task {
 
     @LastModifiedBy
     private String modifiedBy;
-
-    @Column(name = "active")
-    private boolean active;
-
-    @OneToMany(
-            mappedBy = "task",
-            fetch = FetchType.LAZY)
-    private List<TaskUser> tasksUsers;
-
-    @ManyToOne
-    @JoinColumn(name = "board_id")
-    private Board board;
-
-    @OneToMany(
-            mappedBy = "task",
-            fetch = FetchType.LAZY)
-    private List<Attachment> attachments;
-
-
-    public Task(Long taskId, String taskName, String status, String description, Board board) {
-        this.taskId = taskId;
-        this.taskName = taskName;
-        this.status = status;
-        this.description = description;
-        this.board = board;
-    }
-
-
-    public Task(Long taskId, String taskName, String status, String description) {
-        this.taskId = taskId;
-        this.taskName = taskName;
-        this.status = status;
-        this.description = description;
-    }
-
-    public Task(String taskName, String status, String description) {
-        this.taskName = taskName;
-        this.status = status;
-        this.description = description;
-    }
 }
