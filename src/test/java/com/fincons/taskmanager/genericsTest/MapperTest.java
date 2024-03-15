@@ -31,12 +31,6 @@ public class MapperTest {
                 return true;
             }
         };
-        PropertyMap<Task, TaskDTO> propertyMapToTaskDTO = new PropertyMap<>() {
-            protected void configure() {
-                when(attachmentNotActive).skip().setAttachments(filteredAttachments);
-            }
-        };
-        modelMapper.addMappings(propertyMapToTaskDTO);
         return modelMapper;
     }
     @Test

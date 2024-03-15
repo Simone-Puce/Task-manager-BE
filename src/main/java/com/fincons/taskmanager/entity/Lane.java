@@ -21,11 +21,15 @@ public class Lane {
 
     @Column(nullable = false)
     private String laneName;
-    @Column(name = "active")
-    private boolean active;
+
+    @ManyToOne
+    @JoinColumn(name = "board_id")
+    private Board board;
 
     @OneToMany(
             mappedBy = "lane",
             fetch = FetchType.LAZY)
-    private List<BoardLane> boardsLanes;
+    private List<Task> tasks;
+
+    private boolean active;
 }

@@ -9,7 +9,6 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
@@ -20,7 +19,6 @@ public class BoardDTO {
     private Long boardId;
     private String boardName;
     private List<LaneDTO> lanes;
-    private List<TaskDTO> tasks;
     private List<UserDTO> users;
     private String createdBy;
     private String modifiedBy;

@@ -37,7 +37,6 @@ public class RoleController {
                 .data(listRoleDTOs)
                 .build());
     }
-
     @GetMapping("${role.find-by-id}/{roleId}")
     public ResponseEntity<GenericResponse<RoleDTO>> getRoleById(@PathVariable long roleId) {
         try {
@@ -45,7 +44,7 @@ public class RoleController {
             return ResponseEntity.ok(GenericResponse.<RoleDTO>builder()
                     .status(HttpStatus.OK)
                     .success(true)
-                    .message("Role found Succesfully  !!!")
+                    .message("Role found Succesfully !!!")
                     .data(roleDTO)
                     .build());
         } catch (ResourceNotFoundException rnfe) {
@@ -56,7 +55,6 @@ public class RoleController {
                     .build());
         }
     }
-
     @PostMapping("${role.create}")
     public ResponseEntity<GenericResponse<RoleDTO>> createRole(@RequestBody RoleDTO roleDTO) {
         try {

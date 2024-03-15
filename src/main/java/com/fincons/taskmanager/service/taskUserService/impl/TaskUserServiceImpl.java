@@ -36,6 +36,7 @@ public class TaskUserServiceImpl implements TaskUserService {
         taskUserRepository.save(newTaskUser);
         return newTaskUser;
     }
+
     @Override
     public TaskUser updateTaskUser(Long taskId, String email, TaskUser taskUser) {
 
@@ -52,6 +53,7 @@ public class TaskUserServiceImpl implements TaskUserService {
         taskUserRepository.save(taskUserExist);
 
         return taskUserExist;
+
     }
     @Override
     public TaskUser deleteTaskUser(Long taskId, String email) {
