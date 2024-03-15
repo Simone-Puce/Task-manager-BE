@@ -35,7 +35,7 @@ public class BoardController {
         try {
             ValidateFields.validateSingleFieldLong(id);
             Board board = boardService.getBoardById(id);
-            BoardDTO boardDTO = modelMapperBoard.mapToDTO(board);
+            BoardDTO boardDTO = modelMapperBoard.mapToDTOOnlyActive(board);
             GenericResponse<BoardDTO> response = GenericResponse.success(
                     boardDTO,
                     "Success: Found Board with ID " + id + ".",
@@ -61,7 +61,7 @@ public class BoardController {
     @GetMapping(value = "${board.list}")
     public ResponseEntity<GenericResponse<List<BoardDTO>>> getAllBoards() {
         List<Board> boards = boardService.getAllBoards();
-        List<BoardDTO> boardDTOs = modelMapperBoard.mapEntitiesToDTOs(boards);
+        List<BoardDTO> boardDTOs = modelMapperBoard.mapEntitiesToDTOsOnlyActive(boards);
         GenericResponse<List<BoardDTO>> response = GenericResponse.success(
                 boardDTOs,
                 "Success:" + (boardDTOs.isEmpty() || boardDTOs.size() == 1 ? " Found " : " Founds ") + boardDTOs.size() +

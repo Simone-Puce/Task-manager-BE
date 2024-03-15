@@ -33,7 +33,7 @@ public class TaskController {
         try {
             ValidateFields.validateSingleFieldLong(id);
             Task task = taskService.getTaskById(id);
-            TaskDTO taskDTO = modelMapperTask.mapToDTO(task);
+            TaskDTO taskDTO = modelMapperTask.mapToDTOOnlyActive(task);
             GenericResponse<TaskDTO> response = GenericResponse.success(
                     taskDTO,
                     "Success: Found Task with CODE " + id + ".",
@@ -59,7 +59,7 @@ public class TaskController {
     @GetMapping(value = "${task.list}")
     public ResponseEntity<GenericResponse<List<TaskDTO>>> getAllTasks() {
         List<Task> tasks = taskService.getAllTasks();
-        List<TaskDTO> taskDTOs = modelMapperTask.mapEntitiesToDTOs(tasks);
+        List<TaskDTO> taskDTOs = modelMapperTask.mapEntitiesToDTOsOnlyActive(tasks);
         GenericResponse<List<TaskDTO>> response = GenericResponse.success(
                 taskDTOs,
                 "Success:" + (taskDTOs.isEmpty() || taskDTOs.size() == 1 ? " Found " : " Founds ") + taskDTOs.size() +
