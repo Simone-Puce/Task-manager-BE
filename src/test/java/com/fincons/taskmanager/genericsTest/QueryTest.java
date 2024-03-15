@@ -16,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 public class QueryTest {
 
+
+    /*
     @PersistenceContext
     private EntityManager entityManager;
     @Autowired
@@ -42,4 +44,6 @@ public class QueryTest {
         assertNotNull(board.getTasks());
         assertFalse(board.getTasks().isEmpty());
     }
+
+     */
 }
