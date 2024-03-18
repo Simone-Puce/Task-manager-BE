@@ -52,7 +52,9 @@ public class AppConfig {
             mapper.map(src -> src.getUser().getFirstName(), UserDTO::setFirstName);
             mapper.map(src -> src.getUser().getLastName(), UserDTO::setLastName);
             mapper.map(src -> src.getUser().getEmail(), UserDTO::setEmail);
+            mapper.map(UserBoard::getRoleCode, UserDTO::setRoleCodeForBoard);
         });
+
         modelMapper.addMappings(
                 new PropertyMap<Lane, LaneDTO>() {
                     protected void configure() {
@@ -106,6 +108,20 @@ public class AppConfig {
     @Bean
     public ModelMapper modelMapperForUser() {
         ModelMapper modelMapper = new ModelMapper();
+
+        TypeMap<UserBoard, BoardDTO> userBoardMapping = modelMapper.createTypeMap(UserBoard.class, BoardDTO.class);
+        userBoardMapping.addMappings(mapper -> {
+            mapper.map(src -> src.getBoard().getBoardId(), BoardDTO::setBoardId);
+            mapper.map(src -> src.getBoard().getBoardName(), BoardDTO::setBoardName);
+            mapper.map(src -> src.getBoard().isActive(), BoardDTO::setActive);
+        });
+        TypeMap<TaskUser, TaskDTO> taskUserMapping = modelMapper.createTypeMap(TaskUser.class, TaskDTO.class);
+        taskUserMapping.addMappings(mapper -> {
+            mapper.map(src -> src.getTask().getTaskId(), TaskDTO::setTaskId);
+            mapper.map(src -> src.getTask().getTaskName(), TaskDTO::setTaskName);
+            mapper.map(src -> src.getTask().isActive(), TaskDTO::setActive);
+        });
+
         modelMapper.addMappings(new PropertyMap<Role, RoleDTO>() {
             @Override
             protected void configure() {
