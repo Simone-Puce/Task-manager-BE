@@ -2,6 +2,7 @@ package com.fincons.taskmanager.controller;
 
 import com.fincons.taskmanager.dto.LoginDTO;
 import com.fincons.taskmanager.dto.UserDTO;
+import com.fincons.taskmanager.entity.User;
 import com.fincons.taskmanager.exception.EmailException;
 import com.fincons.taskmanager.exception.PasswordException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
@@ -54,25 +55,15 @@ public class UserController {
     @GetMapping("${registered.users}")
     public ResponseEntity<GenericResponse<List<UserDTO>>> registeredUsers() {
 
-        List<UserDTO> userDTOList = userService.findAllUsers()
-                .stream()
-                .map(user -> userAndRoleMapper.userToUserDto(user))
-                .toList();
-        if (!userDTOList.isEmpty()) {
-            return ResponseEntity.ok(GenericResponse.<List<UserDTO>>builder()
-                    .status(HttpStatus.OK)
-                    .success(true)
-                    .message("List of  registered users")
-                    .data(userDTOList)
-                    .build());
-        } else {
-            return ResponseEntity.ok(GenericResponse.<List<UserDTO>>builder()
-                    .status(HttpStatus.OK)
-                    .success(true)
-                    .message("List is empty")
-                    .data(userDTOList)
-                    .build());
-        }
+        List<User> users = userService.findAllUsers();
+        List<UserDTO> userDTOs = userAndRoleMapper.mapEntitiesToDTOs(users);
+        GenericResponse<List<UserDTO>> response = GenericResponse.success(
+                userDTOs,
+                "Success:" + (userDTOs.isEmpty() || userDTOs.size() == 1 ? " Found " : " Founds ") + userDTOs.size() +
+                        (userDTOs.isEmpty() || userDTOs.size() == 1 ? " user" : " users") + ".",
+                HttpStatus.OK
+        );
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "${register.base.uri}", consumes = MediaType.APPLICATION_JSON_VALUE)

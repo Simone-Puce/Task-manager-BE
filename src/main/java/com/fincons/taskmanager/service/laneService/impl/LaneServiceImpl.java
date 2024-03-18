@@ -1,6 +1,5 @@
 package com.fincons.taskmanager.service.laneService.impl;
 
-import com.fincons.taskmanager.entity.Attachment;
 import com.fincons.taskmanager.entity.Board;
 import com.fincons.taskmanager.entity.Lane;
 import com.fincons.taskmanager.entity.Task;

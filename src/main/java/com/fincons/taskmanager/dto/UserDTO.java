@@ -15,6 +15,7 @@ public class UserDTO {
     private String lastName;
     private String email;
     private String password;
+    private String roleCodeForBoard;
     private List<RoleDTO> roles;
     private List<BoardDTO> boards;
     private List<TaskDTO> tasks;

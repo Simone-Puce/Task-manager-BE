@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findAllUsers() {
-        return userRepo.findAll();
+        return userRepo.findAllUserByROLE_USER();
     }
 
     @Override
