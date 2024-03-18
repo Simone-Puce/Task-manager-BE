@@ -20,12 +20,11 @@ public class BoardDTO {
     private String boardName;
     private List<LaneDTO> lanes;
     private List<UserDTO> users;
+    private boolean active;
     private String createdBy;
     private String modifiedBy;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
     private Timestamp createdDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
     private Timestamp modifiedDate;
-    private boolean active;
-
 }
