@@ -111,7 +111,7 @@ public class LaneController {
     public ResponseEntity<GenericResponse<LaneDTO>> updateLaneById(@RequestParam Long laneId, @RequestBody LaneDTO laneDTO) {
         try {
             ValidateFields.validateSingleFieldLong(laneId);
-            validateLaneDTO(laneDTO);
+            validateLanePutDTO(laneDTO);
             Lane laneMapped = modelMapperLane.mapToEntity(laneDTO);
             Lane lane = laneService.updateLaneById(laneId, laneMapped);
             LaneDTO laneDTO2 = modelMapperLane.mapToDTO(lane);
@@ -177,6 +177,16 @@ public class LaneController {
     private void validateLaneFields(LaneDTO laneDTO) {
         if (Strings.isEmpty(laneDTO.getLaneName()) ||
                 ValidateFields.isValidTaskId(laneDTO.getBoardId())) {
+            throw new IllegalArgumentException("Error: The fields of the lane can't be null or empty.");
+        }
+    }
+    private void validateLanePutDTO(LaneDTO LaneDTO) {
+        validateLaneFieldsPut(LaneDTO);
+        String newLaneName = SpaceAndFormatValidator.spaceAndFormatValidator(LaneDTO.getLaneName());
+        LaneDTO.setLaneName(newLaneName);
+    }
+    private void validateLaneFieldsPut(LaneDTO laneDTO) {
+        if (Strings.isEmpty(laneDTO.getLaneName())) {
             throw new IllegalArgumentException("Error: The fields of the lane can't be null or empty.");
         }
     }

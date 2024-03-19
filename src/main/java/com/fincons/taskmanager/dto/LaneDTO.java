@@ -21,4 +21,5 @@ public class LaneDTO {
     private String boardName;
     private List<TaskDTO> tasks;
     private boolean active;
+
 }

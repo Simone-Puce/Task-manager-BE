@@ -53,8 +53,6 @@ public class LaneServiceImpl implements LaneService {
         existingLaneById(laneId);
         Lane laneExisting = laneRepository.findLaneIdForTasksAllTrue(laneId);
         laneExisting.setLaneName(lane.getLaneName());
-        Board board = boardServiceImpl.validateBoardById(lane.getBoard().getBoardId());
-        laneExisting.setBoard(board);
         laneRepository.save(laneExisting);
         return laneExisting;
     }
