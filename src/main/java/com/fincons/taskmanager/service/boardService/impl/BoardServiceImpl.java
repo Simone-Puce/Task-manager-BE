@@ -1,15 +1,18 @@
 package com.fincons.taskmanager.service.boardService.impl;
 
 
+import com.fincons.taskmanager.dto.LaneDTO;
 import com.fincons.taskmanager.entity.Board;
 import com.fincons.taskmanager.entity.Lane;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.repository.*;
 import com.fincons.taskmanager.service.boardService.BoardService;
+import com.fincons.taskmanager.utility.builder.LaneBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -51,6 +54,13 @@ public class BoardServiceImpl implements BoardService {
     public Board createBoard(Board board) {
         board.setActive(true);
         boardRepository.save(board);
+        Lane lane = LaneBuilder.getDefaultLane();
+        lane.setBoard(board);
+        lane.setActive(true);
+        laneRepository.save(lane);
+        List<Lane> lanes = new ArrayList<>();
+        lanes.add(lane);
+        board.setLanes(lanes);
         return board;
     }
     @Override

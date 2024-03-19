@@ -32,4 +32,9 @@ public class Lane {
     private List<Task> tasks;
 
     private boolean active;
+
+    public Lane(Long laneId, String laneName) {
+        this.laneId = laneId;
+        this.laneName = laneName;
+    }
 }

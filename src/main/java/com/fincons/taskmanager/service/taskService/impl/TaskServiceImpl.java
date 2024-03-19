@@ -71,10 +71,14 @@ public class TaskServiceImpl implements TaskService {
         taskExisting.setTaskName(task.getTaskName());
         taskExisting.setDescription(task.getDescription());
         Lane lane = laneServiceImpl.validateLaneById(task.getLane().getLaneId());
-        //if(Objects.equals(lane.getBoard(), ) )
-        taskExisting.setLane(lane);
-        taskRepository.save(taskExisting);
-        return taskExisting;
+        if(Objects.equals(lane.getBoard(), taskExisting.getLane().getBoard())){
+            taskExisting.setLane(lane);
+            taskRepository.save(taskExisting);
+            return taskExisting;
+        }
+        else {
+            throw new IllegalArgumentException("You can't choose lane of another BOARD!");
+        }
     }
     @Override
     @Transactional
