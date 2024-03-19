@@ -7,6 +7,7 @@ import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.mapper.TaskMapper;
 import com.fincons.taskmanager.service.taskService.TaskService;
 import com.fincons.taskmanager.utility.GenericResponse;
+import com.fincons.taskmanager.utility.MaxCharLength;
 import com.fincons.taskmanager.utility.SpaceAndFormatValidator;
 import com.fincons.taskmanager.utility.ValidateFields;
 import org.apache.logging.log4j.util.Strings;
@@ -30,31 +31,15 @@ public class TaskController {
 
     @GetMapping(value = "${task.find-by-id}")
     public ResponseEntity<GenericResponse<TaskDTO>> getTaskById(@RequestParam Long id) {
-        try {
-            ValidateFields.validateSingleFieldLong(id);
-            Task task = taskService.getTaskById(id);
-            TaskDTO taskDTO = modelMapperTask.mapToDTO(task);
-            GenericResponse<TaskDTO> response = GenericResponse.success(
-                    taskDTO,
-                    "Success: Found Task with CODE " + id + ".",
-                    HttpStatus.OK
-            );
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    GenericResponse.error(
-                            iae.getMessage(),
-                            HttpStatus.BAD_REQUEST
-                    )
-            );
-        } catch (ResourceNotFoundException rnfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    GenericResponse.error(
-                            rnfe.getMessage(),
-                            HttpStatus.NOT_FOUND
-                    )
-            );
-        }
+        ValidateFields.validateSingleFieldLong(id);
+        Task task = taskService.getTaskById(id);
+        TaskDTO taskDTO = modelMapperTask.mapToDTO(task);
+        GenericResponse<TaskDTO> response = GenericResponse.success(
+                taskDTO,
+                "Success: Found Task with CODE " + id + ".",
+                HttpStatus.OK
+        );
+        return ResponseEntity.ok(response);
     }
     @GetMapping(value = "${task.list}")
     public ResponseEntity<GenericResponse<List<TaskDTO>>> getAllTasks() {
@@ -70,111 +55,49 @@ public class TaskController {
     }
     @PostMapping(value = "${task.create}")
     public ResponseEntity<GenericResponse<TaskDTO>> createTask(@RequestBody TaskDTO taskDTO) {
-        try {
-            validateTaskDTO(taskDTO);
-            Task taskMapped = modelMapperTask.mapToEntity(taskDTO);
-            Task task = taskService.createTask(taskMapped);
-            TaskDTO taskDTO2 = modelMapperTask.mapToDTO(task);
-            GenericResponse<TaskDTO> response = GenericResponse.success(
-                    taskDTO2,
-                    "Success: Task with id: " + task.getTaskId() + " has been successfully updated!",
-                    HttpStatus.OK);
-            return ResponseEntity.ok(response);
-
-        }
-        catch (ResourceNotFoundException rfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    GenericResponse.error(
-                            rfe.getMessage(),
-                            HttpStatus.NOT_FOUND
-                    )
-            );
-        }
-        catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    GenericResponse.error(
-                            iae.getMessage(),
-                            HttpStatus.BAD_REQUEST
-                    )
-            );
-        } catch (DuplicateException dne) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    GenericResponse.error(
-                            dne.getMessage(),
-                            HttpStatus.CONFLICT
-                    )
-            );
-        }
+        validateTaskDTO(taskDTO);
+        Task taskMapped = modelMapperTask.mapToEntity(taskDTO);
+        Task task = taskService.createTask(taskMapped);
+        TaskDTO taskDTO2 = modelMapperTask.mapToDTO(task);
+        GenericResponse<TaskDTO> response = GenericResponse.success(
+                taskDTO2,
+                "Success: Task with id: " + task.getTaskId() + " has been successfully updated!",
+                HttpStatus.OK);
+        return ResponseEntity.ok(response);
     }
-
     @PutMapping(value = "${task.put}")
     public ResponseEntity<GenericResponse<TaskDTO>> updateTaskById(@RequestParam Long taskId, @RequestBody TaskDTO taskDTO) {
-        try {
-            ValidateFields.validateSingleFieldLong(taskId);
-            validateTaskDTO(taskDTO);
-            Task taskMapped = modelMapperTask.mapToEntity(taskDTO);
-            Task task = taskService.updateTaskById(taskId, taskMapped);
-            TaskDTO taskDTO2 = modelMapperTask.mapToDTO(task);
-            GenericResponse<TaskDTO> response = GenericResponse.success(
-                    taskDTO2,
-                    "Success: Task with id: " + taskId + " has been successfully updated!",
-                    HttpStatus.OK
-            );
-            return ResponseEntity.ok(response);
-        } catch (ResourceNotFoundException rfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    GenericResponse.error(
-                            rfe.getMessage(),
-                            HttpStatus.NOT_FOUND
-                    )
-            );
-        } catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    GenericResponse.error(
-                            iae.getMessage(),
-                            HttpStatus.BAD_REQUEST
-                    )
-            );
-        } catch (DuplicateException dne) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    GenericResponse.error(
-                            dne.getMessage(),
-                            HttpStatus.CONFLICT
-                    )
-            );
-        }
+        ValidateFields.validateSingleFieldLong(taskId);
+        validateTaskDTO(taskDTO);
+        Task taskMapped = modelMapperTask.mapToEntity(taskDTO);
+        Task task = taskService.updateTaskById(taskId, taskMapped);
+        TaskDTO taskDTO2 = modelMapperTask.mapToDTO(task);
+        GenericResponse<TaskDTO> response = GenericResponse.success(
+                taskDTO2,
+                "Success: Task with id: " + taskId + " has been successfully updated!",
+                HttpStatus.OK
+        );
+        return ResponseEntity.ok(response);
     }
     @PutMapping(value = "${task.delete}")
     public ResponseEntity<GenericResponse<TaskDTO>> deleteTaskById(@RequestParam Long taskId) {
-        try {
-            ValidateFields.validateSingleFieldLong(taskId);
-            taskService.deleteTaskById(taskId);
-            GenericResponse<TaskDTO> response = GenericResponse.empty(
-                    "Success: Task with id: " + taskId + " has been successfully deleted! ",
-                    HttpStatus.OK
-            );
 
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    GenericResponse.error(
-                            iae.getMessage(),
-                            HttpStatus.BAD_REQUEST
-                    )
-            );
-        } catch (ResourceNotFoundException rnfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    GenericResponse.error(
-                            rnfe.getMessage(),
-                            HttpStatus.NOT_FOUND));
-        }
+        ValidateFields.validateSingleFieldLong(taskId);
+        taskService.deleteTaskById(taskId);
+        GenericResponse<TaskDTO> response = GenericResponse.empty(
+                "Success: Task with id: " + taskId + " has been successfully deleted! ",
+                HttpStatus.OK
+        );
+        return ResponseEntity.ok(response);
     }
     private void validateTaskDTO(TaskDTO taskDTO) {
         validateTaskFields(taskDTO);
         String newTaskName = SpaceAndFormatValidator.spaceAndFormatValidator(taskDTO.getTaskName());
+        MaxCharLength.validateNameLength(newTaskName);
         taskDTO.setTaskName(newTaskName);
-        if(!Strings.isEmpty(taskDTO.getDescription())){
+        if (!Strings.isEmpty(taskDTO.getDescription())) {
             String newDescription = SpaceAndFormatValidator.spaceAndFormatValidator(taskDTO.getDescription());
+            MaxCharLength.validateDescriptionLength(newTaskName);
             taskDTO.setDescription(newDescription);
         }
     }

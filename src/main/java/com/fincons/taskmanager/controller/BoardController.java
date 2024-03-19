@@ -9,6 +9,7 @@ import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.mapper.BoardMapper;
 import com.fincons.taskmanager.service.boardService.BoardService;
 import com.fincons.taskmanager.utility.GenericResponse;
+import com.fincons.taskmanager.utility.MaxCharLength;
 import com.fincons.taskmanager.utility.SpaceAndFormatValidator;
 import com.fincons.taskmanager.utility.ValidateFields;
 import org.apache.logging.log4j.util.Strings;
@@ -32,31 +33,15 @@ public class BoardController {
 
     @GetMapping(value = "${board.find-by-id}")
     public ResponseEntity<GenericResponse<BoardDTO>> getBoardById(@RequestParam Long id) {
-        try {
-            ValidateFields.validateSingleFieldLong(id);
-            Board board = boardService.getBoardById(id);
-            BoardDTO boardDTO = modelMapperBoard.mapToDTO(board);
-            GenericResponse<BoardDTO> response = GenericResponse.success(
-                    boardDTO,
-                    "Success: Found Board with ID " + id + ".",
-                    HttpStatus.OK
-            );
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    GenericResponse.error(
-                            iae.getMessage(),
-                            HttpStatus.BAD_REQUEST
-                    )
-            );
-        } catch (ResourceNotFoundException rnfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    GenericResponse.error(
-                            rnfe.getMessage(),
-                            HttpStatus.NOT_FOUND
-                    )
-            );
-        }
+        ValidateFields.validateSingleFieldLong(id);
+        Board board = boardService.getBoardById(id);
+        BoardDTO boardDTO = modelMapperBoard.mapToDTO(board);
+        GenericResponse<BoardDTO> response = GenericResponse.success(
+                boardDTO,
+                "Success: Found Board with ID " + id + ".",
+                HttpStatus.OK
+        );
+        return ResponseEntity.ok(response);
     }
     @GetMapping(value = "${board.list}")
     public ResponseEntity<GenericResponse<List<BoardDTO>>> getAllBoards() {
@@ -70,101 +55,48 @@ public class BoardController {
         );
         return ResponseEntity.ok(response);
     }
+
     @PostMapping(value = "${board.create}")
     public ResponseEntity<GenericResponse<BoardDTO>> createBoard(@RequestBody BoardDTO boardDTO) {
-        try {
-            validateBoardDTO(boardDTO);
-            Board boardMapped = modelMapperBoard.mapToEntity(boardDTO);
-            Board board = boardService.createBoard(boardMapped);
-            BoardDTO boardDTO2 = modelMapperBoard.mapToDTO(board);
-            GenericResponse<BoardDTO> response = GenericResponse.success(
-                    boardDTO2,
-                    "Success: Board with id: " + board.getBoardId() + " has been successfully updated!",
-                    HttpStatus.OK);
-            return ResponseEntity.ok(response);
-
-        }
-        catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    GenericResponse.error(
-                            iae.getMessage(),
-                            HttpStatus.BAD_REQUEST
-                    )
-            );
-        } catch (DuplicateException dne) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    GenericResponse.error(
-                            dne.getMessage(),
-                            HttpStatus.CONFLICT
-                    )
-            );
-        }
+        validateBoardDTO(boardDTO);
+        Board boardMapped = modelMapperBoard.mapToEntity(boardDTO);
+        Board board = boardService.createBoard(boardMapped);
+        BoardDTO boardDTO2 = modelMapperBoard.mapToDTO(board);
+        GenericResponse<BoardDTO> response = GenericResponse.success(
+                boardDTO2,
+                "Success: Board with id: " + board.getBoardId() + " has been successfully updated!",
+                HttpStatus.OK);
+        return ResponseEntity.ok(response);
     }
     @PutMapping(value = "${board.put}")
     public ResponseEntity<GenericResponse<BoardDTO>> updateBoardById(@RequestParam Long boardId, @RequestBody BoardDTO boardDTO) {
-        try {
-            ValidateFields.validateSingleFieldLong(boardId);
-            validateBoardDTO(boardDTO);
-            Board boardMapped = modelMapperBoard.mapToEntity(boardDTO);
-            Board board = boardService.updateBoardById(boardId, boardMapped);
-            BoardDTO boardDTO2 = modelMapperBoard.mapToDTO(board);
-            GenericResponse<BoardDTO> response = GenericResponse.success(
-                    boardDTO2,
-                    "Success: Board with id: " + boardId + " has been successfully updated!",
-                    HttpStatus.OK
-            );
-            return ResponseEntity.ok(response);
-        } catch (ResourceNotFoundException rfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    GenericResponse.error(
-                            rfe.getMessage(),
-                            HttpStatus.NOT_FOUND
-                    )
-            );
-        } catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    GenericResponse.error(
-                            iae.getMessage(),
-                            HttpStatus.BAD_REQUEST
-                    )
-            );
-        } catch (DuplicateException dne) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    GenericResponse.error(
-                            dne.getMessage(),
-                            HttpStatus.CONFLICT
-                    )
-            );
-        }
+        ValidateFields.validateSingleFieldLong(boardId);
+        validateBoardDTO(boardDTO);
+        Board boardMapped = modelMapperBoard.mapToEntity(boardDTO);
+        Board board = boardService.updateBoardById(boardId, boardMapped);
+        BoardDTO boardDTO2 = modelMapperBoard.mapToDTO(board);
+        GenericResponse<BoardDTO> response = GenericResponse.success(
+                boardDTO2,
+                "Success: Board with id: " + boardId + " has been successfully updated!",
+                HttpStatus.OK
+        );
+        return ResponseEntity.ok(response);
     }
+
     @PutMapping(value = "${board.delete}")
     public ResponseEntity<GenericResponse<BoardDTO>> deleteBoardById(@RequestParam Long boardId) {
-        try {
-            ValidateFields.validateSingleFieldLong(boardId);
-            boardService.deleteBoardById(boardId);
-            GenericResponse<BoardDTO> response = GenericResponse.empty(
-                    "Success: Board with id: " + boardId + " has been successfully deleted! ",
-                    HttpStatus.OK
-            );
-
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    GenericResponse.error(
-                            iae.getMessage(),
-                            HttpStatus.BAD_REQUEST
-                    )
-            );
-        } catch (ResourceNotFoundException rnfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    GenericResponse.error(
-                            rnfe.getMessage(),
-                            HttpStatus.NOT_FOUND));
-        }
+        ValidateFields.validateSingleFieldLong(boardId);
+        boardService.deleteBoardById(boardId);
+        GenericResponse<BoardDTO> response = GenericResponse.empty(
+                "Success: Board with id: " + boardId + " has been successfully deleted! ",
+                HttpStatus.OK
+        );
+        return ResponseEntity.ok(response);
     }
     private void validateBoardDTO(BoardDTO boardDTO) {
         validateBoardFields(boardDTO);
         String newBoardName = SpaceAndFormatValidator.spaceAndFormatValidator(boardDTO.getBoardName());
+        MaxCharLength.validateNameLength(newBoardName);
         boardDTO.setBoardName(newBoardName);
     }
     private void validateBoardFields(BoardDTO boardDTO) {
