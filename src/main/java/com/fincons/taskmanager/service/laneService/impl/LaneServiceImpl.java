@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,21 +26,11 @@ public class LaneServiceImpl implements LaneService {
     @Override
     public Lane getLaneById(Long laneId) {
         existingLaneById(laneId);
-        Lane laneForTasks = laneRepository.findLaneIdForTasksAllTrue(laneId);
-        if (Objects.isNull(laneForTasks)){
-            Lane laneForTasksNonNull = laneRepository.findLaneByLaneIdAndActiveTrue(laneId);
-            return filterLaneForLanesTrue(laneForTasksNonNull);
-        }
-        return laneForTasks;
+        return filterLaneForLanesTrue(laneRepository.findLaneByLaneIdAndActiveTrue(laneId));
     }
     @Override
     public List<Lane> getAllLanes() {
-        List<Lane> lanes = laneRepository.findAllForTasksAllTrue();
-        if (lanes.isEmpty()){
-            List<Lane> lanesForTasks = laneRepository.findAllByActiveTrue();
-            return filterLanesForTasksTrue(lanesForTasks);
-        }
-        return lanes;
+        return sortLanesList(filterLanesForTasksTrue(laneRepository.findAllByActiveTrue()));
     }
     @Override
     public Lane createLane(Lane lane) {
@@ -51,10 +43,10 @@ public class LaneServiceImpl implements LaneService {
     @Override
     public Lane updateLaneById(Long laneId, Lane lane) {
         existingLaneById(laneId);
-        Lane laneExisting = laneRepository.findLaneIdForTasksAllTrue(laneId);
+        Lane laneExisting = laneRepository.findLaneByLaneIdAndActiveTrue(laneId);
         laneExisting.setLaneName(lane.getLaneName());
         laneRepository.save(laneExisting);
-        return laneExisting;
+        return filterLaneForLanesTrue(laneExisting);
     }
     @Override
     @Transactional
@@ -91,5 +83,11 @@ public class LaneServiceImpl implements LaneService {
         return lanes.stream()
                 .map(this::filterLaneForLanesTrue)
                 .toList();
+    }
+    private List<Lane> sortLanesList(List<Lane>lanes){
+        List<Lane> sortedLanes = new ArrayList<>(lanes);
+        sortedLanes.sort(Comparator.comparing(Lane::getLaneName)
+                .thenComparing(Lane::getLaneId));
+        return sortedLanes;
     }
 }
