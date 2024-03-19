@@ -1,5 +1,7 @@
 package com.fincons.taskmanager.controller;
 
+import com.fincons.taskmanager.exception.DuplicateException;
+import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.utility.GenericResponse;
 import org.modelmapper.spi.ErrorMessage;
 import org.springframework.http.HttpStatus;
@@ -35,5 +37,33 @@ public class ControllerExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
         return ResponseEntity.ok(response);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<GenericResponse<?>> illegalArgumentException(IllegalArgumentException iae) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                GenericResponse.error(
+                        iae.getMessage(),
+                        HttpStatus.BAD_REQUEST
+                )
+        );
+    }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<GenericResponse<?>> resourceNotFoundException(ResourceNotFoundException rnfe){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                GenericResponse.error(
+                        rnfe.getMessage(),
+                        HttpStatus.NOT_FOUND
+                )
+        );
+    }
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<GenericResponse<?>> duplicateException(DuplicateException dne){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                GenericResponse.error(
+                        dne.getMessage(),
+                        HttpStatus.CONFLICT
+                )
+        );
     }
 }
