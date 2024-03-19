@@ -1,16 +1,12 @@
 package com.fincons.taskmanager.service.taskService.impl;
 
 import com.fincons.taskmanager.entity.Attachment;
-import com.fincons.taskmanager.entity.Board;
 import com.fincons.taskmanager.entity.Lane;
 import com.fincons.taskmanager.entity.Task;
-import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.repository.AttachmentRepository;
 import com.fincons.taskmanager.repository.TaskRepository;
 import com.fincons.taskmanager.repository.TaskUserRepository;
-import com.fincons.taskmanager.service.boardService.impl.BoardServiceImpl;
-import com.fincons.taskmanager.service.laneService.LaneService;
 import com.fincons.taskmanager.service.laneService.impl.LaneServiceImpl;
 import com.fincons.taskmanager.service.taskService.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import java.util.Objects;
@@ -37,24 +34,12 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task getTaskById(Long taskId) {
         existingTaskById(taskId);
-        Task taskForAttachments = taskRepository.findTaskIdForAttachmentsAllTrue(taskId);
-        if(Objects.isNull(taskForAttachments)){
-            Task taskForAttachmentsNonNull = taskRepository.findTaskByTaskIdAndActiveTrue(taskId);
-            return filterTaskForAttachmentsTrue(taskForAttachmentsNonNull);
-        }
-        return taskForAttachments;
+        return filterTaskForAttachmentsTrue(taskRepository.findTaskByTaskIdAndActiveTrue(taskId));
     }
-
     @Override
-    public List<Task> getAllTasks() {
-        List<Task> tasks = taskRepository.findAllForAttachmentsAllTrue();
-        if (tasks.isEmpty()){
-            List<Task> tasksForAttachments = taskRepository.findAllByActiveTrue();
-            return filterTasksForAttachmentsTrue(tasksForAttachments);
-        }
-        return tasks;
+    public List<Task> getAllTasks(){
+        return sortTaskList(filterTasksForAttachmentsTrue(taskRepository.findAllByActiveTrue()));
     }
-
     @Override
     public Task createTask(Task task) {
         Lane lane = laneServiceImpl.validateLaneById(task.getLane().getLaneId());
@@ -63,18 +48,17 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.save(task);
         return task;
     }
-
     @Override
     public Task updateTaskById(Long taskId, Task task) {
         existingTaskById(taskId);
-        Task taskExisting = taskRepository.findTaskIdForAttachmentsAllTrue(taskId);
+        Task taskExisting = taskRepository.findTaskByTaskIdAndActiveTrue(taskId);
         taskExisting.setTaskName(task.getTaskName());
         taskExisting.setDescription(task.getDescription());
         Lane lane = laneServiceImpl.validateLaneById(task.getLane().getLaneId());
         if(Objects.equals(lane.getBoard(), taskExisting.getLane().getBoard())){
             taskExisting.setLane(lane);
             taskRepository.save(taskExisting);
-            return taskExisting;
+            return filterTaskForAttachmentsTrue(taskExisting);
         }
         else {
             throw new IllegalArgumentException("You can't choose lane of another BOARD!");
@@ -115,4 +99,11 @@ public class TaskServiceImpl implements TaskService {
                 .map(this::filterTaskForAttachmentsTrue)
                 .toList();
     }
+    private List<Task> sortTaskList(List<Task> tasks){
+        List<Task> sortedTasks = new ArrayList<>(tasks);
+        sortedTasks.sort(Comparator.comparing(Task::getTaskName)
+                .thenComparing(Task::getCreatedDate));
+        return sortedTasks;
+    }
+
 }
