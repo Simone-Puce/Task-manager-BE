@@ -26,159 +26,65 @@ public class UserBoardController {
     private UserBoardMapper modelMapperUserBoard;
 
     @GetMapping(value = "${user.board.find.boards.by.user}")
-    public ResponseEntity<GenericResponse<List<UserBoardDTO>>> findBoardsByUser(@RequestParam String email){
-        try{
-            ValidateFields.validateSingleField(email);
-            List<UserBoard> usersBoards = userBoardService.findBoardsByUser(email);
-            List<UserBoardDTO> userBoardDTOs = modelMapperUserBoard.mapEntitiesToDTOs(usersBoards);
+    public ResponseEntity<GenericResponse<List<UserBoardDTO>>> findBoardsByUser(@RequestParam String email) {
+        ValidateFields.validateSingleField(email);
+        List<UserBoard> usersBoards = userBoardService.findBoardsByUser(email);
+        List<UserBoardDTO> userBoardDTOs = modelMapperUserBoard.mapEntitiesToDTOs(usersBoards);
 
-            GenericResponse<List<UserBoardDTO>> response = GenericResponse.success(
-                    userBoardDTOs,
-                    "Success: There are all BOARDS for the User with email : " + email,
-                    HttpStatus.OK
-            );
-            return ResponseEntity.ok(response);
-        }
-        catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    GenericResponse.empty(
-                            iae.getMessage(),
-                            HttpStatus.BAD_REQUEST
-                    )
-            );
-        }
-        catch (ResourceNotFoundException rnfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    GenericResponse.error(
-                            rnfe.getMessage(),
-                            HttpStatus.NOT_FOUND));
-        }
-        catch (DuplicateException dne) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    GenericResponse.error(
-                            dne.getMessage(),
-                            HttpStatus.CONFLICT
-                    )
-            );
-        }
+        GenericResponse<List<UserBoardDTO>> response = GenericResponse.success(
+                userBoardDTOs,
+                "Success: There are all BOARDS for the User with email : " + email,
+                HttpStatus.OK
+        );
+        return ResponseEntity.ok(response);
     }
-
     @PostMapping(value = "${user.board.create}")
-    public ResponseEntity<GenericResponse<UserBoardDTO>> createUserBoard(@RequestBody UserBoardDTO userBoardDTO){
-        try{
-            validateUserBoardFields(userBoardDTO);
-            UserBoard userBoardMapped = modelMapperUserBoard.mapToEntity(userBoardDTO);
-            UserBoard userBoard = userBoardService.createUserBoard(userBoardMapped);
+    public ResponseEntity<GenericResponse<UserBoardDTO>> createUserBoard(@RequestBody UserBoardDTO userBoardDTO) {
+        validateUserBoardFields(userBoardDTO);
+        UserBoard userBoardMapped = modelMapperUserBoard.mapToEntity(userBoardDTO);
+        UserBoard userBoard = userBoardService.createUserBoard(userBoardMapped);
 
-            UserBoardDTO userBoardDTO2 = modelMapperUserBoard.mapToDTO(userBoard);
-            GenericResponse<UserBoardDTO> response = GenericResponse.success(
-                    userBoardDTO2,
-                    "Success: Addition of relationship between USER with email: " + userBoardDTO2.getEmail() + " and BOARD with CODE: " + userBoardDTO2.getBoardId(),
-                    HttpStatus.OK
-            );
-            return ResponseEntity.ok(response);
-        }
-        catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    GenericResponse.empty(
-                            iae.getMessage(),
-                            HttpStatus.BAD_REQUEST
-                    )
-            );
-        }
-        catch (ResourceNotFoundException rnfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    GenericResponse.error(
-                            rnfe.getMessage(),
-                            HttpStatus.NOT_FOUND));
-        }
-        catch (DuplicateException dne) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    GenericResponse.error(
-                            dne.getMessage(),
-                            HttpStatus.CONFLICT
-                    )
-            );
-        }
+        UserBoardDTO userBoardDTO2 = modelMapperUserBoard.mapToDTO(userBoard);
+        GenericResponse<UserBoardDTO> response = GenericResponse.success(
+                userBoardDTO2,
+                "Success: Addition of relationship between USER with email: " + userBoardDTO2.getEmail() + " and BOARD with CODE: " + userBoardDTO2.getBoardId(),
+                HttpStatus.OK
+        );
+        return ResponseEntity.ok(response);
     }
     @PutMapping(value = "${user.board.put}")
     public ResponseEntity<GenericResponse<UserBoardDTO>> updateUserBoard(@RequestParam String email,
                                                                          @RequestParam Long boardId,
                                                                          @RequestBody UserBoardDTO userBoardDTO) {
-        try {
-            ValidateFields.validateSingleField(email);
-            ValidateFields.validateSingleFieldLong(boardId);
-            validateUserBoardFields(userBoardDTO);
-            UserBoard userBoardMapped = modelMapperUserBoard.mapToEntity(userBoardDTO);
-            UserBoard userBoard = userBoardService.updateUserBoard(email, boardId, userBoardMapped);
-            UserBoardDTO userBoardDTO2 = modelMapperUserBoard.mapToDTO(userBoard);
-            GenericResponse<UserBoardDTO> response = GenericResponse.success(
-                    userBoardDTO2,
-                    "Success: Addition of relationship between User with EMAIL: " + email + " and Board with CODE: " + boardId,
-                    HttpStatus.OK
-            );
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    GenericResponse.empty(
-                            iae.getMessage(),
-                            HttpStatus.BAD_REQUEST
-                    )
-            );
-        } catch (ResourceNotFoundException rnfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    GenericResponse.error(
-                            rnfe.getMessage(),
-                            HttpStatus.NOT_FOUND));
-        } catch (DuplicateException dne) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    GenericResponse.error(
-                            dne.getMessage(),
-                            HttpStatus.CONFLICT
-                    )
-            );
-        }
+        ValidateFields.validateSingleField(email);
+        ValidateFields.validateSingleFieldLong(boardId);
+        validateUserBoardFields(userBoardDTO);
+        UserBoard userBoardMapped = modelMapperUserBoard.mapToEntity(userBoardDTO);
+        UserBoard userBoard = userBoardService.updateUserBoard(email, boardId, userBoardMapped);
+        UserBoardDTO userBoardDTO2 = modelMapperUserBoard.mapToDTO(userBoard);
+        GenericResponse<UserBoardDTO> response = GenericResponse.success(
+                userBoardDTO2,
+                "Success: Addition of relationship between User with EMAIL: " + email + " and Board with CODE: " + boardId,
+                HttpStatus.OK
+        );
+        return ResponseEntity.ok(response);
     }
     @DeleteMapping(value = "${user.board.delete}")
     public ResponseEntity<GenericResponse<UserBoardDTO>> deleteUserBoard(@RequestParam String email,
-                                                                         @RequestParam Long boardId){
-        try{
-            ValidateFields.validateSingleField(email);
-            ValidateFields.validateSingleFieldLong(boardId);
-            userBoardService.deleteUserBoard(email, boardId);
-            GenericResponse<UserBoardDTO> response = GenericResponse.empty(
-                    "Success: Delete relationship between USER with EMAIL: " + email + " and Board with CODE: " + boardId,
-                    HttpStatus.OK
-            );
-            return ResponseEntity.ok(response);
-        }
-        catch (IllegalArgumentException iae) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    GenericResponse.empty(
-                            iae.getMessage(),
-                            HttpStatus.BAD_REQUEST
-                    )
-            );
-        }
-        catch (ResourceNotFoundException rnfe) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    GenericResponse.error(
-                            rnfe.getMessage(),
-                            HttpStatus.NOT_FOUND));
-        }
-        catch (DuplicateException dne) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    GenericResponse.error(
-                            dne.getMessage(),
-                            HttpStatus.CONFLICT
-                    )
-            );
-        }
+                                                                         @RequestParam Long boardId) {
+        ValidateFields.validateSingleField(email);
+        ValidateFields.validateSingleFieldLong(boardId);
+        userBoardService.deleteUserBoard(email, boardId);
+        GenericResponse<UserBoardDTO> response = GenericResponse.empty(
+                "Success: Delete relationship between USER with EMAIL: " + email + " and Board with CODE: " + boardId,
+                HttpStatus.OK
+        );
+        return ResponseEntity.ok(response);
     }
     private void validateUserBoardFields(UserBoardDTO userBoardDTO) {
         if (Strings.isEmpty(userBoardDTO.getEmail()) ||
                 ValidateFields.isValidTaskId(userBoardDTO.getBoardId()) ||
-                Strings.isEmpty(userBoardDTO.getRoleCode())){
+                Strings.isEmpty(userBoardDTO.getRoleCode())) {
             throw new IllegalArgumentException("Error: The fields of the user-board can't be null or empty.");
         }
     }

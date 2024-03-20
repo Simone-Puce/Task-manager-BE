@@ -32,7 +32,7 @@ public class Task {
     @Column(nullable = false)
     private String taskName;
 
-    @Column
+    @Column(length = 5000)
     private String description;
 
     @Column(name = "active")

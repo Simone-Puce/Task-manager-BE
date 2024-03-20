@@ -1,18 +1,16 @@
 package com.fincons.taskmanager.service.boardService.impl;
 
-
 import com.fincons.taskmanager.entity.Board;
 import com.fincons.taskmanager.entity.Lane;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.repository.*;
 import com.fincons.taskmanager.service.boardService.BoardService;
+import com.fincons.taskmanager.utility.builder.LaneBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 public class BoardServiceImpl implements BoardService {
@@ -31,35 +29,33 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public Board getBoardById(Long boardId) {
         existingBoardById(boardId);
-        Board boardForLanes = boardRepository.findBoardIdForLaneAllTrue(boardId);
-        if(Objects.isNull(boardForLanes)){
-            Board boardForLaneNonNull = boardRepository.findBoardByBoardIdAndActiveTrue(boardId);
-            return filterBoardForLanesTrue(boardForLaneNonNull);
-        }
-        return boardForLanes;
+        return filterBoardForLanesTrue(boardRepository.findBoardByBoardIdAndActiveTrue(boardId));
     }
     @Override
     public List<Board> getAllBoards() {
-        List<Board> boards = boardRepository.findAllForLaneAllTrue();
-        if(boards.isEmpty()){
-            List<Board> boardsForLanes = boardRepository.findAllByActiveTrue();
-            return filterBoardsForLanesTrue(boardsForLanes);
-        }
-        return boards;
+        return sortBoardsList(filterBoardsForLanesTrue(boardRepository.findAllByActiveTrue()));
     }
+
     @Override
     public Board createBoard(Board board) {
         board.setActive(true);
         boardRepository.save(board);
+        Lane lane = LaneBuilder.getDefaultLane();
+        lane.setBoard(board);
+        lane.setActive(true);
+        laneRepository.save(lane);
+        List<Lane> lanes = new ArrayList<>();
+        lanes.add(lane);
+        board.setLanes(lanes);
         return board;
     }
     @Override
     public Board updateBoardById(Long boardId, Board board) {
         existingBoardById(boardId);
-        Board boardForLane = boardRepository.findBoardIdForLaneAllTrue(boardId);
+        Board boardForLane = boardRepository.findBoardByBoardIdAndActiveTrue(boardId);
         boardForLane.setBoardName(board.getBoardName());
         boardRepository.save(boardForLane);
-        return boardForLane;
+        return filterBoardForLanesTrue(boardForLane);
     }
     @Override
     @Transactional
@@ -101,5 +97,11 @@ public class BoardServiceImpl implements BoardService {
         return boards.stream()
                 .map(this::filterBoardForLanesTrue)
                 .toList();
+    }
+    private List<Board> sortBoardsList(List<Board> boards){
+        List<Board> sortedBoards = new ArrayList<>(boards);
+        sortedBoards.sort(Comparator.comparing(Board::getBoardName)
+                .thenComparing(Board::getCreatedDate));
+        return sortedBoards;
     }
 }
