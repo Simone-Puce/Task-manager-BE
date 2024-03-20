@@ -96,9 +96,7 @@ public class TaskController {
         MaxCharLength.validateNameLength(newTaskName);
         taskDTO.setTaskName(newTaskName);
         if (!Strings.isEmpty(taskDTO.getDescription())) {
-            String newDescription = SpaceAndFormatValidator.spaceAndFormatValidator(taskDTO.getDescription());
-            MaxCharLength.validateDescriptionLength(newTaskName);
-            taskDTO.setDescription(newDescription);
+            MaxCharLength.validateDescriptionLength(taskDTO.getDescription());
         }
     }
     public void validateTaskFields(TaskDTO taskDTO) {

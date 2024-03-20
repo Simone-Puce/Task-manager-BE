@@ -15,6 +15,7 @@ public interface TaskUserRepository extends JpaRepository <TaskUser, Long> {
     boolean existsByTaskAndUser(Task task, User user);
     TaskUser findByTaskTaskIdAndUserEmail(Long userId, String email);
     void deleteByTask(Task task);
+    void deleteByUser(User user);
     @Query("SELECT tu " +
             "FROM TaskUser tu " +
             "JOIN tu.user u " +
