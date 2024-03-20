@@ -4,6 +4,7 @@ import com.fincons.taskmanager.dto.LoginDTO;
 import com.fincons.taskmanager.dto.UserDTO;
 import com.fincons.taskmanager.entity.Role;
 import com.fincons.taskmanager.entity.User;
+import com.fincons.taskmanager.entity.UserBoard;
 import com.fincons.taskmanager.exception.EmailException;
 import com.fincons.taskmanager.exception.PasswordException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
@@ -11,6 +12,8 @@ import com.fincons.taskmanager.exception.RoleException;
 import com.fincons.taskmanager.jwt.JwtTokenProvider;
 import com.fincons.taskmanager.mapper.UserAndRoleMapper;
 import com.fincons.taskmanager.repository.RoleRepository;
+import com.fincons.taskmanager.repository.TaskUserRepository;
+import com.fincons.taskmanager.repository.UserBoardRepository;
 import com.fincons.taskmanager.repository.UserRepository;
 import com.fincons.taskmanager.service.authService.UserService;
 import com.fincons.taskmanager.utility.EmailValidator;
@@ -26,12 +29,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private TaskUserRepository taskUserRepository;
+    @Autowired
+    private UserBoardRepository userBoardRepository;
     public UserServiceImpl(RoleRepository roleRepo, UserRepository userRepo, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
         this.roleRepo = roleRepo;
         this.userRepo = userRepo;
@@ -134,6 +143,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUserByEmail(String email) throws EmailException, RoleException {
         User userToRemove = userRepo.findByEmail(email);
         if (userToRemove == null) {
@@ -144,6 +154,8 @@ public class UserServiceImpl implements UserService {
                 .anyMatch(role -> role.getName().equals("ROLE_ADMIN"))) {
             throw new RoleException("User with role admin can't be deleted!");
         }
+        taskUserRepository.deleteByUser(userToRemove);
+        userBoardRepository.deleteByUser(userToRemove);
         userRepo.delete(userToRemove);
     }
 

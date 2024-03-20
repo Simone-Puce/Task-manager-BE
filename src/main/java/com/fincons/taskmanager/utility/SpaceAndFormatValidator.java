@@ -3,9 +3,9 @@ package com.fincons.taskmanager.utility;
 import java.util.regex.Pattern;
 
 public class SpaceAndFormatValidator {
-    private static final String NAME_REGEX_CONTAIN_LOWERCASE_AND_UPPERCASE_AND_NUMBER = "^[a-zA-Z0-9 ]*$";
-    private static final String NAME_REGEX_WITH_SPACE_IN_BUT_NOT_BEFORE_AND_AFTER_WITHIN_DOUBLE_SPACE = "(\\w)(?>\\w|\\s(?!\\s))*(?<!\\s)$";
-
+    private static final String NAME_REGEX_CONTAIN_LOWERCASE_AND_UPPERCASE_AND_NUMBER = "^[a-zA-Z0-9 àáâãäåæçèéêëìíîïñóòôõöøùúûüýÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]*$";
+    private static final String NAME_REGEX_WITH_SPACE_IN_BUT_NOT_BEFORE_AND_AFTER_WITHIN_DOUBLE_SPACE = "([\\wàáâãäåæçèéêëìíîïñóòôõöøùúûüýÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß])(?>[\\wàáâãäåæçèéêëìíîïñóòôõöøùúûüýÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝß]|\\s(?!\\s))*(?<!\\s)$$";
+    
 
     public static String spaceAndFormatValidator(String inputText){
         boolean isMatch = Pattern.matches(NAME_REGEX_CONTAIN_LOWERCASE_AND_UPPERCASE_AND_NUMBER, inputText);
@@ -21,7 +21,7 @@ public class SpaceAndFormatValidator {
             }
 
         } else {
-            throw new IllegalArgumentException("Error: Name must only contain lowercase letters, uppercase letters, or numbers, without any special characters.");
+            throw new IllegalArgumentException("Error: This character is not allowed.");
         }
     }
     private static String replaceDoubleOrMoreSpaces(String input) {

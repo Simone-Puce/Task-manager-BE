@@ -99,6 +99,7 @@ public class SecurityConfiguration {
                     .requestMatchers(appContext + errorBaseUri).permitAll()
                     .requestMatchers(appContext + modifyUser).authenticated()
                     .requestMatchers(appContext + updateUserPassword).authenticated()
+                    .requestMatchers(appContext + deleteUserByEmail).permitAll() //to handle
                     .anyRequest().authenticated();
         }).httpBasic(Customizer.withDefaults());
 
