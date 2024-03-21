@@ -18,12 +18,10 @@ public class AppConfig {
     public AuditorAware<String> auditorProvider() {
         return new SpringSecurityAuditorAwareImpl();
     }
-
     @Bean
     public ModelMapper modelMapperStandard() {
         return new ModelMapper();
     }
-
     @Bean
     public ModelMapper modelMapperForTask() {
         ModelMapper modelMapper = new ModelMapper();
@@ -38,6 +36,7 @@ public class AppConfig {
             @Override
             protected void configure() {
                 skip(destination.getTaskId());
+                skip(destination.getFile64());
             }
         });
         return modelMapper;

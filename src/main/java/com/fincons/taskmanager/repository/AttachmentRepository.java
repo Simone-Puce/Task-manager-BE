@@ -7,7 +7,5 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface AttachmentRepository extends JpaRepository<Attachment,Long> {
-    Attachment findAttachmentByAttachmentIdAndActiveTrue(Long id);
-    List<Attachment> findAllByActiveTrue();
-
+    Attachment findAttachmentByAttachmentId(Long id);
 }
