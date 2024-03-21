@@ -34,11 +34,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task getTaskById(Long taskId) {
         existingTaskById(taskId);
-        return filterTaskForAttachmentsTrue(taskRepository.findTaskByTaskIdAndActiveTrue(taskId));
+        return taskRepository.findTaskByTaskIdAndActiveTrue(taskId);
     }
     @Override
     public List<Task> getAllTasks(){
-        return sortTaskList(filterTasksForAttachmentsTrue(taskRepository.findAllByActiveTrue()));
+        return sortTaskList(taskRepository.findAllByActiveTrue());
     }
     @Override
     public Task createTask(Task task) {
@@ -58,7 +58,7 @@ public class TaskServiceImpl implements TaskService {
         if(Objects.equals(lane.getBoard(), taskExisting.getLane().getBoard())){
             taskExisting.setLane(lane);
             taskRepository.save(taskExisting);
-            return filterTaskForAttachmentsTrue(taskExisting);
+            return taskExisting;
         }
         else {
             throw new IllegalArgumentException("You can't choose lane of another BOARD!");
@@ -70,7 +70,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = validateTaskById(taskId);
         task.setActive(false);
         task.getAttachments().forEach(attachment ->
-                attachment.setActive(false));
+                attachmentRepository.delete(attachment));
         taskRepository.save(task);
         taskUserRepository.deleteByTask(task);
     }
@@ -87,23 +87,10 @@ public class TaskServiceImpl implements TaskService {
             throw new ResourceNotFoundException("Error: Task with ID: " + id + " not found");
         }
     }
-    private Task filterTaskForAttachmentsTrue(Task task) {
-        List<Attachment> attachments = task.getAttachments().stream()
-                .filter(Attachment::isActive)
-                .toList();
-        task.setAttachments(attachments);
-        return task;
-    }
-    private List<Task> filterTasksForAttachmentsTrue(List<Task> tasks){
-        return tasks.stream()
-                .map(this::filterTaskForAttachmentsTrue)
-                .toList();
-    }
     private List<Task> sortTaskList(List<Task> tasks){
         List<Task> sortedTasks = new ArrayList<>(tasks);
         sortedTasks.sort(Comparator.comparing(Task::getTaskName)
                 .thenComparing(Task::getCreatedDate));
         return sortedTasks;
     }
-
 }

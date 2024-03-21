@@ -89,7 +89,7 @@ public class SecurityConfiguration {
                     .requestMatchers(appContext + roleBaseUri + "/**").hasAnyRole("ADMIN")
                     .requestMatchers(appContext + taskBaseUri + "/**").hasAnyRole("ADMIN", "USER")
                     .requestMatchers(appContext + attachmentBaseUri + "/**").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(appContext + boardBaseUri + "/**").hasAnyRole("ADMIN")
+                    .requestMatchers(appContext + boardBaseUri + "/**").hasAnyRole("ADMIN", "USER")
                     .requestMatchers(appContext + laneBaseUri + "/**").hasAnyRole("ADMIN", "USER")
                     .requestMatchers(appContext + boardLaneBaseUri + "/**").hasAnyRole("ADMIN", "USER")
                     .requestMatchers(appContext + userBoardBaseUri + "/**").hasAnyRole("ADMIN", "USER")
