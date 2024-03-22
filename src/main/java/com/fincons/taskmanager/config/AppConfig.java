@@ -36,7 +36,6 @@ public class AppConfig {
             @Override
             protected void configure() {
                 skip(destination.getTaskId());
-                skip(destination.getFile64());
             }
         });
         return modelMapper;
