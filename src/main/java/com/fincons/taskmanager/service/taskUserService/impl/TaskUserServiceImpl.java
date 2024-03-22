@@ -3,6 +3,7 @@ package com.fincons.taskmanager.service.taskUserService.impl;
 import com.fincons.taskmanager.entity.*;
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
+import com.fincons.taskmanager.mapper.TaskMapper;
 import com.fincons.taskmanager.repository.*;
 import com.fincons.taskmanager.service.taskUserService.TaskUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ public class TaskUserServiceImpl implements TaskUserService {
     private TaskRepository taskRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TaskMapper modelMapperTask;
 
     @Override
     public List<TaskUser> findTasksByUser(String email){
@@ -72,7 +75,7 @@ public class TaskUserServiceImpl implements TaskUserService {
         return existingUser;
     }
     private Task validateTaskById(Long id) {
-        Task existingTask = taskRepository.findTaskByTaskIdAndActiveTrue(id);
+        Task existingTask = modelMapperTask.mapProjectionToEntity(taskRepository.findTaskByTaskIdAndActiveTrue(id));
         if (Objects.isNull(existingTask)) {
             throw new ResourceNotFoundException("Error: Task with ID: " + id + " not found.");
         }

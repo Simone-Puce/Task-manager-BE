@@ -1,12 +1,13 @@
 package com.fincons.taskmanager.service.taskService.impl;
 
-import com.fincons.taskmanager.entity.Attachment;
 import com.fincons.taskmanager.entity.Lane;
 import com.fincons.taskmanager.entity.Task;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
+import com.fincons.taskmanager.mapper.TaskMapper;
 import com.fincons.taskmanager.repository.AttachmentRepository;
 import com.fincons.taskmanager.repository.TaskRepository;
 import com.fincons.taskmanager.repository.TaskUserRepository;
+import com.fincons.taskmanager.projection.TaskProjection;
 import com.fincons.taskmanager.service.laneService.impl.LaneServiceImpl;
 import com.fincons.taskmanager.service.taskService.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +31,18 @@ public class TaskServiceImpl implements TaskService {
     private TaskUserRepository taskUserRepository;
     @Autowired
     private AttachmentRepository attachmentRepository;
+    @Autowired
+    private TaskMapper modelMapperTask;
 
     @Override
     public Task getTaskById(Long taskId) {
         existingTaskById(taskId);
-        return taskRepository.findTaskByTaskIdAndActiveTrue(taskId);
+        TaskProjection taskProjection = taskRepository.findTaskByTaskIdAndActiveTrue(taskId);
+        return modelMapperTask.mapProjectionToEntity(taskProjection);
     }
     @Override
     public List<Task> getAllTasks(){
-        return sortTaskList(taskRepository.findAllByActiveTrue());
+        return sortTaskList(modelMapperTask.mapProjectionsToEntities(taskRepository.findAllByActiveTrue()));
     }
     @Override
     public Task createTask(Task task) {
@@ -51,7 +55,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task updateTaskById(Long taskId, Task task) {
         existingTaskById(taskId);
-        Task taskExisting = taskRepository.findTaskByTaskIdAndActiveTrue(taskId);
+        Task taskExisting = modelMapperTask.mapProjectionToEntity(taskRepository.findTaskByTaskIdAndActiveTrue(taskId));
         taskExisting.setTaskName(task.getTaskName());
         taskExisting.setDescription(task.getDescription());
         Lane lane = laneServiceImpl.validateLaneById(task.getLane().getLaneId());
@@ -75,7 +79,7 @@ public class TaskServiceImpl implements TaskService {
         taskUserRepository.deleteByTask(task);
     }
     public Task validateTaskById(Long id) {
-        Task existingId = taskRepository.findTaskByTaskIdAndActiveTrue(id);
+        Task existingId = modelMapperTask.mapProjectionToEntity(taskRepository.findTaskByTaskIdAndActiveTrue(id));
         if (Objects.isNull(existingId)) {
             throw new ResourceNotFoundException("Error: Task with ID: " + id + " not found.");
         }
