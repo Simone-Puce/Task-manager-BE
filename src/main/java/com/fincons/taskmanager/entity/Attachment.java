@@ -1,13 +1,14 @@
 package com.fincons.taskmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "attachment")
 public class Attachment {
@@ -20,12 +21,27 @@ public class Attachment {
     @Column(nullable = false)
     private String attachmentName;
 
+    @Column(name = "file64", length = 7026356)
+    private String file64;
+
     @Column(nullable = false)
     private String extension;
-    @Column(name = "active")
-    private boolean active;
 
     @ManyToOne
     @JoinColumn(name = "task_id")
     private Task task;
+
+    public Attachment(String attachmentName, String file64, String extension, Task task) {
+        this.attachmentName = attachmentName;
+        this.file64 = file64;
+        this.extension = extension;
+        this.task = task;
+    }
+
+    public Attachment(String attachmentName, Task task) {
+        this.attachmentName = attachmentName;
+        this.task = task;
+    }
+
+
 }

@@ -18,12 +18,10 @@ public class AppConfig {
     public AuditorAware<String> auditorProvider() {
         return new SpringSecurityAuditorAwareImpl();
     }
-
     @Bean
     public ModelMapper modelMapperStandard() {
         return new ModelMapper();
     }
-
     @Bean
     public ModelMapper modelMapperForTask() {
         ModelMapper modelMapper = new ModelMapper();

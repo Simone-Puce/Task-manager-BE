@@ -24,8 +24,8 @@ public class AttachmentMapper {
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
-
     public Attachment mapToEntity(AttachmentDTO attachmentDTO){
         return modelMapperStandard.map(attachmentDTO, Attachment.class);
     }
+
 }

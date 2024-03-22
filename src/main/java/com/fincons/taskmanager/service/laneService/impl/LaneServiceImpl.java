@@ -4,6 +4,7 @@ import com.fincons.taskmanager.entity.Board;
 import com.fincons.taskmanager.entity.Lane;
 import com.fincons.taskmanager.entity.Task;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
+import com.fincons.taskmanager.repository.AttachmentRepository;
 import com.fincons.taskmanager.repository.LaneRepository;
 import com.fincons.taskmanager.service.boardService.impl.BoardServiceImpl;
 import com.fincons.taskmanager.service.laneService.LaneService;
@@ -22,7 +23,8 @@ public class LaneServiceImpl implements LaneService {
     private LaneRepository laneRepository;
     @Autowired
     private BoardServiceImpl boardServiceImpl;
-
+    @Autowired
+    private AttachmentRepository attachmentRepository;
     @Override
     public Lane getLaneById(Long laneId) {
         existingLaneById(laneId);
@@ -55,7 +57,7 @@ public class LaneServiceImpl implements LaneService {
         lane.setActive(false);
         lane.getTasks().forEach(task -> {
             task.setActive(false);
-            task.getAttachments().forEach(attachment -> attachment.setActive(false));
+            task.getAttachments().forEach(attachment -> attachmentRepository.delete(attachment));
         });
         laneRepository.save(lane);
     }

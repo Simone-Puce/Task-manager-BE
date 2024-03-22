@@ -15,7 +15,7 @@ public class AttachmentDTO {
 
     private Long attachmentId;
     private String attachmentName;
+    private String file64;
     private String extension;
     private Long taskId;
-    private boolean active;
 }

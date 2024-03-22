@@ -1,12 +1,13 @@
 package com.fincons.taskmanager.service.taskService.impl;
 
-import com.fincons.taskmanager.entity.Attachment;
 import com.fincons.taskmanager.entity.Lane;
 import com.fincons.taskmanager.entity.Task;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
+import com.fincons.taskmanager.mapper.TaskMapper;
 import com.fincons.taskmanager.repository.AttachmentRepository;
 import com.fincons.taskmanager.repository.TaskRepository;
 import com.fincons.taskmanager.repository.TaskUserRepository;
+import com.fincons.taskmanager.projection.TaskProjection;
 import com.fincons.taskmanager.service.laneService.impl.LaneServiceImpl;
 import com.fincons.taskmanager.service.taskService.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +31,18 @@ public class TaskServiceImpl implements TaskService {
     private TaskUserRepository taskUserRepository;
     @Autowired
     private AttachmentRepository attachmentRepository;
+    @Autowired
+    private TaskMapper modelMapperTask;
 
     @Override
     public Task getTaskById(Long taskId) {
         existingTaskById(taskId);
-        return filterTaskForAttachmentsTrue(taskRepository.findTaskByTaskIdAndActiveTrue(taskId));
+        TaskProjection taskProjection = taskRepository.findTaskByTaskIdAndActiveTrue(taskId);
+        return modelMapperTask.mapProjectionToEntity(taskProjection);
     }
     @Override
     public List<Task> getAllTasks(){
-        return sortTaskList(filterTasksForAttachmentsTrue(taskRepository.findAllByActiveTrue()));
+        return sortTaskList(modelMapperTask.mapProjectionsToEntities(taskRepository.findAllByActiveTrue()));
     }
     @Override
     public Task createTask(Task task) {
@@ -51,14 +55,14 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task updateTaskById(Long taskId, Task task) {
         existingTaskById(taskId);
-        Task taskExisting = taskRepository.findTaskByTaskIdAndActiveTrue(taskId);
+        Task taskExisting = modelMapperTask.mapProjectionToEntity(taskRepository.findTaskByTaskIdAndActiveTrue(taskId));
         taskExisting.setTaskName(task.getTaskName());
         taskExisting.setDescription(task.getDescription());
         Lane lane = laneServiceImpl.validateLaneById(task.getLane().getLaneId());
         if(Objects.equals(lane.getBoard(), taskExisting.getLane().getBoard())){
             taskExisting.setLane(lane);
             taskRepository.save(taskExisting);
-            return filterTaskForAttachmentsTrue(taskExisting);
+            return taskExisting;
         }
         else {
             throw new IllegalArgumentException("You can't choose lane of another BOARD!");
@@ -70,12 +74,12 @@ public class TaskServiceImpl implements TaskService {
         Task task = validateTaskById(taskId);
         task.setActive(false);
         task.getAttachments().forEach(attachment ->
-                attachment.setActive(false));
+                attachmentRepository.delete(attachment));
         taskRepository.save(task);
         taskUserRepository.deleteByTask(task);
     }
     public Task validateTaskById(Long id) {
-        Task existingId = taskRepository.findTaskByTaskIdAndActiveTrue(id);
+        Task existingId = modelMapperTask.mapProjectionToEntity(taskRepository.findTaskByTaskIdAndActiveTrue(id));
         if (Objects.isNull(existingId)) {
             throw new ResourceNotFoundException("Error: Task with ID: " + id + " not found.");
         }
@@ -87,23 +91,10 @@ public class TaskServiceImpl implements TaskService {
             throw new ResourceNotFoundException("Error: Task with ID: " + id + " not found");
         }
     }
-    private Task filterTaskForAttachmentsTrue(Task task) {
-        List<Attachment> attachments = task.getAttachments().stream()
-                .filter(Attachment::isActive)
-                .toList();
-        task.setAttachments(attachments);
-        return task;
-    }
-    private List<Task> filterTasksForAttachmentsTrue(List<Task> tasks){
-        return tasks.stream()
-                .map(this::filterTaskForAttachmentsTrue)
-                .toList();
-    }
     private List<Task> sortTaskList(List<Task> tasks){
         List<Task> sortedTasks = new ArrayList<>(tasks);
         sortedTasks.sort(Comparator.comparing(Task::getTaskName)
                 .thenComparing(Task::getCreatedDate));
         return sortedTasks;
     }
-
 }

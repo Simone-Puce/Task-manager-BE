@@ -25,6 +25,9 @@ public class BoardServiceImpl implements BoardService {
     private TaskRepository taskRepository;
     @Autowired
     private TaskUserRepository taskUserRepository;
+    @Autowired
+    private AttachmentRepository attachmentRepository;
+
 
     @Override
     public Board getBoardById(Long boardId) {
@@ -69,7 +72,7 @@ public class BoardServiceImpl implements BoardService {
             lane.getTasks().forEach(task -> {
                 taskUserRepository.deleteByTask(task);
                 task.setActive(false);
-                task.getAttachments().forEach(attachment -> attachment.setActive(false));
+                task.getAttachments().forEach(attachment -> attachmentRepository.delete(attachment));
             });
         });
     }

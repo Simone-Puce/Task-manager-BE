@@ -21,13 +21,6 @@ public class MapperTest {
             @Override
             public boolean applies(MappingContext<List<Attachment>, List<AttachmentDTO>> context) {
                 List<Attachment> attachments = context.getSource();
-                if (attachments != null) {
-                    for (Attachment attachment : attachments) {
-                        if (attachment.isActive()) {
-                            filteredAttachments.add(modelMapper.map(attachment, AttachmentDTO.class));
-                        }
-                    }
-                }
                 return true;
             }
         };

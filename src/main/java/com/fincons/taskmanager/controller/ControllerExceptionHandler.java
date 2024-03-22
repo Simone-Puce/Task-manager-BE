@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.io.IOException;
+
 @ControllerAdvice
 public class ControllerExceptionHandler {
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
@@ -20,7 +22,7 @@ public class ControllerExceptionHandler {
                 hmnre.getMessage(),
                 HttpStatus.BAD_REQUEST
         );
-        return ResponseEntity.ok(response);
+        return ResponseEntity.badRequest().body(response);
     }
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<GenericResponse<ErrorMessage>> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException matme) {
@@ -28,7 +30,15 @@ public class ControllerExceptionHandler {
                 matme.getMessage(),
                 HttpStatus.BAD_REQUEST
         );
-        return ResponseEntity.ok(response);
+        return ResponseEntity.badRequest().body(response);
+    }
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<GenericResponse<?>> iOException(IOException ioe){
+        GenericResponse<?> response = GenericResponse.error(
+                ioe.getMessage(),
+                HttpStatus.BAD_REQUEST
+        );
+        return ResponseEntity.badRequest().body(response);
     }
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<GenericResponse<ErrorMessage>> missingServletRequestParameterException(MissingServletRequestParameterException msrpe){
@@ -36,7 +46,7 @@ public class ControllerExceptionHandler {
                 msrpe.getMessage(),
                 HttpStatus.BAD_REQUEST
         );
-        return ResponseEntity.ok(response);
+        return ResponseEntity.badRequest().body(response);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
