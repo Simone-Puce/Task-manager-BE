@@ -10,11 +10,12 @@ import com.fincons.taskmanager.utility.GenericResponse;
 import com.fincons.taskmanager.utility.MaxCharLength;
 import com.fincons.taskmanager.utility.SpaceAndFormatValidator;
 import com.fincons.taskmanager.utility.ValidateFields;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,9 +32,17 @@ public class AttachmentController {
     private AttachmentService attachmentService;
     @Autowired
     private AttachmentMapper modelMapperAttachment;
+    private static final Logger log = LogManager.getLogger(AttachmentController.class);
+
 
     @GetMapping(value = "${attachment.find-by-id}")
     public ResponseEntity<GenericResponse<AttachmentDTO>> getAttachmentById(@RequestParam Long id) {
+        log.trace("A TRACE Message");
+        log.debug("A DEBUG Message");
+        log.info("An INFO Message");
+        log.warn("A WARN Message");
+        log.error("An ERROR Message");
+        log.info("The parameter type is a {}: ID: {}", id.getClass().getSimpleName(), id);
         ValidateFields.validateSingleFieldLong(id);
         Attachment attachment = attachmentService.getAttachmentById(id);
         AttachmentDTO attachmentDTO = modelMapperAttachment.mapToDTO(attachment);

@@ -39,6 +39,8 @@ public class SecurityConfiguration {
     private JwtAuthenticationFilter jwtAuthFilter;
     @Value("${application.context}")
     private String appContext;
+    @Value("${log4j2.base.uri}")
+    private String logBaseUri;
     @Value("${role.base.uri}")
     private String roleBaseUri;
     @Value("${modify.user}")
@@ -86,6 +88,7 @@ public class SecurityConfiguration {
 
         http.authorizeHttpRequests(auth -> {
             auth
+                    .requestMatchers(appContext + logBaseUri + "/**").hasAnyRole("ADMIN")
                     .requestMatchers(appContext + roleBaseUri + "/**").hasAnyRole("ADMIN")
                     .requestMatchers(appContext + taskBaseUri + "/**").hasAnyRole("ADMIN", "USER")
                     .requestMatchers(appContext + attachmentBaseUri + "/**").hasAnyRole("ADMIN", "USER")
