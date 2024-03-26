@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="LOGS_HOME" value="C:\\Log-Task-Manager\\prova.log" />
+    <property name="LOGS_HOME" value="C:\\Log-Task-Manager\\task-manager_" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
@@ -28,8 +28,8 @@
         </rollingPolicy>
     </appender>
 
-    <appender name="FILE-ACCESS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOGS_HOME}access.log</file>
+    <appender name="FILE-REQUEST" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_HOME}request.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>
                 %d{dd-MM-yyyy HH:mm:ss.SSS}, %msg%n
@@ -38,7 +38,7 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${LOGS_HOME}access.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>${LOGS_HOME}request.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>10MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
@@ -50,8 +50,8 @@
         <appender-ref ref="STDOUT" />
     </logger>
 
-    <logger name="access-log" level="info" additivity="false">
-        <appender-ref ref="FILE-ACCESS" />
+    <logger name="request-log" level="info" additivity="false">
+        <appender-ref ref="FILE-REQUEST" />
         <appender-ref ref="STDOUT" />
     </logger>
 

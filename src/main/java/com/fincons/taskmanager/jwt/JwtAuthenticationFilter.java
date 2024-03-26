@@ -22,9 +22,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtTokenProvider jwtTokenProvider;
     private UserDetailsService userDetailsService;
-
-    private static final Logger serverLogger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-    private static final Logger accessLogger = LoggerFactory.getLogger("access-log");
+    private static final Logger accessLogger = LoggerFactory.getLogger("request-log");
 
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService) {
         this.jwtTokenProvider = jwtTokenProvider;
