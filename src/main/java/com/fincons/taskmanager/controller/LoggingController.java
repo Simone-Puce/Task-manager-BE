@@ -1,16 +1,14 @@
 package com.fincons.taskmanager.controller;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/task-manager")
-public class LombokLoggingController {
+public class LoggingController {
 
-    private static final Logger serverLogger = LoggerFactory.getLogger(LombokLoggingController.class);
+    private static final Logger serverLogger = LoggerFactory.getLogger(LoggingController.class);
     @GetMapping("${log4j2.get}")
     public String index() {
         serverLogger.trace("A TRACE Message");
