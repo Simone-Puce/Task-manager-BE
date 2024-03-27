@@ -11,6 +11,8 @@ import com.fincons.taskmanager.jwt.JwtAuthResponse;
 import com.fincons.taskmanager.mapper.UserAndRoleMapper;
 import com.fincons.taskmanager.service.authService.UserService;
 import com.fincons.taskmanager.utility.GenericResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,6 +28,7 @@ public class UserController {
     UserService userService;
     @Autowired
     UserAndRoleMapper userAndRoleMapper;
+    private static final Logger log = LogManager.getLogger(UserController.class);
     @GetMapping("${error.base.uri}")
     public String errorEndpoint() {
         return "Error!";
@@ -34,6 +37,7 @@ public class UserController {
     @PostMapping("${login.base.uri}")
     public ResponseEntity<GenericResponse<JwtAuthResponse>> login(@RequestBody LoginDTO loginDto) {
         try {
+            log.info("Received {} request for log in", RequestMethod.POST);
             String token = userService.login(loginDto);
             JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
             jwtAuthResponse.setAccessToken(token);
@@ -54,7 +58,7 @@ public class UserController {
 
     @GetMapping("${registered.users}")
     public ResponseEntity<GenericResponse<List<UserDTO>>> registeredUsers() {
-
+        log.info("Received {} request to get all users", RequestMethod.GET);
         List<User> users = userService.findAllUsers();
         List<UserDTO> userDTOs = userAndRoleMapper.mapEntitiesToDTOs(users);
         GenericResponse<List<UserDTO>> response = GenericResponse.success(
@@ -71,6 +75,7 @@ public class UserController {
             @RequestBody UserDTO userDTO,
             @RequestParam(name = "admin", required = false) String passwordForAdmin) {
         try {
+            log.info("Received {} request for create new User", RequestMethod.POST);
             UserDTO registeredUser = userAndRoleMapper.mapToDTO(userService.registerNewUser(userDTO, passwordForAdmin));
             return ResponseEntity.ok(GenericResponse.<UserDTO>builder()
                     .status(HttpStatus.OK)
@@ -192,6 +197,7 @@ public class UserController {
     @DeleteMapping("${delete.user-by-email}")
     public ResponseEntity<GenericResponse<Boolean>> deleteUserByEmail(@RequestParam String email) {
         try {
+            log.info("Received {} request to delete user by email", RequestMethod.DELETE);
             userService.deleteUserByEmail(email);
             return ResponseEntity.status(HttpStatus.OK).body(
                     GenericResponse.<Boolean>builder()
