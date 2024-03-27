@@ -39,7 +39,7 @@ public class SecurityConfiguration {
     private JwtAuthenticationFilter jwtAuthFilter;
     @Value("${application.context}")
     private String appContext;
-    @Value("${log4j2.base.uri}")
+    @Value("${log4j.base.uri}")
     private String logBaseUri;
     @Value("${role.base.uri}")
     private String roleBaseUri;

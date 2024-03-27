@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 public class LoggingController {
 
     private static final Logger serverLogger = LoggerFactory.getLogger(LoggingController.class);
-    @GetMapping("${log4j2.get}")
+    @GetMapping("${log4j.get}")
     public String index() {
         serverLogger.trace("A TRACE Message");
         serverLogger.debug("A DEBUG Message");
