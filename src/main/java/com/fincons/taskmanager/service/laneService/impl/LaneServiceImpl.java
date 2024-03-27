@@ -8,6 +8,8 @@ import com.fincons.taskmanager.repository.AttachmentRepository;
 import com.fincons.taskmanager.repository.LaneRepository;
 import com.fincons.taskmanager.service.boardService.impl.BoardServiceImpl;
 import com.fincons.taskmanager.service.laneService.LaneService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ public class LaneServiceImpl implements LaneService {
     private BoardServiceImpl boardServiceImpl;
     @Autowired
     private AttachmentRepository attachmentRepository;
+    private static final Logger log = LogManager.getLogger(LaneServiceImpl.class);
     @Override
     public Lane getLaneById(Long laneId) {
         existingLaneById(laneId);
@@ -40,6 +43,7 @@ public class LaneServiceImpl implements LaneService {
         lane.setBoard(board);
         lane.setActive(true);
         laneRepository.save(lane);
+        log.info("New Lane saved in the repository with ID {}.", lane.getLaneId());
         return lane;
     }
     @Override
@@ -48,6 +52,7 @@ public class LaneServiceImpl implements LaneService {
         Lane laneExisting = laneRepository.findLaneByLaneIdAndActiveTrue(laneId);
         laneExisting.setLaneName(lane.getLaneName());
         laneRepository.save(laneExisting);
+        log.info("Updated Lane in the repository with ID {}.", laneExisting.getLaneId());
         return filterLaneForLanesTrue(laneExisting);
     }
     @Override
@@ -56,8 +61,12 @@ public class LaneServiceImpl implements LaneService {
         Lane lane = validateLaneById(laneId);
         lane.setActive(false);
         lane.getTasks().forEach(task -> {
+            log.info("Task with ID {} deleted from the repository.", task.getTaskId());
             task.setActive(false);
-            task.getAttachments().forEach(attachment -> attachmentRepository.delete(attachment));
+            task.getAttachments().forEach(attachment -> {
+                log.info("Attachment with ID {} deleted from the repository.", attachment.getAttachmentId());
+                attachmentRepository.delete(attachment);
+            });
         });
         laneRepository.save(lane);
     }
@@ -73,6 +82,7 @@ public class LaneServiceImpl implements LaneService {
         if (!existingId){
             throw new ResourceNotFoundException("Error: Lane with ID: " + id + " not found.");
         }
+        log.info("Lane retrieved from repository with ID: {} exists", id);
     }
     private Lane filterLaneForLanesTrue(Lane lane) {
         List <Task> tasks = lane.getTasks().stream()

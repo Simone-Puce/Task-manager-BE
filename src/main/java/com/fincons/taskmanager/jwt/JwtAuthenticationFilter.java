@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             //LOGGER
             ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
-            accessLogger.info("Request Method: {}, Path: {}, User email: {}",
+            accessLogger.info("Request Method: {}, Path: {}, User: {}",
                     request.getMethod(), request.getRequestURI(), email);
             responseWrapper.copyBodyToResponse();
         }

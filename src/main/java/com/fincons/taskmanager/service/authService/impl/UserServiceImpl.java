@@ -4,7 +4,6 @@ import com.fincons.taskmanager.dto.LoginDTO;
 import com.fincons.taskmanager.dto.UserDTO;
 import com.fincons.taskmanager.entity.Role;
 import com.fincons.taskmanager.entity.User;
-import com.fincons.taskmanager.entity.UserBoard;
 import com.fincons.taskmanager.exception.EmailException;
 import com.fincons.taskmanager.exception.PasswordException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
@@ -81,7 +80,9 @@ public class UserServiceImpl implements UserService {
             role = roleToAssign("ROLE_USER");
         }
         userToSave.setRoles(List.of(role));
-        return userRepo.save(userToSave);
+        userRepo.save(userToSave);
+        LOG.info("New User saved in the repository with ID {}.", userToSave.getId());
+        return userToSave;
     }
 
     @Override
@@ -91,7 +92,9 @@ public class UserServiceImpl implements UserService {
                 loginDto.getPassword()
         ));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return jwtTokenProvider.generateToken(authentication);
+        String token = jwtTokenProvider.generateToken(authentication);
+        LOG.info("The user with email {}, is logged in.", loginDto.getEmail());
+        return token;
     }
 
     @Override
@@ -157,6 +160,7 @@ public class UserServiceImpl implements UserService {
         taskUserRepository.deleteByUser(userToRemove);
         userBoardRepository.deleteByUser(userToRemove);
         userRepo.delete(userToRemove);
+        LOG.info("The user with email {}, is deleted.", userToRemove.getEmail());
     }
 
     @Override
