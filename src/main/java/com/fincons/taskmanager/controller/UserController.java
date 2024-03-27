@@ -58,7 +58,7 @@ public class UserController {
 
     @GetMapping("${registered.users}")
     public ResponseEntity<GenericResponse<List<UserDTO>>> registeredUsers() {
-        log.info("Received {} request to get all users", RequestMethod.GET);
+        log.info("Received {} request to get all users with base role", RequestMethod.GET);
         List<User> users = userService.findAllUsers();
         List<UserDTO> userDTOs = userAndRoleMapper.mapEntitiesToDTOs(users);
         GenericResponse<List<UserDTO>> response = GenericResponse.success(
