@@ -10,6 +10,8 @@ import com.fincons.taskmanager.repository.TaskUserRepository;
 import com.fincons.taskmanager.projection.TaskProjection;
 import com.fincons.taskmanager.service.laneService.impl.LaneServiceImpl;
 import com.fincons.taskmanager.service.taskService.TaskService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,7 @@ public class TaskServiceImpl implements TaskService {
     private AttachmentRepository attachmentRepository;
     @Autowired
     private TaskMapper modelMapperTask;
-
+    private static final Logger log = LogManager.getLogger(TaskServiceImpl.class);
     @Override
     public Task getTaskById(Long taskId) {
         existingTaskById(taskId);
@@ -50,6 +52,7 @@ public class TaskServiceImpl implements TaskService {
         task.setLane(lane);
         task.setActive(true);
         taskRepository.save(task);
+        log.info("New Task saved in the repository with ID {}.", task.getTaskId());
         return task;
     }
     @Override
@@ -62,6 +65,7 @@ public class TaskServiceImpl implements TaskService {
         if(Objects.equals(lane.getBoard(), taskExisting.getLane().getBoard())){
             taskExisting.setLane(lane);
             taskRepository.save(taskExisting);
+            log.info("Updated Task in the repository with ID {}.", taskExisting.getTaskId());
             return taskExisting;
         }
         else {
@@ -73,23 +77,28 @@ public class TaskServiceImpl implements TaskService {
     public void deleteTaskById(Long taskId) {
         Task task = validateTaskById(taskId);
         task.setActive(false);
-        task.getAttachments().forEach(attachment ->
-                attachmentRepository.delete(attachment));
+        task.getAttachments().forEach(attachment -> {
+            log.info("Attachment with ID {} deleted from the repository.", attachment.getAttachmentId());
+            attachmentRepository.delete(attachment);
+        });
         taskRepository.save(task);
         taskUserRepository.deleteByTask(task);
+        log.info("Task with ID {} deleted from the repository.", task.getTaskId());
     }
     public Task validateTaskById(Long id) {
-        Task existingId = modelMapperTask.mapProjectionToEntity(taskRepository.findTaskByTaskIdAndActiveTrue(id));
-        if (Objects.isNull(existingId)) {
+        Task existingTask = modelMapperTask.mapProjectionToEntity(taskRepository.findTaskByTaskIdAndActiveTrue(id));
+        if (Objects.isNull(existingTask)) {
             throw new ResourceNotFoundException("Error: Task with ID: " + id + " not found.");
         }
-        return existingId;
+        log.info("Task retrieved from repository with ID: {}", existingTask.getTaskId());
+        return existingTask;
     }
     public void existingTaskById(Long id){
         boolean existingId = taskRepository.existsByTaskIdAndActiveTrue(id);
         if(!existingId){
             throw new ResourceNotFoundException("Error: Task with ID: " + id + " not found");
         }
+        log.info("Task retrieved from repository with ID: {} exists", id);
     }
     private List<Task> sortTaskList(List<Task> tasks){
         List<Task> sortedTasks = new ArrayList<>(tasks);

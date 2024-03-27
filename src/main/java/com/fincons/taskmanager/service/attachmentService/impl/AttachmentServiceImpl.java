@@ -9,13 +9,13 @@ import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.repository.AttachmentRepository;
 import com.fincons.taskmanager.service.attachmentService.AttachmentService;
 import com.fincons.taskmanager.service.taskService.impl.TaskServiceImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,7 +26,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     private AttachmentRepository attachmentRepository;
     @Autowired
     private TaskServiceImpl taskServiceImpl;
-
+    private static final Logger log = LogManager.getLogger(AttachmentService.class);
 
     @Override
     public Attachment getAttachmentById(Long attachmentId) {
@@ -38,12 +38,6 @@ public class AttachmentServiceImpl implements AttachmentService {
         return new AttachmentDownload(
                 AttachmentDecoding.decodeToString(attachmentExisting), attachmentExisting);
     }
-
-    @Override
-    public List<Attachment> getAllAttachments() {
-        return attachmentRepository.findAll();
-    }
-
     @Override
     public Attachment uploadAttachment(Long taskId, MultipartFile file) throws IOException {
         Task task = taskServiceImpl.validateTaskById(taskId);
@@ -53,29 +47,34 @@ public class AttachmentServiceImpl implements AttachmentService {
         String encodeAttachment = AttachmentEncoding.encodeAttachment(file);
         Attachment attachment = new Attachment(attachmentName, encodeAttachment, extension, task);
         attachmentRepository.save(attachment);
+        log.info("New attachment saved in the repository with ID {}.", attachment.getAttachmentId());
         return attachment;
     }
     @Override
     public void deleteAttachmentById(Long attachmentId) {
         Attachment attachment = validateAttachmentById(attachmentId);
         attachmentRepository.delete(attachment);
+        log.info("Attachment with ID {} deleted from the repository.", attachment.getAttachmentId());
     }
 
     public Attachment validateAttachmentById(Long id) {
-        Attachment existingId = attachmentRepository.findAttachmentByAttachmentId(id);
-
-        if (Objects.isNull(existingId)) {
+        Attachment existingAttachment  = attachmentRepository.findAttachmentByAttachmentId(id);
+        if (Objects.isNull(existingAttachment)) {
             throw new ResourceNotFoundException("Error: Attachment with ID: " + id + " not found.");
         }
-        return existingId;
+        log.info("Attachment retrieved from repository with ID: {}", existingAttachment.getAttachmentId());
+        return existingAttachment;
     }
     private String getFileName(MultipartFile file) throws IOException{
         String fileName = file.getOriginalFilename();
         if (fileName != null && !fileName.isEmpty()) {
             int lastIndex = fileName.lastIndexOf('.');
             if (lastIndex != -1) {
-                return fileName.substring(0, lastIndex);
+                String nameWithoutExtension = fileName.substring(0, lastIndex);
+                log.debug("Get name without extension: {}", nameWithoutExtension);
+                return nameWithoutExtension;
             } else {
+                log.debug("Get name without extension: {}", fileName);
                 return fileName;
             }
         } else {
@@ -85,7 +84,9 @@ public class AttachmentServiceImpl implements AttachmentService {
     private String getFileExtension(MultipartFile file) throws IOException {
         String fileExtension = file.getOriginalFilename();
         if (fileExtension != null && fileExtension.contains(".")) {
-            return fileExtension.substring(fileExtension.lastIndexOf(".") + 1);
+            String extensionFile = fileExtension.substring(fileExtension.lastIndexOf(".") + 1);
+            log.debug("Get extension: {}", extensionFile);
+            return extensionFile;
         }
         else {
             throw new IOException("Invalid extension or file without extension");

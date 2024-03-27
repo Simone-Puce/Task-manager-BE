@@ -12,6 +12,8 @@ import com.fincons.taskmanager.utility.GenericResponse;
 import com.fincons.taskmanager.utility.MaxCharLength;
 import com.fincons.taskmanager.utility.SpaceAndFormatValidator;
 import com.fincons.taskmanager.utility.ValidateFields;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,9 +32,10 @@ public class BoardController {
     private BoardService boardService;
     @Autowired
     private BoardMapper modelMapperBoard;
-
+    private static final Logger log = LogManager.getLogger(BoardController.class);
     @GetMapping(value = "${board.find-by-id}")
     public ResponseEntity<GenericResponse<BoardDTO>> getBoardById(@RequestParam Long id) {
+        log.info("Received {} request for Board with ID: {}", RequestMethod.GET, id);
         ValidateFields.validateSingleFieldLong(id);
         Board board = boardService.getBoardById(id);
         BoardDTO boardDTO = modelMapperBoard.mapToDTO(board);
@@ -45,6 +48,7 @@ public class BoardController {
     }
     @GetMapping(value = "${board.list}")
     public ResponseEntity<GenericResponse<List<BoardDTO>>> getAllBoards() {
+        log.info("Received request to retrieve all Board lists.");
         List<Board> boards = boardService.getAllBoards();
         List<BoardDTO> boardDTOs = modelMapperBoard.mapEntitiesToDTOs(boards);
         GenericResponse<List<BoardDTO>> response = GenericResponse.success(
@@ -58,6 +62,7 @@ public class BoardController {
 
     @PostMapping(value = "${board.create}")
     public ResponseEntity<GenericResponse<BoardDTO>> createBoard(@RequestBody BoardDTO boardDTO) {
+        log.info("Received {} request for create new Board", RequestMethod.POST);
         validateBoardDTO(boardDTO);
         Board boardMapped = modelMapperBoard.mapToEntity(boardDTO);
         Board board = boardService.createBoard(boardMapped);
@@ -70,6 +75,7 @@ public class BoardController {
     }
     @PutMapping(value = "${board.put}")
     public ResponseEntity<GenericResponse<BoardDTO>> updateBoardById(@RequestParam Long boardId, @RequestBody BoardDTO boardDTO) {
+        log.info("Received {} request to modify Board with ID {}", RequestMethod.PUT, boardId);
         ValidateFields.validateSingleFieldLong(boardId);
         validateBoardDTO(boardDTO);
         Board boardMapped = modelMapperBoard.mapToEntity(boardDTO);
@@ -85,6 +91,7 @@ public class BoardController {
 
     @PutMapping(value = "${board.delete}")
     public ResponseEntity<GenericResponse<BoardDTO>> deleteBoardById(@RequestParam Long boardId) {
+        log.info("Received {} request for delete Board with ID: {}", RequestMethod.DELETE, boardId);
         ValidateFields.validateSingleFieldLong(boardId);
         boardService.deleteBoardById(boardId);
         GenericResponse<BoardDTO> response = GenericResponse.empty(
@@ -94,14 +101,18 @@ public class BoardController {
         return ResponseEntity.ok(response);
     }
     private void validateBoardDTO(BoardDTO boardDTO) {
+        log.debug("Start validating BoardDTO");
         validateBoardFields(boardDTO);
         String newBoardName = SpaceAndFormatValidator.spaceAndFormatValidator(boardDTO.getBoardName());
         MaxCharLength.validateNameLength(newBoardName);
         boardDTO.setBoardName(newBoardName);
+        log.debug("BoardDTO validation completed successfully");
     }
     private void validateBoardFields(BoardDTO boardDTO) {
+        log.debug("Start validation fields BoardDTO");
         if (Strings.isEmpty(boardDTO.getBoardName())) {
             throw new IllegalArgumentException("Error: The field of the board can't be null or empty.");
         }
+        log.debug("BoardDTO validation fields was successful");
     }
 }

@@ -12,7 +12,6 @@ public interface AttachmentService {
 
     Attachment getAttachmentById(Long attachmentId);
     AttachmentDownload downloadFile(Long id);
-    List<Attachment> getAllAttachments();
     Attachment uploadAttachment(Long taskId, MultipartFile file) throws IOException;
     void deleteAttachmentById(Long attachmentId);
 }
