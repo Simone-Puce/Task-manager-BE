@@ -2,6 +2,7 @@ package com.fincons.taskmanager.service.boardService.impl;
 
 import com.fincons.taskmanager.entity.Board;
 import com.fincons.taskmanager.entity.Lane;
+import com.fincons.taskmanager.entity.Task;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
 import com.fincons.taskmanager.repository.*;
 import com.fincons.taskmanager.service.boardService.BoardService;
@@ -34,11 +35,11 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public Board getBoardById(Long boardId) {
         existingBoardById(boardId);
-        return filterBoardForLanesTrue(boardRepository.findBoardByBoardIdAndActiveTrue(boardId));
+        return filterTasksInBoard(filterBoardForLanesTrue(boardRepository.findBoardByBoardIdAndActiveTrue(boardId)));
     }
     @Override
     public List<Board> getAllBoards() {
-        return sortBoardsList(filterBoardsForLanesTrue(boardRepository.findAllByActiveTrue()));
+        return sortBoardsList(filterTasksInBoards(filterBoardsForLanesTrue(boardRepository.findAllByActiveTrue())));
     }
 
     @Override
@@ -101,6 +102,22 @@ public class BoardServiceImpl implements BoardService {
                 .toList();
         board.setLanes(lanes);
         return board;
+    }
+    private Board filterTasksInBoard(Board board) {
+        List<Lane> lanesInBoard = board.getLanes();
+        lanesInBoard.forEach(lane -> {
+            List<Task> taskList = lane.getTasks();
+            List<Task> filterTaskList = taskList.stream().filter(Task::isActive).toList();
+            lane.setTasks(filterTaskList);
+        });
+        board.setLanes(lanesInBoard);
+        return board;
+    }
+
+    private List<Board> filterTasksInBoards(List<Board> boards){
+        return boards.stream()
+                .map(this::filterTasksInBoard)
+                .toList();
     }
     private List<Board> filterBoardsForLanesTrue(List<Board> boards){
         return boards.stream()
