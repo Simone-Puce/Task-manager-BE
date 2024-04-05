@@ -3,6 +3,7 @@ package com.fincons.taskmanager.service.userBoardService.impl;
 import com.fincons.taskmanager.entity.*;
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
+import com.fincons.taskmanager.exception.RoleException;
 import com.fincons.taskmanager.repository.BoardRepository;
 import com.fincons.taskmanager.repository.RoleRepository;
 import com.fincons.taskmanager.repository.UserBoardRepository;
@@ -38,7 +39,7 @@ public class UserBoardServiceImpl implements UserBoardService {
     }
 
     @Override
-    public UserBoard createUserBoard(UserBoard userBoard) {
+    public UserBoard createUserBoard(UserBoard userBoard) throws RoleException {
 
         User existingUser = validateUserByEmail(userBoard.getUser().getEmail());
         Board existingBoard = validateBoardById(userBoard.getBoard().getBoardId());
@@ -58,13 +59,13 @@ public class UserBoardServiceImpl implements UserBoardService {
                     .filter(userBoard1 -> "EDITOR".equals(userBoard1.getRoleCode()))
                     .map(UserBoard::getUser)
                     .toList();
-            boolean emailExists = userIsEditor.stream()
+            boolean isEditorEmailValidated = userIsEditor.stream()
                     .anyMatch(user -> Objects.equals(user.getEmail(), loggedUser));
-            if(emailExists){
+            if(isEditorEmailValidated){
                 canCreate = true;
             }
             else {
-                throw new IllegalArgumentException("You need to be a EDITOR to create a Relationship");
+                throw new RoleException("You need to be a EDITOR to create a relationship");
             }
         }
         if(canCreate){
