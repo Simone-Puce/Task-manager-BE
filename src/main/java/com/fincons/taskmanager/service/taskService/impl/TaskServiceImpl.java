@@ -3,6 +3,7 @@ package com.fincons.taskmanager.service.taskService.impl;
 import com.fincons.taskmanager.entity.Lane;
 import com.fincons.taskmanager.entity.Task;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
+import com.fincons.taskmanager.exception.RoleException;
 import com.fincons.taskmanager.mapper.TaskMapper;
 import com.fincons.taskmanager.repository.AttachmentRepository;
 import com.fincons.taskmanager.repository.TaskRepository;
@@ -13,6 +14,7 @@ import com.fincons.taskmanager.service.taskService.TaskService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,9 +58,16 @@ public class TaskServiceImpl implements TaskService {
         return task;
     }
     @Override
-    public Task updateTaskById(Long taskId, Task task) {
+    public Task updateTaskById(Long taskId, Task task) throws RoleException {
         existingTaskById(taskId);
         Task taskExisting = modelMapperTask.mapProjectionToEntity(taskRepository.findTaskByTaskIdAndActiveTrue(taskId));
+
+        String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        boolean userAssociated = taskExisting.getTasksUsers().stream()
+                        .anyMatch(taskUser -> Objects.equals(taskUser.getUser().getEmail(), loggedUser));
+        if (!userAssociated){
+            throw new RoleException("You are not associated with this task and cannot update it.");
+        }
         taskExisting.setTaskName(task.getTaskName());
         taskExisting.setDescription(task.getDescription());
         Lane lane = laneServiceImpl.validateLaneById(task.getLane().getLaneId());
@@ -74,8 +83,15 @@ public class TaskServiceImpl implements TaskService {
     }
     @Override
     @Transactional
-    public void deleteTaskById(Long taskId) {
+    public void deleteTaskById(Long taskId) throws RoleException {
         Task task = validateTaskById(taskId);
+
+        String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        boolean userAssociated = task.getTasksUsers().stream()
+                .anyMatch(taskUser -> Objects.equals(taskUser.getUser().getEmail(), loggedUser));
+        if (!userAssociated){
+            throw new RoleException("You are not associated with this task and cannot delete it.");
+        }
         task.setActive(false);
         task.getAttachments().forEach(attachment -> {
             log.info("Attachment with ID {} deleted from the repository.", attachment.getAttachmentId());

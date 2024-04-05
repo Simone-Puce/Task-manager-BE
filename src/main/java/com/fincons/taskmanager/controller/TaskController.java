@@ -2,6 +2,7 @@ package com.fincons.taskmanager.controller;
 
 import com.fincons.taskmanager.dto.TaskDTO;
 import com.fincons.taskmanager.entity.Task;
+import com.fincons.taskmanager.exception.RoleException;
 import com.fincons.taskmanager.mapper.TaskMapper;
 import com.fincons.taskmanager.service.taskService.TaskService;
 import com.fincons.taskmanager.utility.GenericResponse;
@@ -69,7 +70,7 @@ public class TaskController {
         return ResponseEntity.ok(response);
     }
     @PutMapping(value = "${task.put}")
-    public ResponseEntity<GenericResponse<TaskDTO>> updateTaskById(@RequestParam Long taskId, @RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<GenericResponse<TaskDTO>> updateTaskById(@RequestParam Long taskId, @RequestBody TaskDTO taskDTO) throws RoleException {
         log.info("Received {} request to modify Task with ID {}", RequestMethod.PUT, taskId);
         ValidateFields.validateSingleFieldLong(taskId);
         validateTaskDTO(taskDTO);
@@ -84,7 +85,7 @@ public class TaskController {
         return ResponseEntity.ok(response);
     }
     @PutMapping(value = "${task.delete}")
-    public ResponseEntity<GenericResponse<TaskDTO>> deleteTaskById(@RequestParam Long taskId) {
+    public ResponseEntity<GenericResponse<TaskDTO>> deleteTaskById(@RequestParam Long taskId) throws RoleException {
         log.info("Received {} request for delete Task with ID: {}", RequestMethod.DELETE, taskId);
         ValidateFields.validateSingleFieldLong(taskId);
         taskService.deleteTaskById(taskId);

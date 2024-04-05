@@ -89,7 +89,7 @@ public class SecurityConfiguration {
         http.authorizeHttpRequests(auth -> {
             auth
                     //ADMIN
-                    .requestMatchers(appContext + logBaseUri + "/").hasAnyRole("ADMIN")
+                    .requestMatchers(appContext + logBaseUri + "/**").hasAnyRole("ADMIN")
                     .requestMatchers(appContext + userBoardBaseUri + "/").hasAnyRole("ADMIN", "USER")
                     .requestMatchers(appContext + boardBaseUri + "/").hasAnyRole("ADMIN")
                     .requestMatchers(appContext + roleBaseUri + "/").hasAnyRole("ADMIN")
