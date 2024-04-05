@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -88,19 +89,13 @@ public class SecurityConfiguration {
 
         http.authorizeHttpRequests(auth -> {
             auth
-                    //ADMIN
-                    .requestMatchers(appContext + logBaseUri + "/").hasAnyRole("ADMIN")
-                    .requestMatchers(appContext + userBoardBaseUri + "/").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(appContext + boardBaseUri + "/").hasAnyRole("ADMIN")
-                    .requestMatchers(appContext + roleBaseUri + "/").hasAnyRole("ADMIN")
-
-                    //EDITOR & USER
-                    .requestMatchers(appContext + laneBaseUri + "/").hasAnyRole("USER")
-                    .requestMatchers(appContext + taskUserBaseUri + "/").hasAnyRole("USER")
-                    .requestMatchers(appContext + attachmentBaseUri + "/").hasAnyRole("USER")
-                    .requestMatchers(appContext + taskBaseUri + "/").hasAnyRole("USER")
-
-                    //General authorizations
+                    .requestMatchers(HttpMethod.GET, appContext + boardBaseUri + "/**").hasAnyRole("ADMIN","USER")
+                    .requestMatchers(appContext + attachmentBaseUri + "/**").hasAnyRole("USER")
+                    .requestMatchers(appContext + laneBaseUri + "/**").hasAnyRole("USER")
+                    .requestMatchers(appContext + taskBaseUri + "/**").hasAnyRole("USER")
+                    .requestMatchers(appContext + taskUserBaseUri + "/**").hasAnyRole("USER")
+                    .requestMatchers(appContext + userBoardBaseUri + "/**").hasAnyRole("ADMIN","USER")
+                    .requestMatchers(appContext + boardBaseUri +"/**").hasAnyRole("ADMIN")
                     .requestMatchers(appContext + loginBaseUri).permitAll()
                     .requestMatchers(appContext + registerBaseUri).permitAll()
                     .requestMatchers(appContext + errorBaseUri).permitAll()
@@ -110,13 +105,7 @@ public class SecurityConfiguration {
                     .anyRequest().authenticated();
         }).httpBasic(Customizer.withDefaults());
 
-        //ADMIN -> CRUD SULLE BOARD    OK
 
-        //EDITOR -> CRUD SUI TASK + ASSOCIAZIONE task a board e task a user
-
-        //USER -> create + delete sui task
-        //          -> update + delete sui task a lui assegnati
-        //          -> cambio status sui task a lui assegnati
 
         http.exceptionHandling(exception -> exception
                 .authenticationEntryPoint(authenticationExceptionEntryPoint));
