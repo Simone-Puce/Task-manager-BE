@@ -93,14 +93,11 @@ public class SecurityConfiguration {
                     .requestMatchers(appContext + userBoardBaseUri + "/").hasAnyRole("ADMIN", "USER")
                     .requestMatchers(appContext + boardBaseUri + "/").hasAnyRole("ADMIN")
                     .requestMatchers(appContext + roleBaseUri + "/").hasAnyRole("ADMIN")
-                    .requestMatchers(appContext + laneBaseUri + "/").hasAnyRole("ADMIN")
 
                     //EDITOR & USER
                     .requestMatchers(appContext + laneBaseUri + "/").hasAnyRole("USER")
-                    //.requestMatchers(appContext + userBoardBaseUri + "/").hasAnyRole("USER")
                     .requestMatchers(appContext + taskUserBaseUri + "/").hasAnyRole("USER")
                     .requestMatchers(appContext + attachmentBaseUri + "/").hasAnyRole("USER")
-                    //TODO da gestire taskBaseUri perché possono updatare e delete solo i task a loro assegnati
                     .requestMatchers(appContext + taskBaseUri + "/").hasAnyRole("USER")
 
                     //General authorizations

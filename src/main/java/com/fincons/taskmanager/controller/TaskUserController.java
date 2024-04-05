@@ -5,6 +5,7 @@ import com.fincons.taskmanager.dto.TaskUserDTO;
 import com.fincons.taskmanager.entity.TaskUser;
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
+import com.fincons.taskmanager.exception.RoleException;
 import com.fincons.taskmanager.mapper.TaskUserMapper;
 import com.fincons.taskmanager.service.taskUserService.TaskUserService;
 import com.fincons.taskmanager.utility.GenericResponse;
@@ -40,7 +41,7 @@ public class TaskUserController {
         return ResponseEntity.ok(response);
     }
     @PostMapping(value = "${task.user.create}")
-    public ResponseEntity<GenericResponse<TaskUserDTO>> createTaskUser(@RequestBody TaskUserDTO taskUserDTO) {
+    public ResponseEntity<GenericResponse<TaskUserDTO>> createTaskUser(@RequestBody TaskUserDTO taskUserDTO) throws RoleException {
         validateTaskUserFields(taskUserDTO);
         TaskUser taskUserMapped = modelMapperTaskUser.mapToEntity(taskUserDTO);
         TaskUser taskUser = taskUserService.createTaskUser(taskUserMapped);
@@ -55,7 +56,7 @@ public class TaskUserController {
     @PutMapping(value = "${task.user.put}")
     public ResponseEntity<GenericResponse<TaskUserDTO>> updateTaskUser(@RequestParam Long taskId,
                                                                        @RequestParam String email,
-                                                                       @RequestBody TaskUserDTO taskUserDTO) {
+                                                                       @RequestBody TaskUserDTO taskUserDTO) throws RoleException {
         ValidateFields.validateSingleFieldLong(taskId);
         ValidateFields.validateSingleField(email);
         validateTaskUserFields(taskUserDTO);
@@ -70,7 +71,7 @@ public class TaskUserController {
         return ResponseEntity.ok(response);
     }
     @DeleteMapping(value = "${task.user.delete}")
-    public ResponseEntity<GenericResponse<TaskUserDTO>> deleteTaskUser(@RequestParam Long taskId, @RequestParam String email) {
+    public ResponseEntity<GenericResponse<TaskUserDTO>> deleteTaskUser(@RequestParam Long taskId, @RequestParam String email) throws RoleException {
         ValidateFields.validateSingleFieldLong(taskId);
         ValidateFields.validateSingleField(email);
         taskUserService.deleteTaskUser(taskId, email);
