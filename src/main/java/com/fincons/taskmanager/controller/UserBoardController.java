@@ -56,7 +56,7 @@ public class UserBoardController {
     @PutMapping(value = "${user.board.put}")
     public ResponseEntity<GenericResponse<UserBoardDTO>> updateUserBoard(@RequestParam String email,
                                                                          @RequestParam Long boardId,
-                                                                         @RequestBody UserBoardDTO userBoardDTO) {
+                                                                         @RequestBody UserBoardDTO userBoardDTO) throws RoleException {
         ValidateFields.validateSingleField(email);
         ValidateFields.validateSingleFieldLong(boardId);
         validateUserBoardFields(userBoardDTO);
@@ -72,7 +72,7 @@ public class UserBoardController {
     }
     @DeleteMapping(value = "${user.board.delete}")
     public ResponseEntity<GenericResponse<UserBoardDTO>> deleteUserBoard(@RequestParam String email,
-                                                                         @RequestParam Long boardId) {
+                                                                         @RequestParam Long boardId) throws RoleException {
         ValidateFields.validateSingleField(email);
         ValidateFields.validateSingleFieldLong(boardId);
         userBoardService.deleteUserBoard(email, boardId);

@@ -8,6 +8,6 @@ import java.util.List;
 public interface UserBoardService {
     List<UserBoard> findBoardsByUser(String email);
     UserBoard createUserBoard(UserBoard userBoard) throws RoleException;
-    UserBoard updateUserBoard(String email, Long boardCode, UserBoard userBoard);
-    UserBoard deleteUserBoard(String email, Long boardCode);
+    UserBoard updateUserBoard(String email, Long boardCode, UserBoard userBoard) throws RoleException;
+    UserBoard deleteUserBoard(String email, Long boardCode) throws RoleException;
 }

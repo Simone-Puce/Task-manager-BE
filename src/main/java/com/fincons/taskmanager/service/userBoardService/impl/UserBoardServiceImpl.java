@@ -23,6 +23,9 @@ import java.util.Objects;
 public class UserBoardServiceImpl implements UserBoardService {
 
     private static final Logger log = LogManager.getLogger(UserBoardServiceImpl.class);
+    private static final String EDITOR = "EDITOR";
+    private static final String ROLEADMIN = "ROLE_ADMIN";
+    private static final String ROLEUSER = "ROLE_USER";
     @Autowired
     private UserBoardRepository userBoardRepository;
     @Autowired
@@ -49,38 +52,38 @@ public class UserBoardServiceImpl implements UserBoardService {
                 .findFirst()
                 .orElse(null);
         String roleAsString = (authority != null) ? authority.getAuthority() : "is null";
-        boolean canCreate = false;
-        if(Objects.equals(roleAsString, "ROLE_ADMIN")){
-            canCreate = true;
+        boolean canUserBoardBeCreated = false;
+
+        if (Objects.equals(roleAsString, ROLEADMIN)) {
+            canUserBoardBeCreated = true;
         }
-        if(Objects.equals(roleAsString, "ROLE_USER")){
+
+        if (Objects.equals(roleAsString, ROLEUSER)) {
             String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
             List<User> userIsEditor = existingBoard.getUsersBoards().stream()
-                    .filter(userBoard1 -> "EDITOR".equals(userBoard1.getRoleCode()))
+                    .filter(userBoardToCreate -> EDITOR.equals(userBoardToCreate.getRoleCode()))
                     .map(UserBoard::getUser)
                     .toList();
             boolean isEditorEmailValidated = userIsEditor.stream()
                     .anyMatch(user -> Objects.equals(user.getEmail(), loggedUser));
-            if(isEditorEmailValidated){
-                canCreate = true;
-            }
-            else {
-                throw new RoleException("You need to be a EDITOR to create a relationship");
+            if (isEditorEmailValidated) {
+                canUserBoardBeCreated = true;
+            } else {
+                throw new RoleException("You need to be an EDITOR to create a relationship");
             }
         }
-        if(canCreate){
+        if (canUserBoardBeCreated) {
             UserBoard newUserBoard = new UserBoard(existingUser, existingBoard, userBoard.getRoleCode());
             userBoardRepository.save(newUserBoard);
             return newUserBoard;
-        }
-        else{
+        } else {
             log.error("UNEXPECTED ERROR");
             throw new IllegalArgumentException("UNEXPECTED ERROR");
         }
     }
 
     @Override
-    public UserBoard updateUserBoard(String email, Long boardId, UserBoard userBoard) {
+    public UserBoard updateUserBoard(String email, Long boardId, UserBoard userBoard) throws RoleException {
 
         User existingUser = validateUserByEmail(email);
         Board existingBoard = validateBoardById(boardId);
@@ -90,22 +93,80 @@ public class UserBoardServiceImpl implements UserBoardService {
         Board boardToUpdate = validateBoardById(userBoard.getBoard().getBoardId());
         validateUserBoardNotExistRelationship(userToUpdate, boardToUpdate);
 
-        userBoardExist.setUser(userToUpdate);
-        userBoardExist.setBoard(boardToUpdate);
-        userBoardExist.setRoleCode(userBoard.getRoleCode());
-        userBoardRepository.save(userBoardExist);
+        GrantedAuthority authority = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .findFirst()
+                .orElse(null);
+        String roleAsString = (authority != null) ? authority.getAuthority() : "is null";
+        boolean canUserBoardBeUpdated = false;
 
-        return userBoardExist;
+        if (Objects.equals(roleAsString, ROLEADMIN)) {
+            canUserBoardBeUpdated = true;
+        }
 
+        if (Objects.equals(roleAsString, ROLEUSER)) {
+            String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+            List<User> userIsEditor = boardToUpdate.getUsersBoards().stream()
+                    .filter(userBoardToFilter -> EDITOR.equals(userBoardToFilter.getRoleCode()))
+                    .map(UserBoard::getUser)
+                    .toList();
+            boolean isEditorEmailValidated = userIsEditor.stream()
+                    .anyMatch(user -> Objects.equals(user.getEmail(), loggedUser));
+            if (isEditorEmailValidated) {
+                canUserBoardBeUpdated = true;
+            } else {
+                throw new RoleException("You need to be an EDITOR to update a relationship");
+            }
+        }
+        if (canUserBoardBeUpdated) {
+            userBoardExist.setUser(userToUpdate);
+            userBoardExist.setBoard(boardToUpdate);
+            userBoardExist.setRoleCode(userBoard.getRoleCode());
+            return userBoardRepository.save(userBoardExist);
+        } else {
+            log.error("UNEXPECTED ERROR");
+            throw new IllegalArgumentException("UNEXPECTED ERROR");
+        }
     }
+
     @Override
-    public UserBoard deleteUserBoard(String email, Long boardId) {
+    public UserBoard deleteUserBoard(String email, Long boardId) throws RoleException {
         User existingUser = validateUserByEmail(email);
         Board existingBoard = validateBoardById(boardId);
         UserBoard userBoardExist = validateUserBoardRelationship(existingUser, existingBoard);
-        userBoardRepository.delete(userBoardExist);
-        return userBoardExist;
+
+        GrantedAuthority authority = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .findFirst()
+                .orElse(null);
+        String roleAsString = (authority != null) ? authority.getAuthority() : "is null";
+        boolean canUserBeDeleted = false;
+
+        if (Objects.equals(roleAsString, ROLEADMIN)) {
+            canUserBeDeleted = true;
+        }
+
+        if (Objects.equals(roleAsString, ROLEUSER)) {
+            String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+            List<User> userIsEditor = existingBoard.getUsersBoards().stream()
+                    .filter(userBoardToFilter -> EDITOR.equals(userBoardToFilter.getRoleCode()))
+                    .map(UserBoard::getUser)
+                    .toList();
+            boolean isEditorEmailValidated = userIsEditor.stream()
+                    .anyMatch(user -> Objects.equals(user.getEmail(), loggedUser));
+            if (isEditorEmailValidated) {
+                canUserBeDeleted = true;
+            } else {
+                throw new RoleException("You need to be an EDITOR to delete a relationship");
+            }
+        }
+        if (canUserBeDeleted) {
+            userBoardRepository.delete(userBoardExist);
+            return userBoardExist;
+        } else {
+            log.error("UNEXPECTED ERROR");
+            throw new IllegalArgumentException("UNEXPECTED ERROR");
+        }
     }
+
     private User validateUserByEmail(String email) {
         User existingUser = userRepository.findByEmail(email);
         if (Objects.isNull(existingUser)) {
@@ -113,6 +174,7 @@ public class UserBoardServiceImpl implements UserBoardService {
         }
         return existingUser;
     }
+
     private Board validateBoardById(Long id) {
         Board existingBoard = boardRepository.findBoardByBoardIdAndActiveTrue(id);
         if (Objects.isNull(existingBoard)) {
@@ -120,6 +182,7 @@ public class UserBoardServiceImpl implements UserBoardService {
         }
         return existingBoard;
     }
+
     private void checkDuplicateUserBoardExist(User user, Board board) {
 
         boolean userBoardExist = userBoardRepository.existsByUserAndBoard(user, board);
@@ -129,6 +192,7 @@ public class UserBoardServiceImpl implements UserBoardService {
                     "USER: " + user.getEmail() + " and BOARD: " + board.getBoardId());
         }
     }
+
     private UserBoard validateUserBoardRelationship(User user, Board board) {
         UserBoard userBoardExist = userBoardRepository.findByUserEmailAndBoardBoardId(user.getEmail(), board.getBoardId());
         if (Objects.isNull(userBoardExist)) {
@@ -137,6 +201,7 @@ public class UserBoardServiceImpl implements UserBoardService {
         }
         return userBoardExist;
     }
+
     private void validateUserBoardNotExistRelationship(User user, Board board) {
         UserBoard userBoardExist = userBoardRepository.findByUserEmailAndBoardBoardId(user.getEmail(), board.getBoardId());
         if (!Objects.isNull(userBoardExist)) {
