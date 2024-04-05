@@ -88,23 +88,38 @@ public class SecurityConfiguration {
 
         http.authorizeHttpRequests(auth -> {
             auth
-                    .requestMatchers(appContext + logBaseUri + "/**").hasAnyRole("ADMIN")
-                    .requestMatchers(appContext + roleBaseUri + "/**").hasAnyRole("ADMIN")
-                    .requestMatchers(appContext + taskBaseUri + "/**").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(appContext + attachmentBaseUri + "/**").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(appContext + boardBaseUri + "/**").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(appContext + laneBaseUri + "/**").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(appContext + boardLaneBaseUri + "/**").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(appContext + userBoardBaseUri + "/**").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(appContext + taskUserBaseUri + "/**").hasAnyRole("ADMIN", "USER")
+                    //ADMIN
+                    .requestMatchers(appContext + logBaseUri + "/").hasAnyRole("ADMIN")
+                    .requestMatchers(appContext + userBoardBaseUri + "/").hasAnyRole("ADMIN", "USER")
+                    .requestMatchers(appContext + boardBaseUri + "/").hasAnyRole("ADMIN")
+                    .requestMatchers(appContext + roleBaseUri + "/").hasAnyRole("ADMIN")
+                    .requestMatchers(appContext + laneBaseUri + "/").hasAnyRole("ADMIN")
+
+                    //EDITOR & USER
+                    .requestMatchers(appContext + laneBaseUri + "/").hasAnyRole("USER")
+                    //.requestMatchers(appContext + userBoardBaseUri + "/").hasAnyRole("USER")
+                    .requestMatchers(appContext + taskUserBaseUri + "/").hasAnyRole("USER")
+                    .requestMatchers(appContext + attachmentBaseUri + "/").hasAnyRole("USER")
+                    //TODO da gestire taskBaseUri perché possono updatare e delete solo i task a loro assegnati
+                    .requestMatchers(appContext + taskBaseUri + "/").hasAnyRole("USER")
+
+                    //General authorizations
                     .requestMatchers(appContext + loginBaseUri).permitAll()
                     .requestMatchers(appContext + registerBaseUri).permitAll()
                     .requestMatchers(appContext + errorBaseUri).permitAll()
                     .requestMatchers(appContext + modifyUser).authenticated()
                     .requestMatchers(appContext + updateUserPassword).authenticated()
-                    .requestMatchers(appContext + deleteUserByEmail).permitAll() //to handle
+                    .requestMatchers(appContext + deleteUserByEmail).hasAnyRole("ADMIN") //TO HANDLE? BUT I THINK ONLY ADMIN CAN DELETE IT
                     .anyRequest().authenticated();
         }).httpBasic(Customizer.withDefaults());
+
+        //ADMIN -> CRUD SULLE BOARD    OK
+
+        //EDITOR -> CRUD SUI TASK + ASSOCIAZIONE task a board e task a user
+
+        //USER -> create + delete sui task
+        //          -> update + delete sui task a lui assegnati
+        //          -> cambio status sui task a lui assegnati
 
         http.exceptionHandling(exception -> exception
                 .authenticationEntryPoint(authenticationExceptionEntryPoint));

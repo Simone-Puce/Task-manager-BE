@@ -8,7 +8,11 @@ import com.fincons.taskmanager.repository.RoleRepository;
 import com.fincons.taskmanager.repository.UserBoardRepository;
 import com.fincons.taskmanager.repository.UserRepository;
 import com.fincons.taskmanager.service.userBoardService.UserBoardService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +21,7 @@ import java.util.Objects;
 @Service
 public class UserBoardServiceImpl implements UserBoardService {
 
+    private static final Logger log = LogManager.getLogger(UserBoardServiceImpl.class);
     @Autowired
     private UserBoardRepository userBoardRepository;
     @Autowired
@@ -37,12 +42,40 @@ public class UserBoardServiceImpl implements UserBoardService {
 
         User existingUser = validateUserByEmail(userBoard.getUser().getEmail());
         Board existingBoard = validateBoardById(userBoard.getBoard().getBoardId());
-
         checkDuplicateUserBoardExist(existingUser, existingBoard);
-        UserBoard newUserBoard = new UserBoard(existingUser, existingBoard, userBoard.getRoleCode());
-        userBoardRepository.save(newUserBoard);
 
-        return newUserBoard;
+        GrantedAuthority authority = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .findFirst()
+                .orElse(null);
+        String roleAsString = (authority != null) ? authority.getAuthority() : "is null";
+        boolean canCreate = false;
+        if(Objects.equals(roleAsString, "ROLE_ADMIN")){
+            canCreate = true;
+        }
+        if(Objects.equals(roleAsString, "ROLE_USER")){
+            String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+            List<User> userIsEditor = existingBoard.getUsersBoards().stream()
+                    .filter(userBoard1 -> "EDITOR".equals(userBoard1.getRoleCode()))
+                    .map(UserBoard::getUser)
+                    .toList();
+            boolean emailExists = userIsEditor.stream()
+                    .anyMatch(user -> Objects.equals(user.getEmail(), loggedUser));
+            if(emailExists){
+                canCreate = true;
+            }
+            else {
+                throw new IllegalArgumentException("You need to be a EDITOR to create a Relationship");
+            }
+        }
+        if(canCreate){
+            UserBoard newUserBoard = new UserBoard(existingUser, existingBoard, userBoard.getRoleCode());
+            userBoardRepository.save(newUserBoard);
+            return newUserBoard;
+        }
+        else{
+            log.error("UNEXPECTED ERROR");
+            throw new IllegalArgumentException("UNEXPECTED ERROR");
+        }
     }
 
     @Override
