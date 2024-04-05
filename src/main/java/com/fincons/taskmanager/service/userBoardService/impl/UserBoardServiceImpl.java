@@ -91,7 +91,6 @@ public class UserBoardServiceImpl implements UserBoardService {
 
         User userToUpdate = validateUserByEmail(userBoard.getUser().getEmail());
         Board boardToUpdate = validateBoardById(userBoard.getBoard().getBoardId());
-        validateUserBoardNotExistRelationship(userToUpdate, boardToUpdate);
 
         GrantedAuthority authority = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .findFirst()
