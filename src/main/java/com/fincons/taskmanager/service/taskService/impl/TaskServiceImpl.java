@@ -65,7 +65,10 @@ public class TaskServiceImpl implements TaskService {
         String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
         boolean userAssociated = taskExisting.getTasksUsers().stream()
                         .anyMatch(taskUser -> Objects.equals(taskUser.getUser().getEmail(), loggedUser));
-        if (!userAssociated){
+        //todo fix this
+        //boolean userIsEditor = true;
+        //if (!userAssociated && userIsEditor == false){
+        if(!userAssociated){
             throw new RoleException("You are not associated with this task and cannot update it.");
         }
         taskExisting.setTaskName(task.getTaskName());
