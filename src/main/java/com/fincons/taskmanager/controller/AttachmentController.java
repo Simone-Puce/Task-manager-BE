@@ -2,6 +2,7 @@ package com.fincons.taskmanager.controller;
 
 import com.fincons.taskmanager.dto.AttachmentDTO;
 import com.fincons.taskmanager.entity.Attachment;
+import com.fincons.taskmanager.exception.RoleException;
 import com.fincons.taskmanager.mapper.AttachmentMapper;
 import com.fincons.taskmanager.service.attachmentService.AttachmentService;
 import com.fincons.taskmanager.entity.AttachmentDownload;
@@ -52,7 +53,7 @@ public class AttachmentController {
     }
     @PostMapping(value = "${attachment.upload}")
     public ResponseEntity<GenericResponse<AttachmentDTO>> uploadAttachment(@RequestParam Long taskId,
-                                                                           @RequestBody MultipartFile file) throws IOException {
+                                                                           @RequestBody MultipartFile file) throws IOException, RoleException {
         log.info("Received {} request to upload with a reference to Task with ID: {}", RequestMethod.POST, taskId);
         ValidateFields.validateSingleFieldLong(taskId);
         if(Objects.isNull(file)){
@@ -67,7 +68,7 @@ public class AttachmentController {
         return ResponseEntity.ok(response);
     }
     @DeleteMapping(value = "${attachment.delete}")
-    public ResponseEntity<GenericResponse<AttachmentDTO>> deleteAttachmentById(@RequestParam Long attachmentId) {
+    public ResponseEntity<GenericResponse<AttachmentDTO>> deleteAttachmentById(@RequestParam Long attachmentId) throws RoleException {
         log.info("Received {} request for delete Attachment with ID: {}", RequestMethod.DELETE, attachmentId);
         ValidateFields.validateSingleFieldLong(attachmentId);
         attachmentService.deleteAttachmentById(attachmentId);

@@ -90,10 +90,6 @@ public class TaskServiceImpl implements TaskService {
         if(EDITOR.equals(roleCode)){
             userIsEditor = true;
         }
-
-        if(userInBoard.isEmpty()){
-            throw new RoleException("something missing.");
-        }
         if(!userAssociated && !userIsEditor){
             throw new RoleException("You are not associated with this task and cannot update it.");
         }
@@ -119,7 +115,19 @@ public class TaskServiceImpl implements TaskService {
         String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
         boolean userAssociated = task.getTasksUsers().stream()
                 .anyMatch(taskUser -> Objects.equals(taskUser.getUser().getEmail(), loggedUser));
-        if (!userAssociated){
+        Lane laneToGetBoard = task.getLane();
+        long boardId = laneToGetBoard.getBoard().getBoardId();
+        List<UserBoard> userBoards = userBoardService.findBoardsByUser(loggedUser);
+        List<UserBoard> userInBoard = userBoards.stream().filter(userBoardToCheck -> userBoardToCheck.getBoard().getBoardId() == boardId).toList();
+
+        UserBoard userBoard = userInBoard.get(0);
+        boolean userIsEditor = false;
+        String roleCode = userBoard.getRoleCode();
+        log.info(userBoard.getRoleCode());
+        if(EDITOR.equals(roleCode)){
+            userIsEditor = true;
+        }
+        if (!userAssociated && !userIsEditor){
             throw new RoleException("You are not associated with this task and cannot delete it.");
         }
         task.setActive(false);
@@ -131,6 +139,7 @@ public class TaskServiceImpl implements TaskService {
         taskUserRepository.deleteByTask(task);
         log.info("Task with ID {} deleted from the repository.", task.getTaskId());
     }
+
     public Task validateTaskById(Long id) {
         Task existingTask = modelMapperTask.mapProjectionToEntity(taskRepository.findTaskByTaskIdAndActiveTrue(id));
         if (Objects.isNull(existingTask)) {
