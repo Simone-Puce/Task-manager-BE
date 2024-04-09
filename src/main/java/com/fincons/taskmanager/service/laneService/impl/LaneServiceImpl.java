@@ -1,9 +1,8 @@
 package com.fincons.taskmanager.service.laneService.impl;
 
-import com.fincons.taskmanager.entity.Board;
-import com.fincons.taskmanager.entity.Lane;
-import com.fincons.taskmanager.entity.Task;
+import com.fincons.taskmanager.entity.*;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
+import com.fincons.taskmanager.exception.RoleException;
 import com.fincons.taskmanager.repository.AttachmentRepository;
 import com.fincons.taskmanager.repository.LaneRepository;
 import com.fincons.taskmanager.service.boardService.impl.BoardServiceImpl;
@@ -11,6 +10,7 @@ import com.fincons.taskmanager.service.laneService.LaneService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,37 +38,73 @@ public class LaneServiceImpl implements LaneService {
         return sortLanesList(filterLanesForTasksTrue(laneRepository.findAllByActiveTrue()));
     }
     @Override
-    public Lane createLane(Lane lane) {
+    public Lane createLane(Lane lane) throws RoleException {
         Board board = boardServiceImpl.validateBoardById(lane.getBoard().getBoardId());
-        lane.setBoard(board);
-        lane.setActive(true);
-        laneRepository.save(lane);
-        log.info("New Lane saved in the repository with ID {}.", lane.getLaneId());
-        return lane;
+        String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<User> userIsEditor = board.getUsersBoards().stream()
+                .filter(userBoardToCreate -> "EDITOR".equals(userBoardToCreate.getRoleCode()))
+                .map(UserBoard::getUser)
+                .toList();
+        boolean isEditorEmailValidated = userIsEditor.stream()
+                .anyMatch(user -> Objects.equals(user.getEmail(), loggedUser));
+        if (isEditorEmailValidated) {
+            lane.setBoard(board);
+            lane.setActive(true);
+            laneRepository.save(lane);
+            log.info("New Lane saved in the repository with ID {}.", lane.getLaneId());
+            return lane;
+        }
+        else {
+            throw new RoleException("You don't have permission to create the lane in this board.");
+        }
     }
     @Override
-    public Lane updateLaneById(Long laneId, Lane lane) {
+    public Lane updateLaneById(Long laneId, Lane lane) throws RoleException {
         existingLaneById(laneId);
         Lane laneExisting = laneRepository.findLaneByLaneIdAndActiveTrue(laneId);
-        laneExisting.setLaneName(lane.getLaneName());
-        laneRepository.save(laneExisting);
-        log.info("Updated Lane in the repository with ID {}.", laneExisting.getLaneId());
-        return filterLaneForLanesTrue(laneExisting);
+        String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<User> userIsEditor = laneExisting.getBoard().getUsersBoards().stream()
+                .filter(userBoardToCreate -> "EDITOR".equals(userBoardToCreate.getRoleCode()))
+                .map(UserBoard::getUser)
+                .toList();
+        boolean isEditorEmailValidated = userIsEditor.stream()
+                .anyMatch(user -> Objects.equals(user.getEmail(), loggedUser));
+        if (isEditorEmailValidated) {
+            laneExisting.setLaneName(lane.getLaneName());
+            laneRepository.save(laneExisting);
+            log.info("Updated Lane in the repository with ID {}.", laneExisting.getLaneId());
+            return filterLaneForLanesTrue(laneExisting);
+        }
+        else {
+            throw new RoleException("You don't have permission to modify this lane in this board.");
+        }
     }
     @Override
     @Transactional
-    public void deleteLaneById(Long laneId) {
+    public void deleteLaneById(Long laneId) throws RoleException {
         Lane lane = validateLaneById(laneId);
-        lane.setActive(false);
-        lane.getTasks().forEach(task -> {
-            log.info("Task with ID {} deleted from the repository.", task.getTaskId());
-            task.setActive(false);
-            task.getAttachments().forEach(attachment -> {
-                log.info("Attachment with ID {} deleted from the repository.", attachment.getAttachmentId());
-                attachmentRepository.delete(attachment);
+        String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<User> userIsEditor = lane.getBoard().getUsersBoards().stream()
+                .filter(userBoardToCreate -> "EDITOR".equals(userBoardToCreate.getRoleCode()))
+                .map(UserBoard::getUser)
+                .toList();
+        boolean isEditorEmailValidated = userIsEditor.stream()
+                .anyMatch(user -> Objects.equals(user.getEmail(), loggedUser));
+        if (isEditorEmailValidated) {
+            lane.setActive(false);
+            lane.getTasks().forEach(task -> {
+                log.info("Task with ID {} deleted from the repository.", task.getTaskId());
+                task.setActive(false);
+                task.getAttachments().forEach(attachment -> {
+                    log.info("Attachment with ID {} deleted from the repository.", attachment.getAttachmentId());
+                    attachmentRepository.delete(attachment);
+                });
             });
-        });
-        laneRepository.save(lane);
+            laneRepository.save(lane);
+        }
+        else{
+            throw new RoleException("You don't have permission to delete this lane in this board.");
+        }
     }
     public Lane validateLaneById(Long id) {
         Lane existingId = laneRepository.findLaneByLaneIdAndActiveTrue(id);

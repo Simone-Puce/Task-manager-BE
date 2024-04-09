@@ -2,6 +2,7 @@ package com.fincons.taskmanager.controller;
 
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
+import com.fincons.taskmanager.exception.RoleException;
 import com.fincons.taskmanager.utility.GenericResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -84,6 +85,16 @@ public class ControllerExceptionHandler {
                 GenericResponse.error(
                         dne.getMessage(),
                         HttpStatus.CONFLICT
+                )
+        );
+    }
+    @ExceptionHandler(RoleException.class)
+    public ResponseEntity<GenericResponse<?>> roleException(RoleException re){
+        log.warn(re.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                GenericResponse.error(
+                        re.getMessage(),
+                        HttpStatus.UNAUTHORIZED
                 )
         );
     }

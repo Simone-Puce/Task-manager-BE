@@ -128,7 +128,7 @@ public class AppConfig {
         });
         return modelMapper;
     }
-
+    //TODO DA GESTIRE I MAPPER CON STRATEGY LOOSE
     @Bean
     public ModelMapper modelMapperForTaskUser() {
         ModelMapper modelMapper = new ModelMapper();
