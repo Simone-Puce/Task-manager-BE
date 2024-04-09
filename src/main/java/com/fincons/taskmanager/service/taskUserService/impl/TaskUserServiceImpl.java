@@ -3,10 +3,13 @@ package com.fincons.taskmanager.service.taskUserService.impl;
 import com.fincons.taskmanager.entity.*;
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
+import com.fincons.taskmanager.exception.RoleException;
 import com.fincons.taskmanager.mapper.TaskMapper;
 import com.fincons.taskmanager.repository.*;
 import com.fincons.taskmanager.service.taskUserService.TaskUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +17,8 @@ import java.util.Objects;
 @Service
 public class TaskUserServiceImpl implements TaskUserService {
 
+    @Autowired
+    private UserBoardRepository userBoardRepository;
     @Autowired
     private TaskUserRepository taskUserRepository;
     @Autowired
@@ -29,19 +34,31 @@ public class TaskUserServiceImpl implements TaskUserService {
         return taskUserRepository.findTasksByUser(email);
     }
     @Override
-    public TaskUser createTaskUser(TaskUser taskUser) {
+    public TaskUser createTaskUser(TaskUser taskUser) throws RoleException {
 
         User existingUser = validateUserByEmail(taskUser.getUser().getEmail());
         Task existingTask = validateTaskById(taskUser.getTask().getTaskId());
-
         checkDuplicateTaskUserExist(existingTask, existingUser);
-        TaskUser newTaskUser = new TaskUser(existingTask, existingUser);
-        taskUserRepository.save(newTaskUser);
-        return newTaskUser;
+
+        String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<User> userIsEditor = existingTask.getLane().getBoard().getUsersBoards().stream()
+                .filter(userBoard1 -> "EDITOR".equals(userBoard1.getRoleCode()))
+                .map(UserBoard::getUser)
+                .toList();
+        boolean isEditorEmailValidated = userIsEditor.stream()
+                .anyMatch(user -> Objects.equals(user.getEmail(), loggedUser));
+        if(isEditorEmailValidated){
+            TaskUser newTaskUser = new TaskUser(existingTask, existingUser);
+            taskUserRepository.save(newTaskUser);
+            return newTaskUser;
+        }
+        else{
+            throw new RoleException("You need to be a EDITOR for create new relationship task-user");
+        }
     }
 
     @Override
-    public TaskUser updateTaskUser(Long taskId, String email, TaskUser taskUser) {
+    public TaskUser updateTaskUser(Long taskId, String email, TaskUser taskUser) throws RoleException {
 
         User existingUser = validateUserByEmail(email);
         Task existingTask = validateTaskById(taskId);
@@ -51,22 +68,44 @@ public class TaskUserServiceImpl implements TaskUserService {
         Task taskToUpdate = validateTaskById(taskUser.getTask().getTaskId());
         validateTaskUserNotExistRelationship(taskToUpdate, userToUpdate);
 
-        taskUserExist.setTask(taskToUpdate);
-        taskUserExist.setUser(userToUpdate);
-        taskUserRepository.save(taskUserExist);
-
-        return taskUserExist;
-
+        String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<User> userIsEditor = existingTask.getLane().getBoard().getUsersBoards().stream()
+                .filter(userBoard1 -> "EDITOR".equals(userBoard1.getRoleCode()))
+                .map(UserBoard::getUser)
+                .toList();
+        boolean isEditorEmailValidated = userIsEditor.stream()
+                .anyMatch(user -> Objects.equals(user.getEmail(), loggedUser));
+        if(isEditorEmailValidated){
+            taskUserExist.setTask(taskToUpdate);
+            taskUserExist.setUser(userToUpdate);
+            taskUserRepository.save(taskUserExist);
+            return taskUserExist;
+        }
+        else{
+            throw new RoleException("You need to be a EDITOR for modify new relationship task-user");
+        }
     }
     @Override
-    public TaskUser deleteTaskUser(Long taskId, String email) {
+    public TaskUser deleteTaskUser(Long taskId, String email) throws RoleException {
         User existingUser = validateUserByEmail(email);
         Task existingTask = validateTaskById(taskId);
         TaskUser taskUserExist = validateTaskUserRelationship(existingTask, existingUser);
-        taskUserRepository.delete(taskUserExist);
-        return taskUserExist;
-    }
 
+        String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<User> userIsEditor = existingTask.getLane().getBoard().getUsersBoards().stream()
+                .filter(userBoard1 -> "EDITOR".equals(userBoard1.getRoleCode()))
+                .map(UserBoard::getUser)
+                .toList();
+        boolean isEditorEmailValidated = userIsEditor.stream()
+                .anyMatch(user -> Objects.equals(user.getEmail(), loggedUser));
+        if(isEditorEmailValidated){
+            taskUserRepository.delete(taskUserExist);
+            return taskUserExist;
+        }
+        else{
+            throw new RoleException("You need to be a EDITOR for delete the relationship task-user");
+        }
+    }
     private User validateUserByEmail(String email) {
         User existingUser = userRepository.findByEmail(email);
         if (Objects.isNull(existingUser)) {
@@ -93,7 +132,7 @@ public class TaskUserServiceImpl implements TaskUserService {
     private TaskUser validateTaskUserRelationship(Task task, User user) {
         TaskUser taskUserExist = taskUserRepository.findByTaskTaskIdAndUserEmail(task.getTaskId(), user.getEmail());
         if (Objects.isNull(taskUserExist)) {
-            throw new ResourceNotFoundException("Error: Relationship with ID task:: " + task.getTaskId() +
+            throw new ResourceNotFoundException("Error: Relationship with ID task: " + task.getTaskId() +
                     " and USER email: " + user.getEmail() + " don't exist.");
         }
         return taskUserExist;

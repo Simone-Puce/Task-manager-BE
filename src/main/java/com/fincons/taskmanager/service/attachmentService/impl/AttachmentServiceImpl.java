@@ -1,17 +1,18 @@
 package com.fincons.taskmanager.service.attachmentService.impl;
 
 
-import com.fincons.taskmanager.entity.Attachment;
-import com.fincons.taskmanager.entity.AttachmentDownload;
-import com.fincons.taskmanager.entity.Task;
+import com.fincons.taskmanager.entity.*;
 import com.fincons.taskmanager.enums.FileExtension;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
+import com.fincons.taskmanager.exception.RoleException;
 import com.fincons.taskmanager.repository.AttachmentRepository;
 import com.fincons.taskmanager.service.attachmentService.AttachmentService;
 import com.fincons.taskmanager.service.taskService.impl.TaskServiceImpl;
+import com.fincons.taskmanager.service.userBoardService.UserBoardService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +23,10 @@ import java.util.Objects;
 @Service
 public class AttachmentServiceImpl implements AttachmentService {
 
+
+    private static final String EDITOR = "EDITOR";
+    @Autowired
+    private UserBoardService userBoardService;
     @Autowired
     private AttachmentRepository attachmentRepository;
     @Autowired
@@ -39,8 +44,27 @@ public class AttachmentServiceImpl implements AttachmentService {
                 AttachmentDecoding.decodeToString(attachmentExisting), attachmentExisting);
     }
     @Override
-    public Attachment uploadAttachment(Long taskId, MultipartFile file) throws IOException {
+    public Attachment uploadAttachment(Long taskId, MultipartFile file) throws IOException, RoleException {
         Task task = taskServiceImpl.validateTaskById(taskId);
+
+        String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        boolean userAssociated = task.getTasksUsers().stream()
+                .anyMatch(taskUser -> Objects.equals(taskUser.getUser().getEmail(), loggedUser));
+        Lane laneToGetBoard = task.getLane();
+        long boardId = laneToGetBoard.getBoard().getBoardId();
+        List<UserBoard> userBoards = userBoardService.findBoardsByUser(loggedUser);
+        List<UserBoard> userInBoard = userBoards.stream().filter(userBoardToCheck -> userBoardToCheck.getBoard().getBoardId() == boardId).toList();
+
+        UserBoard userBoard = userInBoard.get(0);
+        boolean userIsEditor = false;
+        String roleCode = userBoard.getRoleCode();
+        log.info(userBoard.getRoleCode());
+        if(EDITOR.equals(roleCode)){
+            userIsEditor = true;
+        }
+        if (!userAssociated && !userIsEditor){
+            throw new RoleException("You are not associated with this task and cannot delete it.");
+        }
         String attachmentName = getFileName(file);
         String extension = getFileExtension(file);
         compatibleExtension(extension);
@@ -51,8 +75,27 @@ public class AttachmentServiceImpl implements AttachmentService {
         return attachment;
     }
     @Override
-    public void deleteAttachmentById(Long attachmentId) {
+    public void deleteAttachmentById(Long attachmentId) throws RoleException {
         Attachment attachment = validateAttachmentById(attachmentId);
+        Task task = taskServiceImpl.validateTaskById(attachment.getTask().getTaskId());
+        String loggedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        boolean userAssociated = task.getTasksUsers().stream()
+                .anyMatch(taskUser -> Objects.equals(taskUser.getUser().getEmail(), loggedUser));
+        Lane laneToGetBoard = task.getLane();
+        long boardId = laneToGetBoard.getBoard().getBoardId();
+        List<UserBoard> userBoards = userBoardService.findBoardsByUser(loggedUser);
+        List<UserBoard> userInBoard = userBoards.stream().filter(userBoardToCheck -> userBoardToCheck.getBoard().getBoardId() == boardId).toList();
+
+        UserBoard userBoard = userInBoard.get(0);
+        boolean userIsEditor = false;
+        String roleCode = userBoard.getRoleCode();
+        log.info(userBoard.getRoleCode());
+        if(EDITOR.equals(roleCode)){
+            userIsEditor = true;
+        }
+        if (!userAssociated && !userIsEditor){
+            throw new RoleException("You are not associated with this task and cannot delete attachments on it.");
+        }
         attachmentRepository.delete(attachment);
         log.info("Attachment with ID {} deleted from the repository.", attachment.getAttachmentId());
     }

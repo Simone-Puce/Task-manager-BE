@@ -3,6 +3,7 @@ package com.fincons.taskmanager.controller;
 
 import com.fincons.taskmanager.dto.LaneDTO;
 import com.fincons.taskmanager.entity.Lane;
+import com.fincons.taskmanager.exception.RoleException;
 import com.fincons.taskmanager.mapper.LaneMapper;
 import com.fincons.taskmanager.service.laneService.LaneService;
 import com.fincons.taskmanager.utility.GenericResponse;
@@ -57,7 +58,7 @@ public class LaneController {
         return ResponseEntity.ok(response);
     }
     @PostMapping(value = "${lane.create}")
-    public ResponseEntity<GenericResponse<LaneDTO>> createLane(@RequestBody LaneDTO laneDTO) {
+    public ResponseEntity<GenericResponse<LaneDTO>> createLane(@RequestBody LaneDTO laneDTO) throws RoleException {
         log.info("Received {} request for create new lane", RequestMethod.POST);
         validateLaneDTO(laneDTO);
         Lane laneMapped = modelMapperLane.mapToEntity(laneDTO);
@@ -71,7 +72,7 @@ public class LaneController {
 
     }
     @PutMapping(value = "${lane.put}")
-    public ResponseEntity<GenericResponse<LaneDTO>> updateLaneById(@RequestParam Long laneId, @RequestBody LaneDTO laneDTO) {
+    public ResponseEntity<GenericResponse<LaneDTO>> updateLaneById(@RequestParam Long laneId, @RequestBody LaneDTO laneDTO) throws RoleException {
         log.info("Received {} request to modify Lane with ID {}", RequestMethod.PUT, laneId);
         ValidateFields.validateSingleFieldLong(laneId);
         validateLaneDTO(laneDTO);
@@ -86,7 +87,7 @@ public class LaneController {
         return ResponseEntity.ok(response);
     }
     @PutMapping(value = "${lane.delete}")
-    public ResponseEntity<GenericResponse<LaneDTO>> deleteLaneById(@RequestParam Long laneId) {
+    public ResponseEntity<GenericResponse<LaneDTO>> deleteLaneById(@RequestParam Long laneId) throws RoleException {
         log.info("Received {} request for delete Task with ID: {}", RequestMethod.DELETE, laneId);
         ValidateFields.validateSingleFieldLong(laneId);
         laneService.deleteLaneById(laneId);

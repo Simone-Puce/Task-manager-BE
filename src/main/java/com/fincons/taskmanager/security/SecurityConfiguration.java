@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -88,23 +89,23 @@ public class SecurityConfiguration {
 
         http.authorizeHttpRequests(auth -> {
             auth
-                    .requestMatchers(appContext + logBaseUri + "/**").hasAnyRole("ADMIN")
-                    .requestMatchers(appContext + roleBaseUri + "/**").hasAnyRole("ADMIN")
-                    .requestMatchers(appContext + taskBaseUri + "/**").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(appContext + attachmentBaseUri + "/**").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(appContext + boardBaseUri + "/**").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(appContext + laneBaseUri + "/**").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(appContext + boardLaneBaseUri + "/**").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(appContext + userBoardBaseUri + "/**").hasAnyRole("ADMIN", "USER")
-                    .requestMatchers(appContext + taskUserBaseUri + "/**").hasAnyRole("ADMIN", "USER")
+                    .requestMatchers(HttpMethod.GET, appContext + boardBaseUri + "/**").hasAnyRole("ADMIN","USER")
+                    .requestMatchers(appContext + attachmentBaseUri + "/**").hasAnyRole("USER")
+                    .requestMatchers(appContext + laneBaseUri + "/**").hasAnyRole("USER")
+                    .requestMatchers(appContext + taskBaseUri + "/**").hasAnyRole("USER")
+                    .requestMatchers(appContext + taskUserBaseUri + "/**").hasAnyRole("USER")
+                    .requestMatchers(appContext + userBoardBaseUri + "/**").hasAnyRole("ADMIN","USER")
+                    .requestMatchers(appContext + boardBaseUri +"/**").hasAnyRole("ADMIN")
                     .requestMatchers(appContext + loginBaseUri).permitAll()
                     .requestMatchers(appContext + registerBaseUri).permitAll()
                     .requestMatchers(appContext + errorBaseUri).permitAll()
                     .requestMatchers(appContext + modifyUser).authenticated()
                     .requestMatchers(appContext + updateUserPassword).authenticated()
-                    .requestMatchers(appContext + deleteUserByEmail).permitAll() //to handle
+                    .requestMatchers(appContext + deleteUserByEmail).hasAnyRole("ADMIN") //TO HANDLE? BUT I THINK ONLY ADMIN CAN DELETE IT
                     .anyRequest().authenticated();
         }).httpBasic(Customizer.withDefaults());
+
+
 
         http.exceptionHandling(exception -> exception
                 .authenticationEntryPoint(authenticationExceptionEntryPoint));

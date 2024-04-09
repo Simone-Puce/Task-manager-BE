@@ -4,6 +4,7 @@ import com.fincons.taskmanager.dto.UserBoardDTO;
 import com.fincons.taskmanager.entity.UserBoard;
 import com.fincons.taskmanager.exception.DuplicateException;
 import com.fincons.taskmanager.exception.ResourceNotFoundException;
+import com.fincons.taskmanager.exception.RoleException;
 import com.fincons.taskmanager.mapper.UserBoardMapper;
 import com.fincons.taskmanager.service.userBoardService.UserBoardService;
 import com.fincons.taskmanager.utility.GenericResponse;
@@ -39,7 +40,7 @@ public class UserBoardController {
         return ResponseEntity.ok(response);
     }
     @PostMapping(value = "${user.board.create}")
-    public ResponseEntity<GenericResponse<UserBoardDTO>> createUserBoard(@RequestBody UserBoardDTO userBoardDTO) {
+    public ResponseEntity<GenericResponse<UserBoardDTO>> createUserBoard(@RequestBody UserBoardDTO userBoardDTO) throws RoleException {
         validateUserBoardFields(userBoardDTO);
         UserBoard userBoardMapped = modelMapperUserBoard.mapToEntity(userBoardDTO);
         UserBoard userBoard = userBoardService.createUserBoard(userBoardMapped);
@@ -55,7 +56,7 @@ public class UserBoardController {
     @PutMapping(value = "${user.board.put}")
     public ResponseEntity<GenericResponse<UserBoardDTO>> updateUserBoard(@RequestParam String email,
                                                                          @RequestParam Long boardId,
-                                                                         @RequestBody UserBoardDTO userBoardDTO) {
+                                                                         @RequestBody UserBoardDTO userBoardDTO) throws RoleException {
         ValidateFields.validateSingleField(email);
         ValidateFields.validateSingleFieldLong(boardId);
         validateUserBoardFields(userBoardDTO);
@@ -71,7 +72,7 @@ public class UserBoardController {
     }
     @DeleteMapping(value = "${user.board.delete}")
     public ResponseEntity<GenericResponse<UserBoardDTO>> deleteUserBoard(@RequestParam String email,
-                                                                         @RequestParam Long boardId) {
+                                                                         @RequestParam Long boardId) throws RoleException {
         ValidateFields.validateSingleField(email);
         ValidateFields.validateSingleFieldLong(boardId);
         userBoardService.deleteUserBoard(email, boardId);
