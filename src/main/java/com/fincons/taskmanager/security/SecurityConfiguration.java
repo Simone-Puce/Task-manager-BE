@@ -72,6 +72,8 @@ public class SecurityConfiguration {
     private String userBoardBaseUri;
     @Value("${task.user.base.uri}")
     private String taskUserBaseUri;
+    @Value("${audit.base.uri}")
+    private String auditBaseUri;
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -102,6 +104,7 @@ public class SecurityConfiguration {
                     .requestMatchers(appContext + modifyUser).authenticated()
                     .requestMatchers(appContext + updateUserPassword).authenticated()
                     .requestMatchers(appContext + deleteUserByEmail).hasAnyRole("ADMIN") //TO HANDLE? BUT I THINK ONLY ADMIN CAN DELETE IT
+                    .requestMatchers(appContext + auditBaseUri + "/**").permitAll()
                     .anyRequest().authenticated();
         }).httpBasic(Customizer.withDefaults());
 
